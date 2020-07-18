@@ -6,23 +6,20 @@
     "version": "1.0.0",
     "exposed-modules": {
         "Styling": [
-            "Css",
-            "Css.Animations",
-            "Css.Transitions",
-            "Css.Media",
-            "Css.Global"
+            "Origami"
         ],
         "Elements": [
-            "Html.Styled",
-            "Html.Styled.Attributes",
-            "Html.Styled.Events",
-            "Html.Styled.Keyed",
-            "Html.Styled.Lazy",
-            "Svg.Styled",
-            "Svg.Styled.Attributes",
-            "Svg.Styled.Events",
-            "Svg.Styled.Keyed",
-            "Svg.Styled.Lazy"
+            "Origami.VirtualDom",
+            "Origami.Html",
+            "Origami.Html.Attributes",
+            "Origami.Html.Events",
+            "Origami.Html.Keyed",
+            "Origami.Html.Lazy",
+            "Origami.Svg",
+            "Origami.Svg.Attributes",
+            "Origami.Svg.Events",
+            "Origami.Svg.Keyed",
+            "Origami.Svg.Lazy"
         ]
     },
     "elm-version": "0.19.1 <= v < 0.20.0",
