@@ -1,9 +1,9 @@
 {
     "type": "package",
-    "name": "rtfeldman/elm-css",
-    "summary": "Typed CSS in Elm.",
+    "name": "miyamoen/elm-origami",
+    "summary": "",
     "license": "BSD-3-Clause",
-    "version": "16.0.1",
+    "version": "1.0.0",
     "exposed-modules": {
         "Styling": [
             "Css",
@@ -25,7 +25,7 @@
             "Svg.Styled.Lazy"
         ]
     },
-    "elm-version": "0.19.0 <= v < 0.20.0",
+    "elm-version": "0.19.1 <= v < 0.20.0",
     "dependencies": {
         "Skinney/murmur3": "2.0.7 <= v < 3.0.0",
         "elm/core": "1.0.0 <= v < 2.0.0",

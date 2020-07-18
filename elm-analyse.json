@@ -1,0 +1,9 @@
+{
+  "checks": {
+    "ImportAll": false,
+    "TriggerWords": false,
+    "SingleFieldRecord": false,
+    "MultiLineRecordFormatting": false
+  },
+  "excludedPaths": []
+}

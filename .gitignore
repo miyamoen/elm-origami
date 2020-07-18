@@ -3,3 +3,4 @@ node_modules
 tests/homepage.css
 bin
 build
+.vscode
