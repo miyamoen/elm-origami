@@ -1,4 +1,4 @@
-module Html.Styled.Keyed exposing
+module Origami.Html.Keyed exposing
     ( node
     , ol, ul
     )
@@ -26,8 +26,8 @@ efficiently.
 
 -}
 
-import Html.Styled exposing (Attribute, Html)
-import VirtualDom.Styled
+import Origami.Html exposing (Attribute, Html)
+import Origami.VirtualDom
 
 
 {-| Works just like `Html.node`, but you add a unique identifier to each child
@@ -37,7 +37,7 @@ the DOM modifications more efficient.
 -}
 node : String -> List (Attribute msg) -> List ( String, Html msg ) -> Html msg
 node =
-    VirtualDom.Styled.keyedNode
+    Origami.VirtualDom.keyedNode
 
 
 {-| -}

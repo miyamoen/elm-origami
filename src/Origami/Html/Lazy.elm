@@ -1,10 +1,9 @@
-module Html.Styled.Lazy exposing (lazy, lazy2, lazy3, lazy4, lazy5, lazy6, lazy7)
+module Origami.Html.Lazy exposing (lazy, lazy2, lazy3, lazy4, lazy5, lazy6, lazy7)
 
-{-| **NOTE:** `Html.Lazy` goes up to `lazy8`, but `Html.Styled.Lazy` can only go
+{-| **NOTE:** `Html.Lazy` goes up to `lazy8`, but `Origami.Html.Lazy` can only go
 up to `lazy7` because it uses one of the arguments to track styling info.
 
 Since all Elm functions are pure we have a guarantee that the same input
-
 will always result in the same output. This module gives us tools to be lazy
 about building `Html` that utilize this fact.
 
@@ -20,8 +19,8 @@ benchmark to be sure!
 
 -}
 
-import Html.Styled exposing (Html)
-import VirtualDom.Styled
+import Origami.Html exposing (Html)
+import Origami.VirtualDom
 
 
 {-| A performance optimization that delays the building of virtual DOM nodes.
@@ -35,46 +34,46 @@ we know if the input to `view` is the same, the output must be the same!
 -}
 lazy : (a -> Html msg) -> a -> Html msg
 lazy =
-    VirtualDom.Styled.lazy
+    Origami.VirtualDom.lazy
 
 
 {-| Same as `lazy` but checks on two arguments.
 -}
 lazy2 : (a -> b -> Html msg) -> a -> b -> Html msg
 lazy2 =
-    VirtualDom.Styled.lazy2
+    Origami.VirtualDom.lazy2
 
 
 {-| Same as `lazy` but checks on three arguments.
 -}
 lazy3 : (a -> b -> c -> Html msg) -> a -> b -> c -> Html msg
 lazy3 =
-    VirtualDom.Styled.lazy3
+    Origami.VirtualDom.lazy3
 
 
 {-| Same as `lazy` but checks on four arguments.
 -}
 lazy4 : (a -> b -> c -> d -> Html msg) -> a -> b -> c -> d -> Html msg
 lazy4 =
-    VirtualDom.Styled.lazy4
+    Origami.VirtualDom.lazy4
 
 
 {-| Same as `lazy` but checks on five arguments.
 -}
 lazy5 : (a -> b -> c -> d -> e -> Html msg) -> a -> b -> c -> d -> e -> Html msg
 lazy5 =
-    VirtualDom.Styled.lazy5
+    Origami.VirtualDom.lazy5
 
 
 {-| Same as `lazy` but checks on six arguments.
 -}
 lazy6 : (a -> b -> c -> d -> e -> f -> Html msg) -> a -> b -> c -> d -> e -> f -> Html msg
 lazy6 =
-    VirtualDom.Styled.lazy6
+    Origami.VirtualDom.lazy6
 
 
 {-| Same as `lazy` but checks on seven arguments.
 -}
 lazy7 : (a -> b -> c -> d -> e -> f -> g -> Html msg) -> a -> b -> c -> d -> e -> f -> g -> Html msg
 lazy7 =
-    VirtualDom.Styled.lazy7
+    Origami.VirtualDom.lazy7

@@ -1,5 +1,5 @@
-module Html.Styled exposing
-    ( styled, fromUnstyled, toUnstyled
+module Origami.Html exposing
+    ( styled, fromHtml, toHtml, toHtmls
     , Html, Attribute, text, node, map
     , h1, h2, h3, h4, h5, h6
     , div, p, hr, pre, blockquote
@@ -19,10 +19,10 @@ module Html.Styled exposing
     , details, summary, menuitem, menu
     )
 
-{-| Drop-in replacement for the `Html` module from the `elm-lang/html` package.
-The only functions added are `styled`, `toUnstyled` and `fromUnstyled`:
+{-| Drop-in replacement for the `Html` module from the `elm/html` package.
+The only functions added are `styled`, `toHtml`, `toHtmls` and `fromHtml`:
 
-@docs styled, fromUnstyled, toUnstyled
+@docs styled, fromHtml, toHtml, toHtmls
 
 This file is organized roughly in order of popularity. The tags which you'd
 expect to use frequently will be closer to the top.
@@ -120,31 +120,38 @@ expect to use frequently will be closer to the top.
 
 -}
 
-import Css exposing (Style)
-import Html.Styled.Internal as Internal
+import Origami exposing (Style)
+import Origami.VirtualDom
 import VirtualDom
-import VirtualDom.Styled
 
 
 
 -- CORE TYPES
 
 
-{-| Styled [`Html`](https://package.elm-lang.org/packages/elm-lang/html/latest/Html#Html).
-You can convert from this to the normal [`Html`](https://package.elm-lang.org/packages/elm-lang/html/latest/Html#Html) type from [`elm-lang/html`](https://package.elm-lang.org/packages/elm-lang/html/latest)
-(which is a type alias for [`VirtualDom.Node`](https://package.elm-lang.org/packages/elm-lang/virtual-dom/latest/VirtualDom#Node))
-by using [`toUnstyled`](#toUnstyled).
-You can convert the other way using [`fromUnstyled`](#fromUnstyled).
+{-| The core building block used to build up HTML. Here we create an `Html`
+value with no attributes and one child:
+
+    hello : Html msg
+    hello =
+        div [] [ text "Hello!" ]
+
+Styled [`Html`](https://package.elm-lang.org/packages/elm/html/latest/Html#Html).
+You can convert from this to the normal [`Html`](https://package.elm-lang.org/packages/elm/html/latest/Html#Html) type from [`elm/html`](https://package.elm-lang.org/packages/elm/html/latest)
+(which is a type alias for [`VirtualDom.Node`](https://package.elm-lang.org/packages/elm/virtual-dom/latest/VirtualDom#Node))
+by using [`toHtml`](#toHtml) or [`toHtmls`](#toHtmls).
+You can convert the other way using [`fromHtml`](#fromHtml).
+
 -}
 type alias Html msg =
-    VirtualDom.Styled.Node msg
+    Origami.VirtualDom.Node msg
 
 
 {-| Set attributes on your `Html`. Learn more in the
 [`Html.Attributes`](Html-Attributes) module.
 -}
 type alias Attribute msg =
-    VirtualDom.Styled.Attribute msg
+    Origami.VirtualDom.Attribute msg
 
 
 
@@ -152,26 +159,31 @@ type alias Attribute msg =
 
 
 {-| Takes a function that creates an element, and pre-applies styles to it.
-bigButton : List (Attribute msg) -> List (Html msg) -> Html msg
-bigButton =
-styled button
-[ padding (px 30)
-, fontWeight bold
-]
-view : Model -> Html msg
-view model =
-[ text "These two buttons are identical:"
-, bigButton [][ text "Hi!" ]
-, button [ css [ padding (px 30), fontWeight bold ] ][ text "Hi!" ]
-][ text "These two buttons are identical:"
-, bigButton [] [ text "Hi!" ]
-, button [ css [ padding (px 30), fontWeight bold ] ] [] [ text "Hi!" ]
-]
+
+    bigButton : List (Attribute msg) -> List (Html msg) -> Html msg
+    bigButton =
+        styled button
+            [ padding (px 30)
+            , fontWeight bold
+            ]
+
+    view : Model -> Html msg
+    view model =
+        [ text "These two buttons are identical:"
+        , bigButton [] [ text "Hi!" ]
+        , button [ css [ padding (px 30), fontWeight bold ] ] [ text "Hi!" ]
+        ]
+            [ text "These two buttons are identical:"
+            , bigButton [] [ text "Hi!" ]
+            , button [ css [ padding (px 30), fontWeight bold ] ] [] [ text "Hi!" ]
+            ]
+
 Here, the `bigButton` function we've defined using `styled button` is
 identical to the normal `button` function, except that it has pre-applied
 the attribute of `css [ padding (px 30), fontWeight bold ]`.
 You can pass more attributes to `bigButton` as usual (including other `css`
 attributes). They will be applied after the pre-applied styles.
+
 -}
 styled :
     (List (Attribute a) -> List (Html b) -> Html msg)
@@ -180,19 +192,25 @@ styled :
     -> List (Html b)
     -> Html msg
 styled fn styles attrs children =
-    fn (Internal.css styles :: attrs) children
+    fn (Origami.VirtualDom.css styles :: attrs) children
 
 
 {-| -}
-toUnstyled : Html msg -> VirtualDom.Node msg
-toUnstyled =
-    VirtualDom.Styled.toUnstyled
+toHtml : Html msg -> VirtualDom.Node msg
+toHtml =
+    Origami.VirtualDom.toPlainNode
 
 
 {-| -}
-fromUnstyled : VirtualDom.Node msg -> Html msg
-fromUnstyled =
-    VirtualDom.Styled.unstyledNode
+toHtmls : List (Html msg) -> List (VirtualDom.Node msg)
+toHtmls =
+    Origami.VirtualDom.toPlainNodes
+
+
+{-| -}
+fromHtml : VirtualDom.Node msg -> Html msg
+fromHtml =
+    Origami.VirtualDom.plainNode
 
 
 
@@ -212,7 +230,7 @@ is not covered by the helper functions in this library.
 -}
 node : String -> List (Attribute msg) -> List (Html msg) -> Html msg
 node =
-    VirtualDom.Styled.node
+    Origami.VirtualDom.node
 
 
 {-| Just put plain text in the DOM. It will escape the string so that it appears
@@ -223,7 +241,7 @@ exactly as you specify.
 -}
 text : String -> Html msg
 text =
-    VirtualDom.Styled.text
+    Origami.VirtualDom.text
 
 
 
@@ -249,15 +267,21 @@ into `Msg` values in `view`.
     viewButton name =
         button [ onClick () ] [ text name ]
 
-This should not come in handy too often. Definitely read [this][reuse] before
-deciding if this is what you want.
+If you are growing your project as recommended in [the official
+guide](https://guide.elm-lang.org/), this should not come in handy in most
+projects. Usually it is easier to just pass things in as arguments.
 
-[reuse]: https://guide.elm-lang.org/reuse/
+**Note:** Some folks have tried to use this to make “components” in their
+projects, but they run into the fact that components are objects. Both are
+local mutable state with methods. Elm is not an object-oriented language, so
+you run into all sorts of friction if you try to use it like one. I definitely
+recommend against going down that path! Instead, make the simplest function
+possible and repeat.
 
 -}
 map : (a -> msg) -> Html a -> Html msg
 map =
-    VirtualDom.Styled.map
+    Origami.VirtualDom.map
 
 
 
@@ -943,13 +967,6 @@ option =
 textarea : List (Attribute msg) -> List (Html msg) -> Html msg
 textarea =
     node "textarea"
-
-
-{-| Represents a key-pair generator control.
--}
-keygen : List (Attribute msg) -> List (Html msg) -> Html msg
-keygen =
-    node "keygen"
 
 
 {-| Represents the result of a calculation.

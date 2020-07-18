@@ -1,11 +1,11 @@
-module Html.Styled.Attributes exposing
-    ( css, fromUnstyled
-    , property, attribute, map, style
+module Origami.Html.Attributes exposing
+    ( css, fromHtmlAttribute, batchAttributes
+    , style, property, attribute, map
     , class, classList, id, title, hidden
     , type_, value, checked, placeholder, selected
     , accept, acceptCharset, action, autocomplete, autofocus
     , disabled, enctype, list, maxlength, minlength, method, multiple
-    , name, novalidate, pattern, readonly, required, size, for, form
+    , name, novalidate, pattern, readonly, required, size, for, form_
     , max, min, step
     , cols, rows, wrap
     , href, target, download, hreflang, media, ping, rel
@@ -20,32 +20,26 @@ module Html.Styled.Attributes exposing
     , cite, datetime, pubdate, manifest
     )
 
-{-| Drop-in replacement for the `Html.Attributes` module from the `elm-lang/html` package.
+{-| Drop-in replacement for the `Html.Attributes` module from the `elm/html` package.
 
-The only functions added are `css` and `fromUnstyled`:
+The only functions added are `css`, `fromHtmlAttribute` and `batchAttributes`:
 
-@docs css, fromUnstyled
+@docs css, fromHtmlAttribute, batchAttributes
 
-There is one function removed: `style` - because the main point of this library
-is to use `css` instead of the `style` attribute!
-
-(If you really must use it, there's always [`attribute "style"`](#attribute).)
-
-Note that there is no `toUnstyled` for Attributes! This is because the process
-of going from styled to unstyled involves adding a `<style>` element to the DOM,
+Note that there is no `toHtmlAttribute` for Attributes! This is because the process
+of going from origami to html involves adding a `<style>` element to the DOM,
 and Attributes cannot do that. So it would be impossible to implement
-`toUnstyled` for Attributes without throwing the styles away - which is definitely
+`toHtmlAttribute` for Attributes without throwing the styles away - which is definitely
 undesirable!
 
 Helper functions for HTML attributes. They are organized roughly by
-
 category. Each attribute is labeled with the HTML tags it can be used with, so
 just search the page for `video` if you want video stuff.
 
 
 # Primitives
 
-@docs property, attribute, map, style
+@docs style, property, attribute, map
 
 
 # Super Common Attributes
@@ -62,7 +56,7 @@ just search the page for `video` if you want video stuff.
 
 @docs accept, acceptCharset, action, autocomplete, autofocus
 @docs disabled, enctype, list, maxlength, minlength, method, multiple
-@docs name, novalidate, pattern, readonly, required, size, for, form
+@docs name, novalidate, pattern, readonly, required, size, for, form_
 
 
 ## Input Ranges
@@ -124,20 +118,33 @@ Attributes that can be attached to any HTML tag but are less commonly used.
 
 -}
 
-import Css exposing (Style)
-import Html.Styled exposing (Attribute)
-import Html.Styled.Internal as Internal
 import Json.Encode as Json
+import Origami exposing (Style)
+import Origami.Html exposing (Attribute)
+import Origami.VirtualDom
 import VirtualDom
-import VirtualDom.Styled
 
 
 {-| Apply styles to an element.
-See the [`Css` module documentation](http://package.elm-lang.org/packages/rtfeldman/elm-css/latest/Css) for an overview of how to use this function.
+See the [`Origami` module documentation](http://package.elm-lang.org/packages/miyamoen/elm-origami/latest/Origami) for an overview of how to use this function.
 -}
 css : List Style -> Attribute msg
 css =
-    Internal.css
+    Origami.VirtualDom.css
+
+
+{-| Convert from a `Html.Attribute` to an Origami one.
+-}
+fromHtmlAttribute : VirtualDom.Attribute msg -> Attribute msg
+fromHtmlAttribute =
+    Origami.VirtualDom.plainAttribute
+
+
+{-| Batch Attributes.
+-}
+batchAttributes : List (Attribute msg) -> Attribute msg
+batchAttributes =
+    Origami.VirtualDom.batchAttributes
 
 
 
@@ -146,45 +153,31 @@ css =
 -- PRIMITIVES
 
 
-{-| Convert from an unstyled `Attribute` to a styled one.
-
-Note that there is no `toUnstyled` for Attributes! This is because the process
-of going from styled to unstyled involves adding a `<style>` element to the DOM,
-and Attributes cannot do that. So it would be impossible to implement
-`toUnstyled` for Attributes without throwing the styles away - which is definitely
-undesirable!
-
--}
-fromUnstyled : VirtualDom.Attribute msg -> Attribute msg
-fromUnstyled =
-    VirtualDom.Styled.unstyledAttribute
-
-
-{-| **NOTE:** If you're using `elm-css`, you **probably do not want this!**
+{-| **NOTE:** If you're using `elm-origami`, you **probably do not want this!**
 
 This is the `style` **attribute**, which has higher precedence than anything
-`elm-css` does. It's probably best to use this as a workaround only.
+`elm-origami` does. It's probably best to use this as a workaround only.
 
-    Specify a style.
+Specify a style.
 
     greeting : Node msg
     greeting =
-      div
-        [ style "background-color" "red"
-        , style "height" "90px"
-        , style "width" "100%"
-        ]
-        [ text "Hello!"
-        ]
+        div
+            [ style "background-color" "red"
+            , style "height" "90px"
+            , style "width" "100%"
+            ]
+            [ text "Hello!"
+            ]
 
 There is no `Html.Styles` module because best practices for working with HTML
 suggest that this should primarily be specified in CSS files. So the general
 recommendation is to use this function lightly.
 
 -}
-style : String -> String -> Html.Styled.Attribute msg
+style : String -> String -> Attribute msg
 style =
-    VirtualDom.Styled.style
+    Origami.VirtualDom.style
 
 
 {-| This function makes it easier to build a space-separated class attribute.
@@ -235,17 +228,17 @@ Read more about the difference between properties and attributes [here].
 -}
 property : String -> Json.Value -> Attribute msg
 property =
-    VirtualDom.Styled.property
+    Origami.VirtualDom.property
 
 
 stringProperty : String -> String -> Attribute msg
 stringProperty key string =
-    VirtualDom.Styled.property key (Json.string string)
+    Origami.VirtualDom.property key (Json.string string)
 
 
 boolProperty : String -> Bool -> Attribute msg
 boolProperty key bool =
-    VirtualDom.Styled.property key (Json.bool bool)
+    Origami.VirtualDom.property key (Json.bool bool)
 
 
 {-| Create _attributes_, like saying `domNode.setAttribute('class', 'greeting')`
@@ -262,14 +255,14 @@ Read more about the difference between properties and attributes [here].
 -}
 attribute : String -> String -> Attribute msg
 attribute =
-    VirtualDom.Styled.attribute
+    Origami.VirtualDom.attribute
 
 
 {-| Transform the messages produced by an `Attribute`.
 -}
 map : (a -> msg) -> Attribute a -> Attribute msg
 map =
-    VirtualDom.Styled.mapAttribute
+    Origami.VirtualDom.mapAttribute
 
 
 
@@ -333,7 +326,7 @@ context menu.
 -}
 contextmenu : String -> Attribute msg
 contextmenu =
-    VirtualDom.Styled.attribute "contextmenu"
+    Origami.VirtualDom.attribute "contextmenu"
 
 
 {-| Defines the text direction. Allowed values are ltr (Left-To-Right) or rtl
@@ -348,7 +341,7 @@ dir =
 -}
 draggable : String -> Attribute msg
 draggable =
-    VirtualDom.Styled.attribute "draggable"
+    Origami.VirtualDom.attribute "draggable"
 
 
 {-| Indicates that the element accept the dropping of content on it.
@@ -361,7 +354,7 @@ dropzone =
 {-| -}
 itemprop : String -> Attribute msg
 itemprop =
-    VirtualDom.Styled.attribute "itemprop"
+    Origami.VirtualDom.attribute "itemprop"
 
 
 {-| Defines the language used in the element.
@@ -383,7 +376,7 @@ instead.
 -}
 tabindex : Int -> Attribute msg
 tabindex n =
-    VirtualDom.Styled.attribute "tabIndex" (String.fromInt n)
+    Origami.VirtualDom.attribute "tabIndex" (String.fromInt n)
 
 
 
@@ -403,7 +396,7 @@ src url =
 -}
 height : Int -> Attribute msg
 height n =
-    VirtualDom.Styled.attribute "height" (String.fromInt n)
+    Origami.VirtualDom.attribute "height" (String.fromInt n)
 
 
 {-| Declare the width of a `canvas`, `embed`, `iframe`, `img`, `input`,
@@ -411,7 +404,7 @@ height n =
 -}
 width : Int -> Attribute msg
 width n =
-    VirtualDom.Styled.attribute "width" (String.fromInt n)
+    Origami.VirtualDom.attribute "width" (String.fromInt n)
 
 
 {-| Alternative text in case an image can't be displayed. Works with `img`,
@@ -479,15 +472,6 @@ kind =
     stringProperty "kind"
 
 
-
-{--TODO: maybe reintroduce once there's a better way to disambiguate imports
-{-| Specifies a user-readable title of the text `track`. -}
-label : String -> Attribute msg
-label =
-  stringProperty "label"
---}
-
-
 {-| A two letter language code indicating the language of the `track` text data.
 -}
 srclang : String -> Attribute msg
@@ -519,8 +503,8 @@ srcdoc =
 -- INPUT
 
 
-{-| Defines the type of a `button`, `input`, `embed`, `object`, `script`,
-`source`, `style`, or `menu`.
+{-| Defines the type of a `button`, `checkbox`, `input`, `embed`, `menu`,
+`object`, `script`, `source`, or `style`.
 -}
 type_ : String -> Attribute msg
 type_ =
@@ -629,7 +613,7 @@ For `input`.
 -}
 list : String -> Attribute msg
 list =
-    VirtualDom.Styled.attribute "list"
+    Origami.VirtualDom.attribute "list"
 
 
 {-| Defines the minimum number of characters allowed in an `input` or
@@ -637,7 +621,7 @@ list =
 -}
 minlength : Int -> Attribute msg
 minlength n =
-    VirtualDom.Styled.attribute "minLength" (String.fromInt n)
+    Origami.VirtualDom.attribute "minLength" (String.fromInt n)
 
 
 {-| Defines the maximum number of characters allowed in an `input` or
@@ -645,7 +629,7 @@ minlength n =
 -}
 maxlength : Int -> Attribute msg
 maxlength n =
-    VirtualDom.Styled.attribute "maxlength" (String.fromInt n)
+    Origami.VirtualDom.attribute "maxlength" (String.fromInt n)
 
 
 {-| Defines which HTTP method to use when submitting a `form`. Can be GET
@@ -711,7 +695,7 @@ For `select` specifies the number of visible options in a drop-down list.
 -}
 size : Int -> Attribute msg
 size n =
-    VirtualDom.Styled.attribute "size" (String.fromInt n)
+    Origami.VirtualDom.attribute "size" (String.fromInt n)
 
 
 {-| The element ID described by this `label` or the element IDs that are used
@@ -726,9 +710,9 @@ for =
 `fieldset`, `input`, `label`, `meter`, `object`, `output`, `progress`,
 `select`, or `textarea`.
 -}
-form : String -> Attribute msg
-form =
-    VirtualDom.Styled.attribute "form"
+form_ : String -> Attribute msg
+form_ =
+    Origami.VirtualDom.attribute "form"
 
 
 
@@ -767,14 +751,14 @@ step n =
 -}
 cols : Int -> Attribute msg
 cols n =
-    VirtualDom.Styled.attribute "cols" (String.fromInt n)
+    Origami.VirtualDom.attribute "cols" (String.fromInt n)
 
 
 {-| Defines the number of rows in a `textarea`.
 -}
 rows : Int -> Attribute msg
 rows n =
-    VirtualDom.Styled.attribute "rows" (String.fromInt n)
+    Origami.VirtualDom.attribute "rows" (String.fromInt n)
 
 
 {-| Indicates whether the text should be wrapped in a `textarea`. Possible
@@ -890,15 +874,6 @@ download fileName =
     stringProperty "download" fileName
 
 
-{-| Indicates that clicking an `a` and `area` will download the resource
-directly, and that the downloaded resource with have the given filename.
-So `downloadAs "hats.json"` means the person gets a file named `hats.json`.
--}
-downloadAs : String -> Attribute msg
-downloadAs =
-    stringProperty "download"
-
-
 {-| Two-letter language code of the linked resource of an `a`, `area`, or `link`.
 -}
 hreflang : String -> Attribute msg
@@ -911,7 +886,7 @@ or `style`.
 -}
 media : String -> Attribute msg
 media =
-    VirtualDom.Styled.attribute "media"
+    Origami.VirtualDom.attribute "media"
 
 
 {-| Specify a URL to send a short POST request to when the user clicks on an
@@ -927,7 +902,7 @@ For `a`, `area`, `link`.
 -}
 rel : String -> Attribute msg
 rel =
-    VirtualDom.Styled.attribute "rel"
+    Origami.VirtualDom.attribute "rel"
 
 
 
@@ -939,7 +914,7 @@ For `del`, `ins`, `time`.
 -}
 datetime : String -> Attribute msg
 datetime =
-    VirtualDom.Styled.attribute "datetime"
+    Origami.VirtualDom.attribute "datetime"
 
 
 {-| Indicates whether this date and time is the date of the nearest `article`
@@ -947,7 +922,7 @@ ancestor element. For `time`.
 -}
 pubdate : String -> Attribute msg
 pubdate =
-    VirtualDom.Styled.attribute "pubdate"
+    Origami.VirtualDom.attribute "pubdate"
 
 
 
@@ -979,7 +954,7 @@ For `td` and `th`.
 -}
 colspan : Int -> Attribute msg
 colspan n =
-    VirtualDom.Styled.attribute "colspan" (String.fromInt n)
+    Origami.VirtualDom.attribute "colspan" (String.fromInt n)
 
 
 {-| A space separated list of element IDs indicating which `th` elements are
@@ -995,7 +970,7 @@ For `td` and `th`.
 -}
 rowspan : Int -> Attribute msg
 rowspan n =
-    VirtualDom.Styled.attribute "rowspan" (String.fromInt n)
+    Origami.VirtualDom.attribute "rowspan" (String.fromInt n)
 
 
 {-| Specifies the scope of a header cell `th`. Possible values are: col, row,
@@ -1010,13 +985,4 @@ scope =
 -}
 manifest : String -> Attribute msg
 manifest =
-    VirtualDom.Styled.attribute "manifest"
-
-
-
-{--TODO: maybe reintroduce once there's a better way to disambiguate imports
-{-| The number of columns a `col` or `colgroup` should span. -}
-span : Int -> Attribute msg
-span n =
-    stringProperty "span" (String.fromInt n)
---}
+    Origami.VirtualDom.attribute "manifest"
