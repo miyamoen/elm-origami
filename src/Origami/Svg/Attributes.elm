@@ -1,5 +1,5 @@
-module Svg.Styled.Attributes exposing
-    ( css, fromUnstyled
+module Origami.Svg.Attributes exposing
+    ( css, fromSvgAttribute, batchAttributes
     , accentHeight, accelerate, accumulate, additive, alphabetic, allowReorder
     , amplitude, arabicForm, ascent, attributeName, attributeType, autoReverse
     , azimuth, baseFrequency, baseProfile, bbox, begin, bias, by, calcMode
@@ -42,10 +42,10 @@ module Svg.Styled.Attributes exposing
     , wordSpacing, writingMode
     )
 
-{-| Drop-in replacement for the `Svg.Attributes` module from the `elm-lang/svg` package.
-The only functions added are `css`, and `fromUnstyled`:
+{-| Drop-in replacement for the `Svg.Attributes` module from the `elm/svg` package.
+The only functions added are `css`, `fromSvgAttribute` and `batchAttributes`:
 
-@docs css, fromUnstyled
+@docs css, fromSvgAttribute, batchAttributes
 
 
 # Regular attributes
@@ -97,27 +97,33 @@ The only functions added are `css`, and `fromUnstyled`:
 
 -}
 
-import Css exposing (Style)
-import Svg.Styled exposing (Attribute)
-import Svg.Styled.Internal as Internal
+import Origami exposing (Style)
+import Origami.Svg exposing (Attribute)
+import Origami.VirtualDom
 import VirtualDom
-import VirtualDom.Styled
-
-
-{-| -}
-fromUnstyled : VirtualDom.Attribute msg -> Attribute msg
-fromUnstyled =
-    VirtualDom.Styled.unstyledAttribute
 
 
 {-| Apply styles to an element.
 
-See the [`Css` module documentation](http://package.elm-lang.org/packages/rtfeldman/elm-css/latest/Css) for an overview of how to use this function.
+See the [`Origami` module documentation](http://package.elm-lang.org/packages/miyamoen/elm-origami/latest/Origami) for an overview of how to use this function.
 
 -}
 css : List Style -> Attribute msg
 css =
-    Internal.css
+    Origami.VirtualDom.css
+
+
+{-| -}
+fromSvgAttribute : VirtualDom.Attribute msg -> Attribute msg
+fromSvgAttribute =
+    Origami.VirtualDom.plainAttribute
+
+
+{-| Batch Attributes.
+-}
+batchAttributes : List (Attribute msg) -> Attribute msg
+batchAttributes =
+    Origami.VirtualDom.batchAttributes
 
 
 
@@ -127,1165 +133,1165 @@ css =
 {-| -}
 accentHeight : String -> Attribute msg
 accentHeight =
-    VirtualDom.Styled.attribute "accent-height"
+    Origami.VirtualDom.attribute "accent-height"
 
 
 {-| -}
 accelerate : String -> Attribute msg
 accelerate =
-    VirtualDom.Styled.attribute "accelerate"
+    Origami.VirtualDom.attribute "accelerate"
 
 
 {-| -}
 accumulate : String -> Attribute msg
 accumulate =
-    VirtualDom.Styled.attribute "accumulate"
+    Origami.VirtualDom.attribute "accumulate"
 
 
 {-| -}
 additive : String -> Attribute msg
 additive =
-    VirtualDom.Styled.attribute "additive"
+    Origami.VirtualDom.attribute "additive"
 
 
 {-| -}
 alphabetic : String -> Attribute msg
 alphabetic =
-    VirtualDom.Styled.attribute "alphabetic"
+    Origami.VirtualDom.attribute "alphabetic"
 
 
 {-| -}
 allowReorder : String -> Attribute msg
 allowReorder =
-    VirtualDom.Styled.attribute "allowReorder"
+    Origami.VirtualDom.attribute "allowReorder"
 
 
 {-| -}
 amplitude : String -> Attribute msg
 amplitude =
-    VirtualDom.Styled.attribute "amplitude"
+    Origami.VirtualDom.attribute "amplitude"
 
 
 {-| -}
 arabicForm : String -> Attribute msg
 arabicForm =
-    VirtualDom.Styled.attribute "arabic-form"
+    Origami.VirtualDom.attribute "arabic-form"
 
 
 {-| -}
 ascent : String -> Attribute msg
 ascent =
-    VirtualDom.Styled.attribute "ascent"
+    Origami.VirtualDom.attribute "ascent"
 
 
 {-| -}
 attributeName : String -> Attribute msg
 attributeName =
-    VirtualDom.Styled.attribute "attributeName"
+    Origami.VirtualDom.attribute "attributeName"
 
 
 {-| -}
 attributeType : String -> Attribute msg
 attributeType =
-    VirtualDom.Styled.attribute "attributeType"
+    Origami.VirtualDom.attribute "attributeType"
 
 
 {-| -}
 autoReverse : String -> Attribute msg
 autoReverse =
-    VirtualDom.Styled.attribute "autoReverse"
+    Origami.VirtualDom.attribute "autoReverse"
 
 
 {-| -}
 azimuth : String -> Attribute msg
 azimuth =
-    VirtualDom.Styled.attribute "azimuth"
+    Origami.VirtualDom.attribute "azimuth"
 
 
 {-| -}
 baseFrequency : String -> Attribute msg
 baseFrequency =
-    VirtualDom.Styled.attribute "baseFrequency"
+    Origami.VirtualDom.attribute "baseFrequency"
 
 
 {-| -}
 baseProfile : String -> Attribute msg
 baseProfile =
-    VirtualDom.Styled.attribute "baseProfile"
+    Origami.VirtualDom.attribute "baseProfile"
 
 
 {-| -}
 bbox : String -> Attribute msg
 bbox =
-    VirtualDom.Styled.attribute "bbox"
+    Origami.VirtualDom.attribute "bbox"
 
 
 {-| -}
 begin : String -> Attribute msg
 begin =
-    VirtualDom.Styled.attribute "begin"
+    Origami.VirtualDom.attribute "begin"
 
 
 {-| -}
 bias : String -> Attribute msg
 bias =
-    VirtualDom.Styled.attribute "bias"
+    Origami.VirtualDom.attribute "bias"
 
 
 {-| -}
 by : String -> Attribute msg
 by value =
-    VirtualDom.Styled.attribute "by" value
+    Origami.VirtualDom.attribute "by" value
 
 
 {-| -}
 calcMode : String -> Attribute msg
 calcMode =
-    VirtualDom.Styled.attribute "calcMode"
+    Origami.VirtualDom.attribute "calcMode"
 
 
 {-| -}
 capHeight : String -> Attribute msg
 capHeight =
-    VirtualDom.Styled.attribute "cap-height"
+    Origami.VirtualDom.attribute "cap-height"
 
 
 {-| -}
 class : String -> Attribute msg
 class =
-    VirtualDom.Styled.attribute "class"
+    Origami.VirtualDom.attribute "class"
 
 
 {-| -}
 clipPathUnits : String -> Attribute msg
 clipPathUnits =
-    VirtualDom.Styled.attribute "clipPathUnits"
+    Origami.VirtualDom.attribute "clipPathUnits"
 
 
 {-| -}
 contentScriptType : String -> Attribute msg
 contentScriptType =
-    VirtualDom.Styled.attribute "contentScriptType"
+    Origami.VirtualDom.attribute "contentScriptType"
 
 
 {-| -}
 contentStyleType : String -> Attribute msg
 contentStyleType =
-    VirtualDom.Styled.attribute "contentStyleType"
+    Origami.VirtualDom.attribute "contentStyleType"
 
 
 {-| -}
 cx : String -> Attribute msg
 cx =
-    VirtualDom.Styled.attribute "cx"
+    Origami.VirtualDom.attribute "cx"
 
 
 {-| -}
 cy : String -> Attribute msg
 cy =
-    VirtualDom.Styled.attribute "cy"
+    Origami.VirtualDom.attribute "cy"
 
 
 {-| -}
 d : String -> Attribute msg
 d =
-    VirtualDom.Styled.attribute "d"
+    Origami.VirtualDom.attribute "d"
 
 
 {-| -}
 decelerate : String -> Attribute msg
 decelerate =
-    VirtualDom.Styled.attribute "decelerate"
+    Origami.VirtualDom.attribute "decelerate"
 
 
 {-| -}
 descent : String -> Attribute msg
 descent =
-    VirtualDom.Styled.attribute "descent"
+    Origami.VirtualDom.attribute "descent"
 
 
 {-| -}
 diffuseConstant : String -> Attribute msg
 diffuseConstant =
-    VirtualDom.Styled.attribute "diffuseConstant"
+    Origami.VirtualDom.attribute "diffuseConstant"
 
 
 {-| -}
 divisor : String -> Attribute msg
 divisor =
-    VirtualDom.Styled.attribute "divisor"
+    Origami.VirtualDom.attribute "divisor"
 
 
 {-| -}
 dur : String -> Attribute msg
 dur =
-    VirtualDom.Styled.attribute "dur"
+    Origami.VirtualDom.attribute "dur"
 
 
 {-| -}
 dx : String -> Attribute msg
 dx =
-    VirtualDom.Styled.attribute "dx"
+    Origami.VirtualDom.attribute "dx"
 
 
 {-| -}
 dy : String -> Attribute msg
 dy =
-    VirtualDom.Styled.attribute "dy"
+    Origami.VirtualDom.attribute "dy"
 
 
 {-| -}
 edgeMode : String -> Attribute msg
 edgeMode =
-    VirtualDom.Styled.attribute "edgeMode"
+    Origami.VirtualDom.attribute "edgeMode"
 
 
 {-| -}
 elevation : String -> Attribute msg
 elevation =
-    VirtualDom.Styled.attribute "elevation"
+    Origami.VirtualDom.attribute "elevation"
 
 
 {-| -}
 end : String -> Attribute msg
 end =
-    VirtualDom.Styled.attribute "end"
+    Origami.VirtualDom.attribute "end"
 
 
 {-| -}
 exponent : String -> Attribute msg
 exponent =
-    VirtualDom.Styled.attribute "exponent"
+    Origami.VirtualDom.attribute "exponent"
 
 
 {-| -}
 externalResourcesRequired : String -> Attribute msg
 externalResourcesRequired =
-    VirtualDom.Styled.attribute "externalResourcesRequired"
+    Origami.VirtualDom.attribute "externalResourcesRequired"
 
 
 {-| -}
 filterRes : String -> Attribute msg
 filterRes =
-    VirtualDom.Styled.attribute "filterRes"
+    Origami.VirtualDom.attribute "filterRes"
 
 
 {-| -}
 filterUnits : String -> Attribute msg
 filterUnits =
-    VirtualDom.Styled.attribute "filterUnits"
+    Origami.VirtualDom.attribute "filterUnits"
 
 
 {-| -}
 format : String -> Attribute msg
 format =
-    VirtualDom.Styled.attribute "format"
+    Origami.VirtualDom.attribute "format"
 
 
 {-| -}
 from : String -> Attribute msg
 from value =
-    VirtualDom.Styled.attribute "from" value
+    Origami.VirtualDom.attribute "from" value
 
 
 {-| -}
 fx : String -> Attribute msg
 fx =
-    VirtualDom.Styled.attribute "fx"
+    Origami.VirtualDom.attribute "fx"
 
 
 {-| -}
 fy : String -> Attribute msg
 fy =
-    VirtualDom.Styled.attribute "fy"
+    Origami.VirtualDom.attribute "fy"
 
 
 {-| -}
 g1 : String -> Attribute msg
 g1 =
-    VirtualDom.Styled.attribute "g1"
+    Origami.VirtualDom.attribute "g1"
 
 
 {-| -}
 g2 : String -> Attribute msg
 g2 =
-    VirtualDom.Styled.attribute "g2"
+    Origami.VirtualDom.attribute "g2"
 
 
 {-| -}
 glyphName : String -> Attribute msg
 glyphName =
-    VirtualDom.Styled.attribute "glyph-name"
+    Origami.VirtualDom.attribute "glyph-name"
 
 
 {-| -}
 glyphRef : String -> Attribute msg
 glyphRef =
-    VirtualDom.Styled.attribute "glyphRef"
+    Origami.VirtualDom.attribute "glyphRef"
 
 
 {-| -}
 gradientTransform : String -> Attribute msg
 gradientTransform =
-    VirtualDom.Styled.attribute "gradientTransform"
+    Origami.VirtualDom.attribute "gradientTransform"
 
 
 {-| -}
 gradientUnits : String -> Attribute msg
 gradientUnits =
-    VirtualDom.Styled.attribute "gradientUnits"
+    Origami.VirtualDom.attribute "gradientUnits"
 
 
 {-| -}
 hanging : String -> Attribute msg
 hanging =
-    VirtualDom.Styled.attribute "hanging"
+    Origami.VirtualDom.attribute "hanging"
 
 
 {-| -}
 height : String -> Attribute msg
 height =
-    VirtualDom.Styled.attribute "height"
+    Origami.VirtualDom.attribute "height"
 
 
 {-| -}
 horizAdvX : String -> Attribute msg
 horizAdvX =
-    VirtualDom.Styled.attribute "horiz-adv-x"
+    Origami.VirtualDom.attribute "horiz-adv-x"
 
 
 {-| -}
 horizOriginX : String -> Attribute msg
 horizOriginX =
-    VirtualDom.Styled.attribute "horiz-origin-x"
+    Origami.VirtualDom.attribute "horiz-origin-x"
 
 
 {-| -}
 horizOriginY : String -> Attribute msg
 horizOriginY =
-    VirtualDom.Styled.attribute "horiz-origin-y"
+    Origami.VirtualDom.attribute "horiz-origin-y"
 
 
 {-| -}
 id : String -> Attribute msg
 id =
-    VirtualDom.Styled.attribute "id"
+    Origami.VirtualDom.attribute "id"
 
 
 {-| -}
 ideographic : String -> Attribute msg
 ideographic =
-    VirtualDom.Styled.attribute "ideographic"
+    Origami.VirtualDom.attribute "ideographic"
 
 
 {-| -}
 in_ : String -> Attribute msg
 in_ =
-    VirtualDom.Styled.attribute "in"
+    Origami.VirtualDom.attribute "in"
 
 
 {-| -}
 in2 : String -> Attribute msg
 in2 =
-    VirtualDom.Styled.attribute "in2"
+    Origami.VirtualDom.attribute "in2"
 
 
 {-| -}
 intercept : String -> Attribute msg
 intercept =
-    VirtualDom.Styled.attribute "intercept"
+    Origami.VirtualDom.attribute "intercept"
 
 
 {-| -}
 k : String -> Attribute msg
 k =
-    VirtualDom.Styled.attribute "k"
+    Origami.VirtualDom.attribute "k"
 
 
 {-| -}
 k1 : String -> Attribute msg
 k1 =
-    VirtualDom.Styled.attribute "k1"
+    Origami.VirtualDom.attribute "k1"
 
 
 {-| -}
 k2 : String -> Attribute msg
 k2 =
-    VirtualDom.Styled.attribute "k2"
+    Origami.VirtualDom.attribute "k2"
 
 
 {-| -}
 k3 : String -> Attribute msg
 k3 =
-    VirtualDom.Styled.attribute "k3"
+    Origami.VirtualDom.attribute "k3"
 
 
 {-| -}
 k4 : String -> Attribute msg
 k4 =
-    VirtualDom.Styled.attribute "k4"
+    Origami.VirtualDom.attribute "k4"
 
 
 {-| -}
 kernelMatrix : String -> Attribute msg
 kernelMatrix =
-    VirtualDom.Styled.attribute "kernelMatrix"
+    Origami.VirtualDom.attribute "kernelMatrix"
 
 
 {-| -}
 kernelUnitLength : String -> Attribute msg
 kernelUnitLength =
-    VirtualDom.Styled.attribute "kernelUnitLength"
+    Origami.VirtualDom.attribute "kernelUnitLength"
 
 
 {-| -}
 keyPoints : String -> Attribute msg
 keyPoints =
-    VirtualDom.Styled.attribute "keyPoints"
+    Origami.VirtualDom.attribute "keyPoints"
 
 
 {-| -}
 keySplines : String -> Attribute msg
 keySplines =
-    VirtualDom.Styled.attribute "keySplines"
+    Origami.VirtualDom.attribute "keySplines"
 
 
 {-| -}
 keyTimes : String -> Attribute msg
 keyTimes =
-    VirtualDom.Styled.attribute "keyTimes"
+    Origami.VirtualDom.attribute "keyTimes"
 
 
 {-| -}
 lang : String -> Attribute msg
 lang =
-    VirtualDom.Styled.attribute "lang"
+    Origami.VirtualDom.attribute "lang"
 
 
 {-| -}
 lengthAdjust : String -> Attribute msg
 lengthAdjust =
-    VirtualDom.Styled.attribute "lengthAdjust"
+    Origami.VirtualDom.attribute "lengthAdjust"
 
 
 {-| -}
 limitingConeAngle : String -> Attribute msg
 limitingConeAngle =
-    VirtualDom.Styled.attribute "limitingConeAngle"
+    Origami.VirtualDom.attribute "limitingConeAngle"
 
 
 {-| -}
 local : String -> Attribute msg
 local =
-    VirtualDom.Styled.attribute "local"
+    Origami.VirtualDom.attribute "local"
 
 
 {-| -}
 markerHeight : String -> Attribute msg
 markerHeight =
-    VirtualDom.Styled.attribute "markerHeight"
+    Origami.VirtualDom.attribute "markerHeight"
 
 
 {-| -}
 markerUnits : String -> Attribute msg
 markerUnits =
-    VirtualDom.Styled.attribute "markerUnits"
+    Origami.VirtualDom.attribute "markerUnits"
 
 
 {-| -}
 markerWidth : String -> Attribute msg
 markerWidth =
-    VirtualDom.Styled.attribute "markerWidth"
+    Origami.VirtualDom.attribute "markerWidth"
 
 
 {-| -}
 maskContentUnits : String -> Attribute msg
 maskContentUnits =
-    VirtualDom.Styled.attribute "maskContentUnits"
+    Origami.VirtualDom.attribute "maskContentUnits"
 
 
 {-| -}
 maskUnits : String -> Attribute msg
 maskUnits =
-    VirtualDom.Styled.attribute "maskUnits"
+    Origami.VirtualDom.attribute "maskUnits"
 
 
 {-| -}
 mathematical : String -> Attribute msg
 mathematical =
-    VirtualDom.Styled.attribute "mathematical"
+    Origami.VirtualDom.attribute "mathematical"
 
 
 {-| -}
 max : String -> Attribute msg
 max =
-    VirtualDom.Styled.attribute "max"
+    Origami.VirtualDom.attribute "max"
 
 
 {-| -}
 media : String -> Attribute msg
 media =
-    VirtualDom.Styled.attribute "media"
+    Origami.VirtualDom.attribute "media"
 
 
 {-| -}
 method : String -> Attribute msg
 method =
-    VirtualDom.Styled.attribute "method"
+    Origami.VirtualDom.attribute "method"
 
 
 {-| -}
 min : String -> Attribute msg
 min =
-    VirtualDom.Styled.attribute "min"
+    Origami.VirtualDom.attribute "min"
 
 
 {-| -}
 mode : String -> Attribute msg
 mode =
-    VirtualDom.Styled.attribute "mode"
+    Origami.VirtualDom.attribute "mode"
 
 
 {-| -}
 name : String -> Attribute msg
 name =
-    VirtualDom.Styled.attribute "name"
+    Origami.VirtualDom.attribute "name"
 
 
 {-| -}
 numOctaves : String -> Attribute msg
 numOctaves =
-    VirtualDom.Styled.attribute "numOctaves"
+    Origami.VirtualDom.attribute "numOctaves"
 
 
 {-| -}
 offset : String -> Attribute msg
 offset =
-    VirtualDom.Styled.attribute "offset"
+    Origami.VirtualDom.attribute "offset"
 
 
 {-| -}
 operator : String -> Attribute msg
 operator =
-    VirtualDom.Styled.attribute "operator"
+    Origami.VirtualDom.attribute "operator"
 
 
 {-| -}
 order : String -> Attribute msg
 order =
-    VirtualDom.Styled.attribute "order"
+    Origami.VirtualDom.attribute "order"
 
 
 {-| -}
 orient : String -> Attribute msg
 orient =
-    VirtualDom.Styled.attribute "orient"
+    Origami.VirtualDom.attribute "orient"
 
 
 {-| -}
 orientation : String -> Attribute msg
 orientation =
-    VirtualDom.Styled.attribute "orientation"
+    Origami.VirtualDom.attribute "orientation"
 
 
 {-| -}
 origin : String -> Attribute msg
 origin =
-    VirtualDom.Styled.attribute "origin"
+    Origami.VirtualDom.attribute "origin"
 
 
 {-| -}
 overlinePosition : String -> Attribute msg
 overlinePosition =
-    VirtualDom.Styled.attribute "overline-position"
+    Origami.VirtualDom.attribute "overline-position"
 
 
 {-| -}
 overlineThickness : String -> Attribute msg
 overlineThickness =
-    VirtualDom.Styled.attribute "overline-thickness"
+    Origami.VirtualDom.attribute "overline-thickness"
 
 
 {-| -}
 panose1 : String -> Attribute msg
 panose1 =
-    VirtualDom.Styled.attribute "panose-1"
+    Origami.VirtualDom.attribute "panose-1"
 
 
 {-| -}
 path : String -> Attribute msg
 path =
-    VirtualDom.Styled.attribute "path"
+    Origami.VirtualDom.attribute "path"
 
 
 {-| -}
 pathLength : String -> Attribute msg
 pathLength =
-    VirtualDom.Styled.attribute "pathLength"
+    Origami.VirtualDom.attribute "pathLength"
 
 
 {-| -}
 patternContentUnits : String -> Attribute msg
 patternContentUnits =
-    VirtualDom.Styled.attribute "patternContentUnits"
+    Origami.VirtualDom.attribute "patternContentUnits"
 
 
 {-| -}
 patternTransform : String -> Attribute msg
 patternTransform =
-    VirtualDom.Styled.attribute "patternTransform"
+    Origami.VirtualDom.attribute "patternTransform"
 
 
 {-| -}
 patternUnits : String -> Attribute msg
 patternUnits =
-    VirtualDom.Styled.attribute "patternUnits"
+    Origami.VirtualDom.attribute "patternUnits"
 
 
 {-| -}
 pointOrder : String -> Attribute msg
 pointOrder =
-    VirtualDom.Styled.attribute "point-order"
+    Origami.VirtualDom.attribute "point-order"
 
 
 {-| -}
 points : String -> Attribute msg
 points =
-    VirtualDom.Styled.attribute "points"
+    Origami.VirtualDom.attribute "points"
 
 
 {-| -}
 pointsAtX : String -> Attribute msg
 pointsAtX =
-    VirtualDom.Styled.attribute "pointsAtX"
+    Origami.VirtualDom.attribute "pointsAtX"
 
 
 {-| -}
 pointsAtY : String -> Attribute msg
 pointsAtY =
-    VirtualDom.Styled.attribute "pointsAtY"
+    Origami.VirtualDom.attribute "pointsAtY"
 
 
 {-| -}
 pointsAtZ : String -> Attribute msg
 pointsAtZ =
-    VirtualDom.Styled.attribute "pointsAtZ"
+    Origami.VirtualDom.attribute "pointsAtZ"
 
 
 {-| -}
 preserveAlpha : String -> Attribute msg
 preserveAlpha =
-    VirtualDom.Styled.attribute "preserveAlpha"
+    Origami.VirtualDom.attribute "preserveAlpha"
 
 
 {-| -}
 preserveAspectRatio : String -> Attribute msg
 preserveAspectRatio =
-    VirtualDom.Styled.attribute "preserveAspectRatio"
+    Origami.VirtualDom.attribute "preserveAspectRatio"
 
 
 {-| -}
 primitiveUnits : String -> Attribute msg
 primitiveUnits =
-    VirtualDom.Styled.attribute "primitiveUnits"
+    Origami.VirtualDom.attribute "primitiveUnits"
 
 
 {-| -}
 r : String -> Attribute msg
 r =
-    VirtualDom.Styled.attribute "r"
+    Origami.VirtualDom.attribute "r"
 
 
 {-| -}
 radius : String -> Attribute msg
 radius =
-    VirtualDom.Styled.attribute "radius"
+    Origami.VirtualDom.attribute "radius"
 
 
 {-| -}
 refX : String -> Attribute msg
 refX =
-    VirtualDom.Styled.attribute "refX"
+    Origami.VirtualDom.attribute "refX"
 
 
 {-| -}
 refY : String -> Attribute msg
 refY =
-    VirtualDom.Styled.attribute "refY"
+    Origami.VirtualDom.attribute "refY"
 
 
 {-| -}
 renderingIntent : String -> Attribute msg
 renderingIntent =
-    VirtualDom.Styled.attribute "rendering-intent"
+    Origami.VirtualDom.attribute "rendering-intent"
 
 
 {-| -}
 repeatCount : String -> Attribute msg
 repeatCount =
-    VirtualDom.Styled.attribute "repeatCount"
+    Origami.VirtualDom.attribute "repeatCount"
 
 
 {-| -}
 repeatDur : String -> Attribute msg
 repeatDur =
-    VirtualDom.Styled.attribute "repeatDur"
+    Origami.VirtualDom.attribute "repeatDur"
 
 
 {-| -}
 requiredExtensions : String -> Attribute msg
 requiredExtensions =
-    VirtualDom.Styled.attribute "requiredExtensions"
+    Origami.VirtualDom.attribute "requiredExtensions"
 
 
 {-| -}
 requiredFeatures : String -> Attribute msg
 requiredFeatures =
-    VirtualDom.Styled.attribute "requiredFeatures"
+    Origami.VirtualDom.attribute "requiredFeatures"
 
 
 {-| -}
 restart : String -> Attribute msg
 restart =
-    VirtualDom.Styled.attribute "restart"
+    Origami.VirtualDom.attribute "restart"
 
 
 {-| -}
 result : String -> Attribute msg
 result =
-    VirtualDom.Styled.attribute "result"
+    Origami.VirtualDom.attribute "result"
 
 
 {-| -}
 rotate : String -> Attribute msg
 rotate =
-    VirtualDom.Styled.attribute "rotate"
+    Origami.VirtualDom.attribute "rotate"
 
 
 {-| -}
 rx : String -> Attribute msg
 rx =
-    VirtualDom.Styled.attribute "rx"
+    Origami.VirtualDom.attribute "rx"
 
 
 {-| -}
 ry : String -> Attribute msg
 ry =
-    VirtualDom.Styled.attribute "ry"
+    Origami.VirtualDom.attribute "ry"
 
 
 {-| -}
 scale : String -> Attribute msg
 scale =
-    VirtualDom.Styled.attribute "scale"
+    Origami.VirtualDom.attribute "scale"
 
 
 {-| -}
 seed : String -> Attribute msg
 seed =
-    VirtualDom.Styled.attribute "seed"
+    Origami.VirtualDom.attribute "seed"
 
 
 {-| -}
 slope : String -> Attribute msg
 slope =
-    VirtualDom.Styled.attribute "slope"
+    Origami.VirtualDom.attribute "slope"
 
 
 {-| -}
 spacing : String -> Attribute msg
 spacing =
-    VirtualDom.Styled.attribute "spacing"
+    Origami.VirtualDom.attribute "spacing"
 
 
 {-| -}
 specularConstant : String -> Attribute msg
 specularConstant =
-    VirtualDom.Styled.attribute "specularConstant"
+    Origami.VirtualDom.attribute "specularConstant"
 
 
 {-| -}
 specularExponent : String -> Attribute msg
 specularExponent =
-    VirtualDom.Styled.attribute "specularExponent"
+    Origami.VirtualDom.attribute "specularExponent"
 
 
 {-| -}
 speed : String -> Attribute msg
 speed =
-    VirtualDom.Styled.attribute "speed"
+    Origami.VirtualDom.attribute "speed"
 
 
 {-| -}
 spreadMethod : String -> Attribute msg
 spreadMethod =
-    VirtualDom.Styled.attribute "spreadMethod"
+    Origami.VirtualDom.attribute "spreadMethod"
 
 
 {-| -}
 startOffset : String -> Attribute msg
 startOffset =
-    VirtualDom.Styled.attribute "startOffset"
+    Origami.VirtualDom.attribute "startOffset"
 
 
 {-| -}
 stdDeviation : String -> Attribute msg
 stdDeviation =
-    VirtualDom.Styled.attribute "stdDeviation"
+    Origami.VirtualDom.attribute "stdDeviation"
 
 
 {-| -}
 stemh : String -> Attribute msg
 stemh =
-    VirtualDom.Styled.attribute "stemh"
+    Origami.VirtualDom.attribute "stemh"
 
 
 {-| -}
 stemv : String -> Attribute msg
 stemv =
-    VirtualDom.Styled.attribute "stemv"
+    Origami.VirtualDom.attribute "stemv"
 
 
 {-| -}
 stitchTiles : String -> Attribute msg
 stitchTiles =
-    VirtualDom.Styled.attribute "stitchTiles"
+    Origami.VirtualDom.attribute "stitchTiles"
 
 
 {-| -}
 strikethroughPosition : String -> Attribute msg
 strikethroughPosition =
-    VirtualDom.Styled.attribute "strikethrough-position"
+    Origami.VirtualDom.attribute "strikethrough-position"
 
 
 {-| -}
 strikethroughThickness : String -> Attribute msg
 strikethroughThickness =
-    VirtualDom.Styled.attribute "strikethrough-thickness"
+    Origami.VirtualDom.attribute "strikethrough-thickness"
 
 
 {-| -}
 string : String -> Attribute msg
 string =
-    VirtualDom.Styled.attribute "string"
+    Origami.VirtualDom.attribute "string"
 
 
 {-| -}
 style : String -> Attribute msg
 style =
-    VirtualDom.Styled.attribute "style"
+    Origami.VirtualDom.attribute "style"
 
 
 {-| -}
 surfaceScale : String -> Attribute msg
 surfaceScale =
-    VirtualDom.Styled.attribute "surfaceScale"
+    Origami.VirtualDom.attribute "surfaceScale"
 
 
 {-| -}
 systemLanguage : String -> Attribute msg
 systemLanguage =
-    VirtualDom.Styled.attribute "systemLanguage"
+    Origami.VirtualDom.attribute "systemLanguage"
 
 
 {-| -}
 tableValues : String -> Attribute msg
 tableValues =
-    VirtualDom.Styled.attribute "tableValues"
+    Origami.VirtualDom.attribute "tableValues"
 
 
 {-| -}
 target : String -> Attribute msg
 target =
-    VirtualDom.Styled.attribute "target"
+    Origami.VirtualDom.attribute "target"
 
 
 {-| -}
 targetX : String -> Attribute msg
 targetX =
-    VirtualDom.Styled.attribute "targetX"
+    Origami.VirtualDom.attribute "targetX"
 
 
 {-| -}
 targetY : String -> Attribute msg
 targetY =
-    VirtualDom.Styled.attribute "targetY"
+    Origami.VirtualDom.attribute "targetY"
 
 
 {-| -}
 textLength : String -> Attribute msg
 textLength =
-    VirtualDom.Styled.attribute "textLength"
+    Origami.VirtualDom.attribute "textLength"
 
 
 {-| -}
 title : String -> Attribute msg
 title =
-    VirtualDom.Styled.attribute "title"
+    Origami.VirtualDom.attribute "title"
 
 
 {-| -}
 to : String -> Attribute msg
 to value =
-    VirtualDom.Styled.attribute "to" value
+    Origami.VirtualDom.attribute "to" value
 
 
 {-| -}
 transform : String -> Attribute msg
 transform =
-    VirtualDom.Styled.attribute "transform"
+    Origami.VirtualDom.attribute "transform"
 
 
 {-| -}
 type_ : String -> Attribute msg
 type_ =
-    VirtualDom.Styled.attribute "type"
+    Origami.VirtualDom.attribute "type"
 
 
 {-| -}
 u1 : String -> Attribute msg
 u1 =
-    VirtualDom.Styled.attribute "u1"
+    Origami.VirtualDom.attribute "u1"
 
 
 {-| -}
 u2 : String -> Attribute msg
 u2 =
-    VirtualDom.Styled.attribute "u2"
+    Origami.VirtualDom.attribute "u2"
 
 
 {-| -}
 underlinePosition : String -> Attribute msg
 underlinePosition =
-    VirtualDom.Styled.attribute "underline-position"
+    Origami.VirtualDom.attribute "underline-position"
 
 
 {-| -}
 underlineThickness : String -> Attribute msg
 underlineThickness =
-    VirtualDom.Styled.attribute "underline-thickness"
+    Origami.VirtualDom.attribute "underline-thickness"
 
 
 {-| -}
 unicode : String -> Attribute msg
 unicode =
-    VirtualDom.Styled.attribute "unicode"
+    Origami.VirtualDom.attribute "unicode"
 
 
 {-| -}
 unicodeRange : String -> Attribute msg
 unicodeRange =
-    VirtualDom.Styled.attribute "unicode-range"
+    Origami.VirtualDom.attribute "unicode-range"
 
 
 {-| -}
 unitsPerEm : String -> Attribute msg
 unitsPerEm =
-    VirtualDom.Styled.attribute "units-per-em"
+    Origami.VirtualDom.attribute "units-per-em"
 
 
 {-| -}
 vAlphabetic : String -> Attribute msg
 vAlphabetic =
-    VirtualDom.Styled.attribute "v-alphabetic"
+    Origami.VirtualDom.attribute "v-alphabetic"
 
 
 {-| -}
 vHanging : String -> Attribute msg
 vHanging =
-    VirtualDom.Styled.attribute "v-hanging"
+    Origami.VirtualDom.attribute "v-hanging"
 
 
 {-| -}
 vIdeographic : String -> Attribute msg
 vIdeographic =
-    VirtualDom.Styled.attribute "v-ideographic"
+    Origami.VirtualDom.attribute "v-ideographic"
 
 
 {-| -}
 vMathematical : String -> Attribute msg
 vMathematical =
-    VirtualDom.Styled.attribute "v-mathematical"
+    Origami.VirtualDom.attribute "v-mathematical"
 
 
 {-| -}
 values : String -> Attribute msg
 values value =
-    VirtualDom.Styled.attribute "values" value
+    Origami.VirtualDom.attribute "values" value
 
 
 {-| -}
 version : String -> Attribute msg
 version =
-    VirtualDom.Styled.attribute "version"
+    Origami.VirtualDom.attribute "version"
 
 
 {-| -}
 vertAdvY : String -> Attribute msg
 vertAdvY =
-    VirtualDom.Styled.attribute "vert-adv-y"
+    Origami.VirtualDom.attribute "vert-adv-y"
 
 
 {-| -}
 vertOriginX : String -> Attribute msg
 vertOriginX =
-    VirtualDom.Styled.attribute "vert-origin-x"
+    Origami.VirtualDom.attribute "vert-origin-x"
 
 
 {-| -}
 vertOriginY : String -> Attribute msg
 vertOriginY =
-    VirtualDom.Styled.attribute "vert-origin-y"
+    Origami.VirtualDom.attribute "vert-origin-y"
 
 
 {-| -}
 viewBox : String -> Attribute msg
 viewBox =
-    VirtualDom.Styled.attribute "viewBox"
+    Origami.VirtualDom.attribute "viewBox"
 
 
 {-| -}
 viewTarget : String -> Attribute msg
 viewTarget =
-    VirtualDom.Styled.attribute "viewTarget"
+    Origami.VirtualDom.attribute "viewTarget"
 
 
 {-| -}
 width : String -> Attribute msg
 width =
-    VirtualDom.Styled.attribute "width"
+    Origami.VirtualDom.attribute "width"
 
 
 {-| -}
 widths : String -> Attribute msg
 widths =
-    VirtualDom.Styled.attribute "widths"
+    Origami.VirtualDom.attribute "widths"
 
 
 {-| -}
 x : String -> Attribute msg
 x =
-    VirtualDom.Styled.attribute "x"
+    Origami.VirtualDom.attribute "x"
 
 
 {-| -}
 xHeight : String -> Attribute msg
 xHeight =
-    VirtualDom.Styled.attribute "x-height"
+    Origami.VirtualDom.attribute "x-height"
 
 
 {-| -}
 x1 : String -> Attribute msg
 x1 =
-    VirtualDom.Styled.attribute "x1"
+    Origami.VirtualDom.attribute "x1"
 
 
 {-| -}
 x2 : String -> Attribute msg
 x2 =
-    VirtualDom.Styled.attribute "x2"
+    Origami.VirtualDom.attribute "x2"
 
 
 {-| -}
 xChannelSelector : String -> Attribute msg
 xChannelSelector =
-    VirtualDom.Styled.attribute "xChannelSelector"
+    Origami.VirtualDom.attribute "xChannelSelector"
 
 
 {-| -}
 xlinkActuate : String -> Attribute msg
 xlinkActuate =
-    VirtualDom.Styled.attributeNS "http://www.w3.org/1999/xlink" "xlink:actuate"
+    Origami.VirtualDom.attributeNS "http://www.w3.org/1999/xlink" "xlink:actuate"
 
 
 {-| -}
 xlinkArcrole : String -> Attribute msg
 xlinkArcrole =
-    VirtualDom.Styled.attributeNS "http://www.w3.org/1999/xlink" "xlink:arcrole"
+    Origami.VirtualDom.attributeNS "http://www.w3.org/1999/xlink" "xlink:arcrole"
 
 
 {-| -}
 xlinkHref : String -> Attribute msg
 xlinkHref value =
-    VirtualDom.Styled.attributeNS "http://www.w3.org/1999/xlink" "xlink:href" value
+    Origami.VirtualDom.attributeNS "http://www.w3.org/1999/xlink" "xlink:href" value
 
 
 {-| -}
 xlinkRole : String -> Attribute msg
 xlinkRole =
-    VirtualDom.Styled.attributeNS "http://www.w3.org/1999/xlink" "xlink:role"
+    Origami.VirtualDom.attributeNS "http://www.w3.org/1999/xlink" "xlink:role"
 
 
 {-| -}
 xlinkShow : String -> Attribute msg
 xlinkShow =
-    VirtualDom.Styled.attributeNS "http://www.w3.org/1999/xlink" "xlink:show"
+    Origami.VirtualDom.attributeNS "http://www.w3.org/1999/xlink" "xlink:show"
 
 
 {-| -}
 xlinkTitle : String -> Attribute msg
 xlinkTitle =
-    VirtualDom.Styled.attributeNS "http://www.w3.org/1999/xlink" "xlink:title"
+    Origami.VirtualDom.attributeNS "http://www.w3.org/1999/xlink" "xlink:title"
 
 
 {-| -}
 xlinkType : String -> Attribute msg
 xlinkType =
-    VirtualDom.Styled.attributeNS "http://www.w3.org/1999/xlink" "xlink:type"
+    Origami.VirtualDom.attributeNS "http://www.w3.org/1999/xlink" "xlink:type"
 
 
 {-| -}
 xmlBase : String -> Attribute msg
 xmlBase =
-    VirtualDom.Styled.attributeNS "http://www.w3.org/XML/1998/namespace" "xml:base"
+    Origami.VirtualDom.attributeNS "http://www.w3.org/XML/1998/namespace" "xml:base"
 
 
 {-| -}
 xmlLang : String -> Attribute msg
 xmlLang =
-    VirtualDom.Styled.attributeNS "http://www.w3.org/XML/1998/namespace" "xml:lang"
+    Origami.VirtualDom.attributeNS "http://www.w3.org/XML/1998/namespace" "xml:lang"
 
 
 {-| -}
 xmlSpace : String -> Attribute msg
 xmlSpace =
-    VirtualDom.Styled.attributeNS "http://www.w3.org/XML/1998/namespace" "xml:space"
+    Origami.VirtualDom.attributeNS "http://www.w3.org/XML/1998/namespace" "xml:space"
 
 
 {-| -}
 y : String -> Attribute msg
 y =
-    VirtualDom.Styled.attribute "y"
+    Origami.VirtualDom.attribute "y"
 
 
 {-| -}
 y1 : String -> Attribute msg
 y1 =
-    VirtualDom.Styled.attribute "y1"
+    Origami.VirtualDom.attribute "y1"
 
 
 {-| -}
 y2 : String -> Attribute msg
 y2 =
-    VirtualDom.Styled.attribute "y2"
+    Origami.VirtualDom.attribute "y2"
 
 
 {-| -}
 yChannelSelector : String -> Attribute msg
 yChannelSelector =
-    VirtualDom.Styled.attribute "yChannelSelector"
+    Origami.VirtualDom.attribute "yChannelSelector"
 
 
 {-| -}
 z : String -> Attribute msg
 z =
-    VirtualDom.Styled.attribute "z"
+    Origami.VirtualDom.attribute "z"
 
 
 {-| -}
 zoomAndPan : String -> Attribute msg
 zoomAndPan =
-    VirtualDom.Styled.attribute "zoomAndPan"
+    Origami.VirtualDom.attribute "zoomAndPan"
 
 
 
@@ -1295,352 +1301,352 @@ zoomAndPan =
 {-| -}
 alignmentBaseline : String -> Attribute msg
 alignmentBaseline =
-    VirtualDom.Styled.attribute "alignment-baseline"
+    Origami.VirtualDom.attribute "alignment-baseline"
 
 
 {-| -}
 baselineShift : String -> Attribute msg
 baselineShift =
-    VirtualDom.Styled.attribute "baseline-shift"
+    Origami.VirtualDom.attribute "baseline-shift"
 
 
 {-| -}
 clipPath : String -> Attribute msg
 clipPath =
-    VirtualDom.Styled.attribute "clip-path"
+    Origami.VirtualDom.attribute "clip-path"
 
 
 {-| -}
 clipRule : String -> Attribute msg
 clipRule =
-    VirtualDom.Styled.attribute "clip-rule"
+    Origami.VirtualDom.attribute "clip-rule"
 
 
 {-| -}
 clip : String -> Attribute msg
 clip =
-    VirtualDom.Styled.attribute "clip"
+    Origami.VirtualDom.attribute "clip"
 
 
 {-| -}
 colorInterpolationFilters : String -> Attribute msg
 colorInterpolationFilters =
-    VirtualDom.Styled.attribute "color-interpolation-filters"
+    Origami.VirtualDom.attribute "color-interpolation-filters"
 
 
 {-| -}
 colorInterpolation : String -> Attribute msg
 colorInterpolation =
-    VirtualDom.Styled.attribute "color-interpolation"
+    Origami.VirtualDom.attribute "color-interpolation"
 
 
 {-| -}
 colorProfile : String -> Attribute msg
 colorProfile =
-    VirtualDom.Styled.attribute "color-profile"
+    Origami.VirtualDom.attribute "color-profile"
 
 
 {-| -}
 colorRendering : String -> Attribute msg
 colorRendering =
-    VirtualDom.Styled.attribute "color-rendering"
+    Origami.VirtualDom.attribute "color-rendering"
 
 
 {-| -}
 color : String -> Attribute msg
 color =
-    VirtualDom.Styled.attribute "color"
+    Origami.VirtualDom.attribute "color"
 
 
 {-| -}
 cursor : String -> Attribute msg
 cursor =
-    VirtualDom.Styled.attribute "cursor"
+    Origami.VirtualDom.attribute "cursor"
 
 
 {-| -}
 direction : String -> Attribute msg
 direction =
-    VirtualDom.Styled.attribute "direction"
+    Origami.VirtualDom.attribute "direction"
 
 
 {-| -}
 display : String -> Attribute msg
 display =
-    VirtualDom.Styled.attribute "display"
+    Origami.VirtualDom.attribute "display"
 
 
 {-| -}
 dominantBaseline : String -> Attribute msg
 dominantBaseline =
-    VirtualDom.Styled.attribute "dominant-baseline"
+    Origami.VirtualDom.attribute "dominant-baseline"
 
 
 {-| -}
 enableBackground : String -> Attribute msg
 enableBackground =
-    VirtualDom.Styled.attribute "enable-background"
+    Origami.VirtualDom.attribute "enable-background"
 
 
 {-| -}
 fillOpacity : String -> Attribute msg
 fillOpacity =
-    VirtualDom.Styled.attribute "fill-opacity"
+    Origami.VirtualDom.attribute "fill-opacity"
 
 
 {-| -}
 fillRule : String -> Attribute msg
 fillRule =
-    VirtualDom.Styled.attribute "fill-rule"
+    Origami.VirtualDom.attribute "fill-rule"
 
 
 {-| -}
 fill : String -> Attribute msg
 fill =
-    VirtualDom.Styled.attribute "fill"
+    Origami.VirtualDom.attribute "fill"
 
 
 {-| -}
 filter : String -> Attribute msg
 filter =
-    VirtualDom.Styled.attribute "filter"
+    Origami.VirtualDom.attribute "filter"
 
 
 {-| -}
 floodColor : String -> Attribute msg
 floodColor =
-    VirtualDom.Styled.attribute "flood-color"
+    Origami.VirtualDom.attribute "flood-color"
 
 
 {-| -}
 floodOpacity : String -> Attribute msg
 floodOpacity =
-    VirtualDom.Styled.attribute "flood-opacity"
+    Origami.VirtualDom.attribute "flood-opacity"
 
 
 {-| -}
 fontFamily : String -> Attribute msg
 fontFamily =
-    VirtualDom.Styled.attribute "font-family"
+    Origami.VirtualDom.attribute "font-family"
 
 
 {-| -}
 fontSizeAdjust : String -> Attribute msg
 fontSizeAdjust =
-    VirtualDom.Styled.attribute "font-size-adjust"
+    Origami.VirtualDom.attribute "font-size-adjust"
 
 
 {-| -}
 fontSize : String -> Attribute msg
 fontSize =
-    VirtualDom.Styled.attribute "font-size"
+    Origami.VirtualDom.attribute "font-size"
 
 
 {-| -}
 fontStretch : String -> Attribute msg
 fontStretch =
-    VirtualDom.Styled.attribute "font-stretch"
+    Origami.VirtualDom.attribute "font-stretch"
 
 
 {-| -}
 fontStyle : String -> Attribute msg
 fontStyle =
-    VirtualDom.Styled.attribute "font-style"
+    Origami.VirtualDom.attribute "font-style"
 
 
 {-| -}
 fontVariant : String -> Attribute msg
 fontVariant =
-    VirtualDom.Styled.attribute "font-variant"
+    Origami.VirtualDom.attribute "font-variant"
 
 
 {-| -}
 fontWeight : String -> Attribute msg
 fontWeight =
-    VirtualDom.Styled.attribute "font-weight"
+    Origami.VirtualDom.attribute "font-weight"
 
 
 {-| -}
 glyphOrientationHorizontal : String -> Attribute msg
 glyphOrientationHorizontal =
-    VirtualDom.Styled.attribute "glyph-orientation-horizontal"
+    Origami.VirtualDom.attribute "glyph-orientation-horizontal"
 
 
 {-| -}
 glyphOrientationVertical : String -> Attribute msg
 glyphOrientationVertical =
-    VirtualDom.Styled.attribute "glyph-orientation-vertical"
+    Origami.VirtualDom.attribute "glyph-orientation-vertical"
 
 
 {-| -}
 imageRendering : String -> Attribute msg
 imageRendering =
-    VirtualDom.Styled.attribute "image-rendering"
+    Origami.VirtualDom.attribute "image-rendering"
 
 
 {-| -}
 kerning : String -> Attribute msg
 kerning =
-    VirtualDom.Styled.attribute "kerning"
+    Origami.VirtualDom.attribute "kerning"
 
 
 {-| -}
 letterSpacing : String -> Attribute msg
 letterSpacing =
-    VirtualDom.Styled.attribute "letter-spacing"
+    Origami.VirtualDom.attribute "letter-spacing"
 
 
 {-| -}
 lightingColor : String -> Attribute msg
 lightingColor =
-    VirtualDom.Styled.attribute "lighting-color"
+    Origami.VirtualDom.attribute "lighting-color"
 
 
 {-| -}
 markerEnd : String -> Attribute msg
 markerEnd =
-    VirtualDom.Styled.attribute "marker-end"
+    Origami.VirtualDom.attribute "marker-end"
 
 
 {-| -}
 markerMid : String -> Attribute msg
 markerMid =
-    VirtualDom.Styled.attribute "marker-mid"
+    Origami.VirtualDom.attribute "marker-mid"
 
 
 {-| -}
 markerStart : String -> Attribute msg
 markerStart =
-    VirtualDom.Styled.attribute "marker-start"
+    Origami.VirtualDom.attribute "marker-start"
 
 
 {-| -}
 mask : String -> Attribute msg
 mask =
-    VirtualDom.Styled.attribute "mask"
+    Origami.VirtualDom.attribute "mask"
 
 
 {-| -}
 opacity : String -> Attribute msg
 opacity =
-    VirtualDom.Styled.attribute "opacity"
+    Origami.VirtualDom.attribute "opacity"
 
 
 {-| -}
 overflow : String -> Attribute msg
 overflow =
-    VirtualDom.Styled.attribute "overflow"
+    Origami.VirtualDom.attribute "overflow"
 
 
 {-| -}
 pointerEvents : String -> Attribute msg
 pointerEvents =
-    VirtualDom.Styled.attribute "pointer-events"
+    Origami.VirtualDom.attribute "pointer-events"
 
 
 {-| -}
 shapeRendering : String -> Attribute msg
 shapeRendering =
-    VirtualDom.Styled.attribute "shape-rendering"
+    Origami.VirtualDom.attribute "shape-rendering"
 
 
 {-| -}
 stopColor : String -> Attribute msg
 stopColor =
-    VirtualDom.Styled.attribute "stop-color"
+    Origami.VirtualDom.attribute "stop-color"
 
 
 {-| -}
 stopOpacity : String -> Attribute msg
 stopOpacity =
-    VirtualDom.Styled.attribute "stop-opacity"
+    Origami.VirtualDom.attribute "stop-opacity"
 
 
 {-| -}
 strokeDasharray : String -> Attribute msg
 strokeDasharray =
-    VirtualDom.Styled.attribute "stroke-dasharray"
+    Origami.VirtualDom.attribute "stroke-dasharray"
 
 
 {-| -}
 strokeDashoffset : String -> Attribute msg
 strokeDashoffset =
-    VirtualDom.Styled.attribute "stroke-dashoffset"
+    Origami.VirtualDom.attribute "stroke-dashoffset"
 
 
 {-| -}
 strokeLinecap : String -> Attribute msg
 strokeLinecap =
-    VirtualDom.Styled.attribute "stroke-linecap"
+    Origami.VirtualDom.attribute "stroke-linecap"
 
 
 {-| -}
 strokeLinejoin : String -> Attribute msg
 strokeLinejoin =
-    VirtualDom.Styled.attribute "stroke-linejoin"
+    Origami.VirtualDom.attribute "stroke-linejoin"
 
 
 {-| -}
 strokeMiterlimit : String -> Attribute msg
 strokeMiterlimit =
-    VirtualDom.Styled.attribute "stroke-miterlimit"
+    Origami.VirtualDom.attribute "stroke-miterlimit"
 
 
 {-| -}
 strokeOpacity : String -> Attribute msg
 strokeOpacity =
-    VirtualDom.Styled.attribute "stroke-opacity"
+    Origami.VirtualDom.attribute "stroke-opacity"
 
 
 {-| -}
 strokeWidth : String -> Attribute msg
 strokeWidth =
-    VirtualDom.Styled.attribute "stroke-width"
+    Origami.VirtualDom.attribute "stroke-width"
 
 
 {-| -}
 stroke : String -> Attribute msg
 stroke =
-    VirtualDom.Styled.attribute "stroke"
+    Origami.VirtualDom.attribute "stroke"
 
 
 {-| -}
 textAnchor : String -> Attribute msg
 textAnchor =
-    VirtualDom.Styled.attribute "text-anchor"
+    Origami.VirtualDom.attribute "text-anchor"
 
 
 {-| -}
 textDecoration : String -> Attribute msg
 textDecoration =
-    VirtualDom.Styled.attribute "text-decoration"
+    Origami.VirtualDom.attribute "text-decoration"
 
 
 {-| -}
 textRendering : String -> Attribute msg
 textRendering =
-    VirtualDom.Styled.attribute "text-rendering"
+    Origami.VirtualDom.attribute "text-rendering"
 
 
 {-| -}
 unicodeBidi : String -> Attribute msg
 unicodeBidi =
-    VirtualDom.Styled.attribute "unicode-bidi"
+    Origami.VirtualDom.attribute "unicode-bidi"
 
 
 {-| -}
 visibility : String -> Attribute msg
 visibility =
-    VirtualDom.Styled.attribute "visibility"
+    Origami.VirtualDom.attribute "visibility"
 
 
 {-| -}
 wordSpacing : String -> Attribute msg
 wordSpacing =
-    VirtualDom.Styled.attribute "word-spacing"
+    Origami.VirtualDom.attribute "word-spacing"
 
 
 {-| -}
 writingMode : String -> Attribute msg
 writingMode =
-    VirtualDom.Styled.attribute "writing-mode"
+    Origami.VirtualDom.attribute "writing-mode"

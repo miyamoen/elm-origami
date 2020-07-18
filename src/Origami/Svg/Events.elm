@@ -1,4 +1,4 @@
-module Svg.Styled.Events exposing
+module Origami.Svg.Events exposing
     ( onClick, onMouseDown, onMouseUp, onMouseOver, onMouseOut
     , on, stopPropagationOn, preventDefaultOn, custom
     )
@@ -17,9 +17,9 @@ module Svg.Styled.Events exposing
 
 -}
 
-import Html.Styled.Events as Html
 import Json.Decode as Json
-import VirtualDom.Styled exposing (Attribute)
+import Origami.Html.Events as Html
+import Origami.Svg exposing (Attribute)
 
 
 
@@ -80,7 +80,7 @@ case of `onClick` we always just succeed with the given `message`.
 If this is confusing, work through the [Elm Architecture Tutorial][tutorial].
 It really helps!
 
-[aEL]: https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener
+[aEL]: https://developer.mozilla.org/docs/Web/API/EventTarget/addEventListener
 [decoder]: /packages/elm/json/latest/Json-Decode
 [tutorial]: https://github.com/evancz/elm-architecture-tutorial/
 
@@ -99,7 +99,7 @@ on =
 must produce a message and a `Bool` that decides if `stopPropagation` should
 be called.
 
-[stop]: https://developer.mozilla.org/en-US/docs/Web/API/Event/stopPropagation
+[stop]: https://developer.mozilla.org/docs/Web/API/Event/stopPropagation
 
 **Note:** This creates a [passive] event listener, enabling optimizations for
 touch, scroll, and wheel events in some browsers.
@@ -119,7 +119,7 @@ be called.
 For example, the `onSubmit` function in this library _always_ prevents the
 default behavior:
 
-[prevent]: https://developer.mozilla.org/en-US/docs/Web/API/Event/preventDefault
+[prevent]: https://developer.mozilla.org/docs/Web/API/Event/preventDefault
 
     onSubmit : msg -> Attribute msg
     onSubmit msg =
@@ -138,8 +138,8 @@ preventDefaultOn =
 {-| Create an event listener that may [`stopPropagation`][stop] or
 [`preventDefault`][prevent].
 
-[stop]: https://developer.mozilla.org/en-US/docs/Web/API/Event/stopPropagation
-[prevent]: https://developer.mozilla.org/en-US/docs/Web/API/Event/preventDefault
+[stop]: https://developer.mozilla.org/docs/Web/API/Event/stopPropagation
+[prevent]: https://developer.mozilla.org/docs/Web/API/Event/preventDefault
 
 **Note:** If you need something even more custom (like capture phase) check
 out the lower-level event API in `elm/virtual-dom`.

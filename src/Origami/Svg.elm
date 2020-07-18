@@ -1,5 +1,5 @@
-module Svg.Styled exposing
-    ( styled, fromUnstyled, toUnstyled
+module Origami.Svg exposing
+    ( styled, fromSvg, toSvg, toSvgs
     , Svg, Attribute, text, node, map
     , svg, foreignObject
     , circle, ellipse, image, line, path, polygon, polyline, rect, use
@@ -18,11 +18,11 @@ module Svg.Styled exposing
     , clipPath, colorProfile, cursor, filter, style, view
     )
 
-{-| Drop-in replacement for the `Svg` module from the `elm-lang/svg` package.
+{-| Drop-in replacement for the `Svg` module from the `elm/svg` package.
 
-The only functions added are `styled`, `toUnstyled` and `fromUnstyled`:
+The only functions added are `styled`, `toSvg`, `toSvgs` and `fromSvg`:
 
-@docs styled, fromUnstyled, toUnstyled
+@docs styled, fromSvg, toSvg, toSvgs
 
 
 # SVG Nodes
@@ -90,12 +90,10 @@ The only functions added are `styled`, `toUnstyled` and `fromUnstyled`:
 
 -}
 
-import Css exposing (Style)
-import Html.Styled as Html
-import Json.Encode as Json
-import Svg.Styled.Internal as Internal
+import Origami exposing (Style)
+import Origami.Html as Html
+import Origami.VirtualDom
 import VirtualDom
-import VirtualDom.Styled
 
 
 
@@ -105,18 +103,18 @@ import VirtualDom.Styled
 {-| The core building block to create SVG. This library is filled with helper
 functions to create these `Svg` values.
 
-This is backed by `VirtualDom.Node` in `evancz/virtual-dom`, but you do not
+This is backed by `VirtualDom.Node` in `elm/virtual-dom`, but you do not
 need to know any details about that to use this library!
 
 -}
 type alias Svg msg =
-    VirtualDom.Styled.Node msg
+    Origami.VirtualDom.Node msg
 
 
 {-| Set attributes on your `Svg`.
 -}
 type alias Attribute msg =
-    VirtualDom.Styled.Attribute msg
+    Origami.VirtualDom.Attribute msg
 
 
 {-| Create any SVG node. To create a `<rect>` helper function, you would write:
@@ -131,7 +129,7 @@ library though!
 -}
 node : String -> List (Attribute msg) -> List (Svg msg) -> Svg msg
 node =
-    VirtualDom.Styled.nodeNS "http://www.w3.org/2000/svg"
+    Origami.VirtualDom.nodeNS "http://www.w3.org/2000/svg"
 
 
 {-| A simple text node, no tags at all.
@@ -141,14 +139,14 @@ Warning: not to be confused with `text_` which produces the SVG `<text>` tag!
 -}
 text : String -> Svg msg
 text =
-    VirtualDom.Styled.text
+    Origami.VirtualDom.text
 
 
 {-| Transform the messages produced by some `Svg`.
 -}
 map : (a -> msg) -> Svg a -> Svg msg
 map =
-    VirtualDom.Styled.map
+    Origami.VirtualDom.map
 
 
 {-| Takes a function that creates an element, and pre-applies styles to it.
@@ -159,25 +157,26 @@ styled :
     -> List (Attribute msg)
     -> List (Svg msg)
     -> Svg msg
-styled fn styles =
-    let
-        stylesAttribute =
-            Internal.css styles
-    in
-    \attrs children ->
-        fn (stylesAttribute :: attrs) children
+styled fn styles attrs children =
+    fn (Origami.VirtualDom.css styles :: attrs) children
 
 
 {-| -}
-toUnstyled : Svg msg -> VirtualDom.Node msg
-toUnstyled =
-    VirtualDom.Styled.toUnstyled
+toSvg : Svg msg -> VirtualDom.Node msg
+toSvg =
+    Origami.VirtualDom.toPlainNode
 
 
 {-| -}
-fromUnstyled : VirtualDom.Node msg -> Svg msg
-fromUnstyled =
-    VirtualDom.Styled.unstyledNode
+toSvgs : List (Svg msg) -> List (VirtualDom.Node msg)
+toSvgs =
+    Origami.VirtualDom.toPlainNodes
+
+
+{-| -}
+fromSvg : VirtualDom.Node msg -> Svg msg
+fromSvg =
+    Origami.VirtualDom.plainNode
 
 
 

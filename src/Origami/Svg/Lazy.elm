@@ -1,6 +1,6 @@
-module Svg.Styled.Lazy exposing (lazy, lazy2, lazy3, lazy4, lazy5, lazy6, lazy7)
+module Origami.Svg.Lazy exposing (lazy, lazy2, lazy3, lazy4, lazy5, lazy6, lazy7)
 
-{-| **NOTE:** `Svg.Lazy` goes up to `lazy8`, but `Svg.Styled.Lazy` can only go
+{-| **NOTE:** `Svg.Lazy` goes up to `lazy8`, but `Origami.Svg.Lazy` can only go
 up to `lazy7` because it uses one of the arguments to track styling info.
 
 Since all Elm functions are pure we have a guarantee that the same input
@@ -19,8 +19,8 @@ benchmark to be sure!
 
 -}
 
-import Svg.Styled exposing (Svg)
-import VirtualDom.Styled
+import Origami.Svg exposing (Svg)
+import Origami.VirtualDom
 
 
 {-| A performance optimization that delays the building of virtual DOM nodes.
@@ -34,46 +34,46 @@ we know if the input to `view` is the same, the output must be the same!
 -}
 lazy : (a -> Svg msg) -> a -> Svg msg
 lazy =
-    VirtualDom.Styled.lazy
+    Origami.VirtualDom.lazy
 
 
 {-| Same as `lazy` but checks on two arguments.
 -}
 lazy2 : (a -> b -> Svg msg) -> a -> b -> Svg msg
 lazy2 =
-    VirtualDom.Styled.lazy2
+    Origami.VirtualDom.lazy2
 
 
 {-| Same as `lazy` but checks on three arguments.
 -}
 lazy3 : (a -> b -> c -> Svg msg) -> a -> b -> c -> Svg msg
 lazy3 =
-    VirtualDom.Styled.lazy3
+    Origami.VirtualDom.lazy3
 
 
 {-| Same as `lazy` but checks on four arguments.
 -}
 lazy4 : (a -> b -> c -> d -> Svg msg) -> a -> b -> c -> d -> Svg msg
 lazy4 =
-    VirtualDom.Styled.lazy4
+    Origami.VirtualDom.lazy4
 
 
 {-| Same as `lazy` but checks on five arguments.
 -}
 lazy5 : (a -> b -> c -> d -> e -> Svg msg) -> a -> b -> c -> d -> e -> Svg msg
 lazy5 =
-    VirtualDom.Styled.lazy5
+    Origami.VirtualDom.lazy5
 
 
 {-| Same as `lazy` but checks on six arguments.
 -}
 lazy6 : (a -> b -> c -> d -> e -> f -> Svg msg) -> a -> b -> c -> d -> e -> f -> Svg msg
 lazy6 =
-    VirtualDom.Styled.lazy6
+    Origami.VirtualDom.lazy6
 
 
 {-| Same as `lazy` but checks on seven arguments.
 -}
 lazy7 : (a -> b -> c -> d -> e -> f -> g -> Svg msg) -> a -> b -> c -> d -> e -> f -> g -> Svg msg
 lazy7 =
-    VirtualDom.Styled.lazy7
+    Origami.VirtualDom.lazy7

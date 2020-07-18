@@ -1,4 +1,4 @@
-module Svg.Styled.Keyed exposing (node)
+module Origami.Svg.Keyed exposing (node)
 
 {-| A keyed node helps optimize cases where children are getting added, moved,
 removed, etc. Common examples include:
@@ -18,14 +18,8 @@ efficiently.
 
 -}
 
-import Json.Encode as Json
-import Svg.Styled exposing (Attribute, Svg)
-import VirtualDom.Styled
-
-
-svgNamespace : Attribute msg
-svgNamespace =
-    VirtualDom.Styled.property "namespace" (Json.string "http://www.w3.org/2000/svg")
+import Origami.Svg exposing (Attribute, Svg)
+import Origami.VirtualDom
 
 
 {-| Works just like `Svg.node`, but you add a unique identifier to each child
@@ -34,6 +28,5 @@ nodes, removing nodes, etc. In these cases, the unique identifiers help make
 the DOM modifications more efficient.
 -}
 node : String -> List (Attribute msg) -> List ( String, Svg msg ) -> Svg msg
-node name =
-    \attributes children ->
-        VirtualDom.Styled.keyedNode name (svgNamespace :: attributes) children
+node =
+    Origami.VirtualDom.keyedNodeNS "http://www.w3.org/2000/svg"
