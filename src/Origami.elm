@@ -2,8 +2,8 @@ module Origami exposing (Style, batch, property, qt)
 
 {-| -}
 
-import Origami.Css.Block as Block exposing (Property(..))
 import Origami.Css.Style as Style
+import Origami.Css.StyleTag exposing (Property(..))
 
 
 {-| -}

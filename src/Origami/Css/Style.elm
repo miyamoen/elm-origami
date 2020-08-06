@@ -1,169 +1,169 @@
-module Origami.Css.Style exposing (AccBlock, Style(..), accBlocksMerge, build, compile)
+module Origami.Css.Style exposing (FlatStyle, Style(..), compile, flatten, hashToClassname)
 
-{-| A representation of the preprocessing to be done. The elm-css DSL generates
-the data structures found in this module.
--}
+{-| -}
 
-import Dict exposing (Dict)
 import Hash
-import Origami.Css.Block exposing (..)
+import Origami.Css.Selector as Selector exposing (Selector(..), listToString)
+import Origami.Css.StyleTag as StyleTag exposing (Block(..), KeyframeSelector(..), KeyframesStyleBlock, Properties, Property(..))
 
 
+{-| ユーザー露出する構文的な型
+-}
 type Style
     = PropertyStyle Property
     | BatchStyles (List Style)
-    | MediaStyle MediaQuery (List Style)
+    | NestedStyle Selector (List Style)
     | AnimationStyle (List KeyframesStyleBlock)
 
 
-type AccBlock
-    = AccStyleBlock Selector Properties
-    | AccMediaBlock MediaQuery (Dict String AccBlock)
-    | AccKeyframesBlock String (List KeyframesStyleBlock)
+{-| Styleの再帰構造をフラットにした型
+-}
+type FlatStyle
+    = FlatStyle Selector Properties
+    | FlatAnimationStyle String (List KeyframesStyleBlock)
 
 
-type alias AccumulatedStyle =
-    { classnames : List String
-    , blocks : Dict String AccBlock
-    }
+flatten : List Style -> List FlatStyle
+flatten styles =
+    case styles of
+        [] ->
+            []
+
+        nonEmpty ->
+            let
+                ( properties, accStyles ) =
+                    List.foldr (walk Selector.empty) ( [], [] ) nonEmpty
+            in
+            FlatStyle Selector.empty properties :: accStyles
 
 
-build : Dict String AccBlock -> List Block
-build blocks =
-    Dict.values blocks
-        |> List.map buildHelp
-
-
-buildHelp : AccBlock -> Block
-buildHelp block =
-    case block of
-        AccStyleBlock selector properties ->
-            StyleBlock selector properties
-
-        AccMediaBlock query blocks ->
-            MediaBlock query <| build blocks
-
-        AccKeyframesBlock name keyframesBlocks ->
-            KeyframesBlock name keyframesBlocks
-
-
-compile : List Style -> AccumulatedStyle
-compile styles =
-    compileHelp "" styles
-
-
-compileHelp : String -> List Style -> AccumulatedStyle
-compileHelp classnameContext styles =
-    let
-        ( properties, { classnames, blocks } ) =
-            List.foldr (walk classnameContext) ( [], { classnames = [], blocks = Dict.empty } ) styles
-
-        styleBlockClassname =
-            classnameContext ++ hashToStyleBlockClassname properties
-    in
-    { classnames = styleBlockClassname :: classnames
-    , blocks = Dict.insert styleBlockClassname (AccStyleBlock (ClassSelector styleBlockClassname) properties) blocks
-    }
-
-
-walk : String -> Style -> ( List Property, AccumulatedStyle ) -> ( List Property, AccumulatedStyle )
-walk classnameContext style ( properties, compiled ) =
+walk : Selector -> Style -> ( Properties, List FlatStyle ) -> ( Properties, List FlatStyle )
+walk currentSelector style ( properties, styles ) =
     case style of
         PropertyStyle property ->
-            ( property :: properties, compiled )
+            ( property :: properties, styles )
 
         BatchStyles batched ->
-            List.foldr (walk classnameContext) ( properties, compiled ) batched
+            List.foldr (walk currentSelector) ( properties, styles ) batched
 
-        MediaStyle query styles ->
-            let
-                queryHash =
-                    classnameContext ++ hashMediaQuery query
+        NestedStyle _ [] ->
+            ( properties, styles )
 
-                mediaCompiled =
-                    compileHelp queryHash styles
-            in
-            ( properties
-            , { classnames = mediaCompiled.classnames ++ compiled.classnames
-              , blocks =
-                    Dict.update queryHash
-                        (\maybeMedia ->
-                            case maybeMedia of
-                                Nothing ->
-                                    Just <| AccMediaBlock query mediaCompiled.blocks
+        NestedStyle nestSelector nestStyles ->
+            case Selector.nest currentSelector nestSelector of
+                Nothing ->
+                    ( properties, styles )
 
-                                Just (AccMediaBlock _ blocks) ->
-                                    Just <| AccMediaBlock query <| accBlocksMerge mediaCompiled.blocks blocks
-
-                                -- should not happen! Hash計算が正しければPreMediaBlock以外は引っかからない
-                                _ ->
-                                    Just <| AccMediaBlock query mediaCompiled.blocks
-                        )
-                        compiled.blocks
-              }
-            )
+                Just combined ->
+                    let
+                        ( nestProperties, accStyles ) =
+                            List.foldr (walk combined) ( [], styles ) nestStyles
+                    in
+                    ( properties, FlatStyle combined nestProperties :: accStyles )
 
         AnimationStyle keyframesStyleBlocks ->
             let
                 animationName =
-                    classnameContext ++ hashToAnimationName keyframesStyleBlocks
+                    hashToAnimationName keyframesStyleBlocks
             in
-            ( Property "animation-name" animationName :: properties
-            , { compiled | blocks = Dict.insert animationName (AccKeyframesBlock animationName keyframesStyleBlocks) compiled.blocks }
-            )
+            ( Property "animation-name" animationName :: properties, FlatAnimationStyle animationName keyframesStyleBlocks :: styles )
 
 
-accBlocksMerge : Dict String AccBlock -> Dict String AccBlock -> Dict String AccBlock
-accBlocksMerge left right =
-    Dict.merge
-        Dict.insert
-        (\hash leftBlock rightBlock result -> Dict.insert hash (accBlockMerge leftBlock rightBlock) result)
-        Dict.insert
-        left
-        right
-        Dict.empty
+compile : String -> List FlatStyle -> List Block
+compile classname styles =
+    List.map (toBlock classname) styles
 
 
-accBlockMerge : AccBlock -> AccBlock -> AccBlock
-accBlockMerge left right =
-    case ( left, right ) of
-        ( AccMediaBlock query leftBlocks, AccMediaBlock _ rightBlocks ) ->
-            AccMediaBlock query <| accBlocksMerge leftBlocks rightBlocks
+{-| **CONSIDER**: media queryのネスト
 
-        _ ->
-            left
+  - media queryから更にネストすると`@media`がその分生成される
+      - ネストすることはあんまりなさそう
+  - media queryをキーにして集めてまとめることはできると思う
+      - 記述順を維持したままやるのが難しそう
+
+-}
+toBlock : String -> FlatStyle -> Block
+toBlock classname style =
+    case style of
+        FlatStyle (Selector rs ss pe Nothing) ps ->
+            StyleBlock (StyleTag.Selector classname rs ss pe) ps
+
+        FlatStyle (Selector rs ss pe (Just mq)) ps ->
+            MediaBlock mq [ StyleBlock (StyleTag.Selector classname rs ss pe) ps ]
+
+        FlatAnimationStyle an bs ->
+            KeyframesBlock an bs
 
 
-hashToStyleBlockClassname : Properties -> String
-hashToStyleBlockClassname properties =
-    toPropertiesString properties
+
+----------------
+-- hash
+----------------
+
+
+hashToClassname : List FlatStyle -> String
+hashToClassname styles =
+    List.map flatStyleToString styles
+        |> listToString
         |> Hash.fromString
-        |> (++) "_style_"
+        |> (++) "_"
 
 
 hashToAnimationName : List KeyframesStyleBlock -> String
 hashToAnimationName blocks =
-    List.map toKeyframesBlockString blocks
-        |> String.join " "
+    List.map keyframesStyleBlockToString blocks
+        |> listToString
         |> Hash.fromString
         |> (++) "_keyframes_"
 
 
-hashMediaQuery : MediaQuery -> String
-hashMediaQuery (MediaQuery query) =
-    "_media_" ++ Hash.fromString query
+flatStyleToString : FlatStyle -> String
+flatStyleToString style =
+    case style of
+        FlatStyle s ps ->
+            String.concat
+                [ "(FlatStyle"
+                , Selector.toString s
+                , List.map propertyToString ps |> listToString
+                , ")"
+                ]
+
+        FlatAnimationStyle name kfbs ->
+            String.concat
+                [ "(FlatAnimationStyle\""
+                , name
+                , "\""
+                , List.map keyframesStyleBlockToString kfbs |> listToString
+                , ")"
+                ]
 
 
-toPropertiesString : Properties -> String
-toPropertiesString properties =
-    List.concatMap (\(Property attr value) -> [ attr, ":", value ]) properties
-        |> String.join ";"
-
-
-toKeyframesBlockString : KeyframesStyleBlock -> String
-toKeyframesBlockString ( ( selector, selectors ), properties ) =
-    String.join ","
-        [ List.map printKeyframeSelector (selector :: selectors)
-            |> String.join ","
-        , toPropertiesString properties
+keyframesStyleBlockToString : KeyframesStyleBlock -> String
+keyframesStyleBlockToString ( ( s, ss ), ps ) =
+    String.concat
+        [ "(("
+        , keyframeSelectorToString s
+        , ","
+        , List.map keyframeSelectorToString ss |> listToString
+        , "),"
+        , List.map propertyToString ps |> listToString
+        , ")"
         ]
+
+
+propertyToString : Property -> String
+propertyToString (Property key val) =
+    String.concat [ "(Property\"", key, "\" \"", val, "\")" ]
+
+
+keyframeSelectorToString : KeyframeSelector -> String
+keyframeSelectorToString s =
+    case s of
+        KeyframeSelectorFrom ->
+            "(KeyframeSelectorFrom)"
+
+        KeyframeSelectorTo ->
+            "(KeyframeSelectorTo)"
+
+        KeyframeSelectorPercent val ->
+            String.concat [ "(KeyframeSelectorPercent ", String.fromFloat val, ")" ]

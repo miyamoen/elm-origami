@@ -1,8 +1,7 @@
-module Origami.Css.Block exposing
+module Origami.Css.StyleTag exposing
     ( Block(..)
     , KeyframeSelector(..)
     , KeyframesStyleBlock
-    , MediaQuery(..)
     , NonEmptyList
     , Properties
     , Property(..)
@@ -15,6 +14,8 @@ module Origami.Css.Block exposing
 solely with representing valid stylesheets; it is not concerned with the
 elm-css DSL, collecting warnings, or
 -}
+
+import Origami.Css.Selector as Selector exposing (MediaQuery(..), PseudoElement(..))
 
 
 {-| A property consisting of a key:value string.
@@ -51,12 +52,9 @@ type Block
 
 
 type Selector
-    = ClassSelector String
+    = -- inline CSSから変換するのでSelectorはhash値のclass selector始まりに限定している
+      Selector String (List Selector.Repeatable) (List Selector.Sequence) (Maybe PseudoElement)
     | CustomSelector String
-
-
-type MediaQuery
-    = MediaQuery String
 
 
 type alias KeyframesStyleBlock =
@@ -136,11 +134,68 @@ printStyleBlock indentLevel selector properties =
 printSelector : Selector -> String
 printSelector selector =
     case selector of
-        ClassSelector classname ->
-            "." ++ classname
+        Selector classname repeatables sequences pseudo ->
+            String.concat <|
+                "."
+                    :: classname
+                    :: List.map printRepeatableSelector repeatables
+                    ++ List.map printSelectorSequence sequences
+                    ++ [ Maybe.map printPseudoElement pseudo |> Maybe.withDefault "" ]
 
         CustomSelector raw ->
             raw
+
+
+printSelectorSequence : Selector.Sequence -> String
+printSelectorSequence (Selector.Sequence combinator head repeatables) =
+    String.concat <|
+        printSelectorCombinator combinator
+            :: printSelectorHead head
+            :: List.map printRepeatableSelector repeatables
+
+
+printSelectorHead : Selector.Head -> String
+printSelectorHead head =
+    case head of
+        Selector.TypeSelector element ->
+            element
+
+        Selector.UniversalSelector ->
+            "*"
+
+
+printRepeatableSelector : Selector.Repeatable -> String
+printRepeatableSelector repeatable =
+    case repeatable of
+        Selector.ClassSelector classname ->
+            "." ++ classname
+
+        Selector.PseudoClassSelector pseudoClass ->
+            ":" ++ pseudoClass
+
+        Selector.AttributeSelector attr ->
+            String.concat [ "[", attr, "]" ]
+
+
+printSelectorCombinator : Selector.Combinator -> String
+printSelectorCombinator comb =
+    case comb of
+        Selector.DescendantCombinator ->
+            " "
+
+        Selector.ChildCombinator ->
+            ">"
+
+        Selector.GeneralSiblingCombinator ->
+            "~"
+
+        Selector.AdjacentSiblingCombinator ->
+            "+"
+
+
+printPseudoElement : PseudoElement -> String
+printPseudoElement (PseudoElement element) =
+    "::" ++ element
 
 
 printKeyframesStyleBlock : String -> ( NonEmptyList KeyframeSelector, Properties ) -> String

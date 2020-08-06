@@ -47,10 +47,10 @@ module Origami.VirtualDom exposing
 
 -}
 
-import Dict exposing (Dict)
+import Dict
 import Json.Encode
-import Origami.Css.Block
-import Origami.Css.Style exposing (AccBlock, Style, accBlocksMerge)
+import Origami.Css.Style exposing (FlatStyle, Style)
+import Origami.Css.StyleTag
 import VirtualDom
 
 
@@ -63,7 +63,7 @@ type Node msg
 
 
 type Attribute msg
-    = Attribute (List (VirtualDom.Attribute msg)) (Dict String AccBlock)
+    = Attribute (List (VirtualDom.Attribute msg)) (List ( String, List FlatStyle ))
 
 
 node : String -> List (Attribute msg) -> List (Node msg) -> Node msg
@@ -76,11 +76,7 @@ nodeNS =
     NodeNS
 
 
-keyedNode :
-    String
-    -> List (Attribute msg)
-    -> List ( String, Node msg )
-    -> Node msg
+keyedNode : String -> List (Attribute msg) -> List ( String, Node msg ) -> Node msg
 keyedNode =
     KeyedNode
 
@@ -96,72 +92,58 @@ plainNode =
 
 
 text : String -> Node msg
-text str =
-    PlainNode (VirtualDom.text str)
+text =
+    PlainNode << VirtualDom.text
 
 
 map : (a -> b) -> Node a -> Node b
 map transform vdomNode =
     case vdomNode of
         Node elemType attributes children ->
-            Node
-                elemType
-                (List.map (mapAttribute transform) attributes)
-                (List.map (map transform) children)
+            Node elemType (List.map (mapAttribute transform) attributes) (List.map (map transform) children)
 
         NodeNS ns elemType attributes children ->
-            NodeNS ns
-                elemType
-                (List.map (mapAttribute transform) attributes)
-                (List.map (map transform) children)
+            NodeNS ns elemType (List.map (mapAttribute transform) attributes) (List.map (map transform) children)
 
         KeyedNode elemType attributes children ->
-            KeyedNode
-                elemType
-                (List.map (mapAttribute transform) attributes)
-                (List.map (\( key, child ) -> ( key, map transform child )) children)
+            KeyedNode elemType (List.map (mapAttribute transform) attributes) (List.map (\( key, child ) -> ( key, map transform child )) children)
 
         KeyedNodeNS ns elemType attributes children ->
-            KeyedNodeNS ns
-                elemType
-                (List.map (mapAttribute transform) attributes)
-                (List.map (\( key, child ) -> ( key, map transform child )) children)
+            KeyedNodeNS ns elemType (List.map (mapAttribute transform) attributes) (List.map (\( key, child ) -> ( key, map transform child )) children)
 
         PlainNode vdom ->
-            VirtualDom.map transform vdom
-                |> PlainNode
+            PlainNode <| VirtualDom.map transform vdom
 
 
 property : String -> Json.Encode.Value -> Attribute msg
 property key value =
-    plainAttribute (VirtualDom.property key value)
+    plainAttribute <| VirtualDom.property key value
 
 
 attribute : String -> String -> Attribute msg
 attribute key value =
-    plainAttribute (VirtualDom.attribute key value)
+    plainAttribute <| VirtualDom.attribute key value
 
 
 style : String -> String -> Attribute msg
-style key val =
-    plainAttribute (VirtualDom.style key val)
+style key value =
+    plainAttribute <| VirtualDom.style key value
 
 
 attributeNS : String -> String -> String -> Attribute msg
 attributeNS namespace key value =
-    plainAttribute (VirtualDom.attributeNS namespace key value)
+    plainAttribute <| VirtualDom.attributeNS namespace key value
 
 
 plainAttribute : VirtualDom.Attribute msg -> Attribute msg
 plainAttribute attr =
-    Attribute [ attr ] Dict.empty
+    Attribute [ attr ] []
 
 
 batchAttributes : List (Attribute msg) -> Attribute msg
 batchAttributes =
-    List.foldr (\(Attribute attrs blocks) ( accAttrs, accBlocks ) -> ( attrs ++ accAttrs, accBlocksMerge blocks accBlocks ))
-        ( [], Dict.empty )
-        >> (\( attrs, blocks ) -> Attribute attrs blocks)
+    List.foldr (\(Attribute attrs styles) ( accAttrs, accStyles ) -> ( attrs ++ accAttrs, styles ++ accStyles )) ( [], [] )
+        >> (\( attrs, styles ) -> Attribute attrs styles)
 
 
 on : String -> VirtualDom.Handler msg -> Attribute msg
@@ -176,95 +158,84 @@ mapAttribute transform (Attribute attrs styles) =
 
 lazy : (a -> Node msg) -> a -> Node msg
 lazy fn arg =
-    VirtualDom.lazy2 lazyHelp fn arg
-        |> PlainNode
+    PlainNode <| VirtualDom.lazy2 lazyHelp fn arg
 
 
 lazyHelp : (a -> Node msg) -> a -> VirtualDom.Node msg
 lazyHelp fn arg =
-    fn arg
-        |> toPlainNode
+    toPlainNode <| fn arg
 
 
 lazy2 : (a -> b -> Node msg) -> a -> b -> Node msg
 lazy2 fn arg1 arg2 =
-    VirtualDom.lazy3 lazyHelp2 fn arg1 arg2
-        |> PlainNode
+    PlainNode <| VirtualDom.lazy3 lazyHelp2 fn arg1 arg2
 
 
 lazyHelp2 : (a -> b -> Node msg) -> a -> b -> VirtualDom.Node msg
 lazyHelp2 fn arg1 arg2 =
-    fn arg1 arg2
-        |> toPlainNode
+    toPlainNode <| fn arg1 arg2
 
 
 lazy3 : (a -> b -> c -> Node msg) -> a -> b -> c -> Node msg
 lazy3 fn arg1 arg2 arg3 =
-    VirtualDom.lazy4 lazyHelp3 fn arg1 arg2 arg3
-        |> PlainNode
+    PlainNode <| VirtualDom.lazy4 lazyHelp3 fn arg1 arg2 arg3
 
 
 lazyHelp3 : (a -> b -> c -> Node msg) -> a -> b -> c -> VirtualDom.Node msg
 lazyHelp3 fn arg1 arg2 arg3 =
-    fn arg1 arg2 arg3
-        |> toPlainNode
+    toPlainNode <| fn arg1 arg2 arg3
 
 
 lazy4 : (a -> b -> c -> d -> Node msg) -> a -> b -> c -> d -> Node msg
 lazy4 fn arg1 arg2 arg3 arg4 =
-    VirtualDom.lazy5 lazyHelp4 fn arg1 arg2 arg3 arg4
-        |> PlainNode
+    PlainNode <| VirtualDom.lazy5 lazyHelp4 fn arg1 arg2 arg3 arg4
 
 
 lazyHelp4 : (a -> b -> c -> d -> Node msg) -> a -> b -> c -> d -> VirtualDom.Node msg
 lazyHelp4 fn arg1 arg2 arg3 arg4 =
-    fn arg1 arg2 arg3 arg4
-        |> toPlainNode
+    toPlainNode <| fn arg1 arg2 arg3 arg4
 
 
 lazy5 : (a -> b -> c -> d -> e -> Node msg) -> a -> b -> c -> d -> e -> Node msg
 lazy5 fn arg1 arg2 arg3 arg4 arg5 =
-    VirtualDom.lazy6 lazyHelp5 fn arg1 arg2 arg3 arg4 arg5
-        |> PlainNode
+    PlainNode <| VirtualDom.lazy6 lazyHelp5 fn arg1 arg2 arg3 arg4 arg5
 
 
 lazyHelp5 : (a -> b -> c -> d -> e -> Node msg) -> a -> b -> c -> d -> e -> VirtualDom.Node msg
 lazyHelp5 fn arg1 arg2 arg3 arg4 arg5 =
-    fn arg1 arg2 arg3 arg4 arg5
-        |> toPlainNode
+    toPlainNode <| fn arg1 arg2 arg3 arg4 arg5
 
 
 lazy6 : (a -> b -> c -> d -> e -> f -> Node msg) -> a -> b -> c -> d -> e -> f -> Node msg
 lazy6 fn arg1 arg2 arg3 arg4 arg5 arg6 =
-    VirtualDom.lazy7 lazyHelp6 fn arg1 arg2 arg3 arg4 arg5 arg6
-        |> PlainNode
+    PlainNode <| VirtualDom.lazy7 lazyHelp6 fn arg1 arg2 arg3 arg4 arg5 arg6
 
 
 lazyHelp6 : (a -> b -> c -> d -> e -> f -> Node msg) -> a -> b -> c -> d -> e -> f -> VirtualDom.Node msg
 lazyHelp6 fn arg1 arg2 arg3 arg4 arg5 arg6 =
-    fn arg1 arg2 arg3 arg4 arg5 arg6
-        |> toPlainNode
+    toPlainNode <| fn arg1 arg2 arg3 arg4 arg5 arg6
 
 
 lazy7 : (a -> b -> c -> d -> e -> f -> g -> Node msg) -> a -> b -> c -> d -> e -> f -> g -> Node msg
 lazy7 fn arg1 arg2 arg3 arg4 arg5 arg6 arg7 =
-    VirtualDom.lazy8 lazyHelp7 fn arg1 arg2 arg3 arg4 arg5 arg6 arg7
-        |> PlainNode
+    PlainNode <| VirtualDom.lazy8 lazyHelp7 fn arg1 arg2 arg3 arg4 arg5 arg6 arg7
 
 
 lazyHelp7 : (a -> b -> c -> d -> e -> f -> g -> Node msg) -> a -> b -> c -> d -> e -> f -> g -> VirtualDom.Node msg
 lazyHelp7 fn arg1 arg2 arg3 arg4 arg5 arg6 arg7 =
-    fn arg1 arg2 arg3 arg4 arg5 arg6 arg7
-        |> toPlainNode
+    toPlainNode <| fn arg1 arg2 arg3 arg4 arg5 arg6 arg7
 
 
 css : List Style -> Attribute msg
 css styles =
     let
-        { classnames, blocks } =
-            Origami.Css.Style.compile styles
+        flattens =
+            Origami.Css.Style.flatten styles
+
+        classname =
+            Origami.Css.Style.hashToClassname flattens
     in
-    Attribute [ VirtualDom.property "className" (Json.Encode.string <| String.join " " classnames) ] blocks
+    Attribute [ VirtualDom.property "className" (Json.Encode.string classname) ] [ ( classname, flattens ) ]
 
 
 toPlainNode : Node msg -> VirtualDom.Node msg
@@ -275,40 +246,40 @@ toPlainNode vdom =
 
         Node elemType attributes children ->
             let
-                ( plainAttributes, childNodes, cssBlocks ) =
+                ( plainAttributes, childNodes, styles ) =
                     unstyle attributes children
             in
-            VirtualDom.node elemType plainAttributes (toStyleNode cssBlocks :: childNodes)
+            VirtualDom.node elemType plainAttributes (toStyleNode styles :: childNodes)
 
         NodeNS ns elemType attributes children ->
             let
-                ( plainAttributes, childNodes, cssBlocks ) =
+                ( plainAttributes, childNodes, styles ) =
                     unstyle attributes children
             in
-            VirtualDom.nodeNS ns elemType plainAttributes (toStyleNode cssBlocks :: childNodes)
+            VirtualDom.nodeNS ns elemType plainAttributes (toStyleNode styles :: childNodes)
 
         KeyedNode elemType attributes children ->
             let
-                ( plainAttributes, childNodes, cssBlocks ) =
+                ( plainAttributes, childNodes, styles ) =
                     unstyleKeyed attributes children
             in
-            VirtualDom.keyedNode elemType plainAttributes (toKeyedStyleNode cssBlocks childNodes :: childNodes)
+            VirtualDom.keyedNode elemType plainAttributes (toKeyedStyleNode styles childNodes :: childNodes)
 
         KeyedNodeNS ns elemType attributes children ->
             let
-                ( plainAttributes, childNodes, cssBlocks ) =
+                ( plainAttributes, childNodes, styles ) =
                     unstyleKeyed attributes children
             in
-            VirtualDom.keyedNodeNS ns elemType plainAttributes (toKeyedStyleNode cssBlocks childNodes :: childNodes)
+            VirtualDom.keyedNodeNS ns elemType plainAttributes (toKeyedStyleNode styles childNodes :: childNodes)
 
 
 toPlainNodes : List (Node msg) -> List (VirtualDom.Node msg)
 toPlainNodes vdoms =
     let
-        ( childNodes, cssBlocks ) =
-            List.foldr accumulateStyledHtml ( [], Dict.empty ) vdoms
+        ( childNodes, styles ) =
+            List.foldr accumulateStyledHtml ( [], [] ) vdoms
     in
-    toStyleNode cssBlocks :: childNodes
+    toStyleNode styles :: childNodes
 
 
 
@@ -317,144 +288,126 @@ toPlainNodes vdoms =
 -- _/_/_/_/_/_/_/_/ --
 
 
-unstyle : List (Attribute msg) -> List (Node msg) -> ( List (VirtualDom.Attribute msg), List (VirtualDom.Node msg), Dict String AccBlock )
+unstyle : List (Attribute msg) -> List (Node msg) -> ( List (VirtualDom.Attribute msg), List (VirtualDom.Node msg), List ( String, List FlatStyle ) )
 unstyle attributes children =
     let
-        ( plainAttributes, cssBlocks ) =
+        ( plainAttributes, styles ) =
             partitionAttributes attributes
 
-        ( childNodes, integratedCssBlocks ) =
-            List.foldr accumulateStyledHtml ( [], cssBlocks ) children
+        ( childNodes, combinedStyles ) =
+            List.foldr accumulateStyledHtml ( [], styles ) children
     in
-    ( plainAttributes, childNodes, integratedCssBlocks )
+    ( plainAttributes, childNodes, combinedStyles )
 
 
-unstyleKeyed : List (Attribute msg) -> List ( String, Node msg ) -> ( List (VirtualDom.Attribute msg), List ( String, VirtualDom.Node msg ), Dict String AccBlock )
+unstyleKeyed : List (Attribute msg) -> List ( String, Node msg ) -> ( List (VirtualDom.Attribute msg), List ( String, VirtualDom.Node msg ), List ( String, List FlatStyle ) )
 unstyleKeyed attributes keyedChildren =
     let
-        ( plainAttributes, cssBlocks ) =
+        ( plainAttributes, styles ) =
             partitionAttributes attributes
 
-        ( keyedChildNodes, integratedCssBlocks ) =
-            List.foldr accumulateKeyedStyledHtml ( [], cssBlocks ) keyedChildren
+        ( keyedChildNodes, combinedStyles ) =
+            List.foldr accumulateKeyedStyledHtml ( [], styles ) keyedChildren
     in
-    ( plainAttributes, keyedChildNodes, integratedCssBlocks )
+    ( plainAttributes, keyedChildNodes, combinedStyles )
 
 
-toKeyedStyleNode :
-    Dict String AccBlock
-    -> List ( String, a )
-    -> ( String, VirtualDom.Node msg )
-toKeyedStyleNode cssBlocks keyedChildNodes =
-    ( getUnusedKey keyedChildNodes, toStyleNode cssBlocks )
+toKeyedStyleNode : List ( String, List FlatStyle ) -> List ( String, a ) -> ( String, VirtualDom.Node msg )
+toKeyedStyleNode styles keyedChildNodes =
+    ( getUnusedKey keyedChildNodes, toStyleNode styles )
 
 
-toStyleNode : Dict String AccBlock -> VirtualDom.Node msg
-toStyleNode cssBlocks =
-    Origami.Css.Style.build cssBlocks
-        |> Origami.Css.Block.print
+toStyleNode : List ( String, List FlatStyle ) -> VirtualDom.Node msg
+toStyleNode stylesList =
+    Dict.fromList stylesList
+        |> Dict.map Origami.Css.Style.compile
+        |> Dict.values
+        |> List.concat
+        |> Origami.Css.StyleTag.print
         |> VirtualDom.text
         |> List.singleton
         |> VirtualDom.node "style" []
 
 
-partitionAttributes : List (Attribute msg) -> ( List (VirtualDom.Attribute msg), Dict String AccBlock )
+partitionAttributes : List (Attribute msg) -> ( List (VirtualDom.Attribute msg), List ( String, List FlatStyle ) )
 partitionAttributes attributes =
-    List.foldr (\(Attribute attrs blocks) ( accAttrs, accBlocks ) -> ( attrs ++ accAttrs, accBlocksMerge blocks accBlocks ))
-        ( [], Dict.empty )
-        attributes
+    List.foldr (\(Attribute attrs styles) ( accAttrs, accStyles ) -> ( attrs ++ accAttrs, styles ++ accStyles )) ( [], [] ) attributes
 
 
 accumulateStyledHtml :
     Node msg
-    -> ( List (VirtualDom.Node msg), Dict String AccBlock )
-    -> ( List (VirtualDom.Node msg), Dict String AccBlock )
-accumulateStyledHtml styledNode ( accNodes, accCssBlocks ) =
+    -> ( List (VirtualDom.Node msg), List ( String, List FlatStyle ) )
+    -> ( List (VirtualDom.Node msg), List ( String, List FlatStyle ) )
+accumulateStyledHtml styledNode ( accNodes, accStyles ) =
     case styledNode of
         PlainNode vdomNode ->
-            ( vdomNode :: accNodes, accCssBlocks )
+            ( vdomNode :: accNodes, accStyles )
 
         Node elemType attributes children ->
             let
-                ( plainAttributes, childNodes, cssBlocks ) =
+                ( plainAttributes, childNodes, styles ) =
                     unstyle attributes children
             in
-            ( VirtualDom.node elemType plainAttributes childNodes :: accNodes
-            , accBlocksMerge cssBlocks accCssBlocks
-            )
+            ( VirtualDom.node elemType plainAttributes childNodes :: accNodes, styles ++ accStyles )
 
         NodeNS ns elemType attributes children ->
             let
-                ( plainAttributes, childNodes, cssBlocks ) =
+                ( plainAttributes, childNodes, styles ) =
                     unstyle attributes children
             in
-            ( VirtualDom.nodeNS ns elemType plainAttributes childNodes :: accNodes
-            , accBlocksMerge cssBlocks accCssBlocks
-            )
+            ( VirtualDom.nodeNS ns elemType plainAttributes childNodes :: accNodes, styles ++ accStyles )
 
         KeyedNode elemType attributes children ->
             let
-                ( plainAttributes, childNodes, cssBlocks ) =
+                ( plainAttributes, childNodes, styles ) =
                     unstyleKeyed attributes children
             in
-            ( VirtualDom.keyedNode elemType plainAttributes childNodes :: accNodes
-            , accBlocksMerge cssBlocks accCssBlocks
-            )
+            ( VirtualDom.keyedNode elemType plainAttributes childNodes :: accNodes, styles ++ accStyles )
 
         KeyedNodeNS ns elemType attributes children ->
             let
-                ( plainAttributes, childNodes, cssBlocks ) =
+                ( plainAttributes, childNodes, styles ) =
                     unstyleKeyed attributes children
             in
-            ( VirtualDom.keyedNodeNS ns elemType plainAttributes childNodes :: accNodes
-            , accBlocksMerge cssBlocks accCssBlocks
-            )
+            ( VirtualDom.keyedNodeNS ns elemType plainAttributes childNodes :: accNodes, styles ++ accStyles )
 
 
 accumulateKeyedStyledHtml :
     ( String, Node msg )
-    -> ( List ( String, VirtualDom.Node msg ), Dict String AccBlock )
-    -> ( List ( String, VirtualDom.Node msg ), Dict String AccBlock )
-accumulateKeyedStyledHtml ( key, html ) ( accNodes, accCssBlocks ) =
+    -> ( List ( String, VirtualDom.Node msg ), List ( String, List FlatStyle ) )
+    -> ( List ( String, VirtualDom.Node msg ), List ( String, List FlatStyle ) )
+accumulateKeyedStyledHtml ( key, html ) ( accNodes, accStyles ) =
     case html of
         PlainNode vdom ->
-            ( ( key, vdom ) :: accNodes, accCssBlocks )
+            ( ( key, vdom ) :: accNodes, accStyles )
 
         Node elemType attributes children ->
             let
-                ( plainAttributes, childNodes, cssBlocks ) =
+                ( plainAttributes, childNodes, styles ) =
                     unstyle attributes children
             in
-            ( ( key, VirtualDom.node elemType plainAttributes childNodes ) :: accNodes
-            , accBlocksMerge cssBlocks accCssBlocks
-            )
+            ( ( key, VirtualDom.node elemType plainAttributes childNodes ) :: accNodes, styles ++ accStyles )
 
         NodeNS ns elemType attributes children ->
             let
-                ( plainAttributes, childNodes, cssBlocks ) =
+                ( plainAttributes, childNodes, styles ) =
                     unstyle attributes children
             in
-            ( ( key, VirtualDom.nodeNS ns elemType plainAttributes childNodes ) :: accNodes
-            , accBlocksMerge cssBlocks accCssBlocks
-            )
+            ( ( key, VirtualDom.nodeNS ns elemType plainAttributes childNodes ) :: accNodes, styles ++ accStyles )
 
         KeyedNode elemType attributes children ->
             let
-                ( plainAttributes, childNodes, cssBlocks ) =
+                ( plainAttributes, childNodes, styles ) =
                     unstyleKeyed attributes children
             in
-            ( ( key, VirtualDom.keyedNode elemType plainAttributes childNodes ) :: accNodes
-            , accBlocksMerge cssBlocks accCssBlocks
-            )
+            ( ( key, VirtualDom.keyedNode elemType plainAttributes childNodes ) :: accNodes, styles ++ accStyles )
 
         KeyedNodeNS ns elemType attributes children ->
             let
-                ( plainAttributes, childNodes, cssBlocks ) =
+                ( plainAttributes, childNodes, styles ) =
                     unstyleKeyed attributes children
             in
-            ( ( key, VirtualDom.keyedNodeNS ns elemType plainAttributes childNodes ) :: accNodes
-            , accBlocksMerge cssBlocks accCssBlocks
-            )
+            ( ( key, VirtualDom.keyedNodeNS ns elemType plainAttributes childNodes ) :: accNodes, styles ++ accStyles )
 
 
 {-| returns a String key that is not already one of the keys in the list of
