@@ -6,7 +6,8 @@ module Origami.Css.Selector exposing
     , Repeatable(..)
     , Selector(..)
     , Sequence(..)
-    , empty
+    , Single(..)
+    , initial
     , listToString
     , maybeToString
     , nest
@@ -15,7 +16,11 @@ module Origami.Css.Selector exposing
 
 
 type Selector
-    = Selector (List Repeatable) (List Sequence) (Maybe PseudoElement) (Maybe MediaQuery)
+    = Selector (List Single) (Maybe MediaQuery)
+
+
+type Single
+    = Single (List Repeatable) (List Sequence) (Maybe PseudoElement)
 
 
 type Sequence
@@ -48,9 +53,9 @@ type MediaQuery
     = MediaQuery String
 
 
-empty : Selector
-empty =
-    Selector [] [] Nothing Nothing
+initial : Selector
+initial =
+    Selector [ Single [] [] Nothing ] Nothing
 
 
 {-|
@@ -60,22 +65,34 @@ empty =
 
 -}
 nest : Selector -> Selector -> Maybe Selector
-nest (Selector r1 s1 p1 m1) (Selector r2 s2 p2 m2) =
-    case ( p1, m1, m2 ) of
-        ( Just _, _, _ ) ->
-            Nothing
-
-        ( Nothing, Just _, Just _ ) ->
+nest (Selector parent pm) (Selector child cm) =
+    case ( pm, cm ) of
+        ( Just _, Just _ ) ->
             Nothing
 
         _ ->
+            case lift2 nestSingle parent child |> List.filterMap identity of
+                [] ->
+                    Nothing
+
+                nonEmpty ->
+                    Just <| Selector nonEmpty (or pm cm)
+
+
+nestSingle : Single -> Single -> Maybe Single
+nestSingle (Single r1 s1 p1) (Single r2 s2 p2) =
+    case p1 of
+        Just _ ->
+            Nothing
+
+        Nothing ->
             Just <|
                 case List.reverse s1 of
                     [] ->
-                        Selector (r1 ++ r2) s2 p2 (or m1 m2)
+                        Single (r1 ++ r2) s2 p2
 
                     (Sequence c h lastRepeatables) :: heads ->
-                        Selector r1 (List.reverse (Sequence c h (lastRepeatables ++ r2) :: heads) ++ s2) p2 (or m1 m2)
+                        Single r1 (List.reverse (Sequence c h (lastRepeatables ++ r2) :: heads) ++ s2) p2
 
 
 {-| ref. <https://github.com/elm-community/maybe-extra/blob/5.2.0/src/Maybe/Extra.elm#L260>
@@ -90,6 +107,13 @@ or ma mb =
             ma
 
 
+{-| ref. <https://github.com/elm-community/list-extra/blob/8.2.4/src/List/Extra.elm#L1763>
+-}
+lift2 : (a -> b -> c) -> List a -> List b -> List c
+lift2 f la lb =
+    la |> List.concatMap (\a -> lb |> List.concatMap (\b -> [ f a b ]))
+
+
 
 ----------------
 -- toString
@@ -98,13 +122,22 @@ or ma mb =
 
 
 toString : Selector -> String
-toString (Selector rs ss pe mq) =
+toString (Selector ss mq) =
     String.concat
         [ "(Selector"
+        , List.map singleToString ss |> listToString
+        , Maybe.map mediaQueryToString mq |> maybeToString
+        , ")"
+        ]
+
+
+singleToString : Single -> String
+singleToString (Single rs ss pe) =
+    String.concat
+        [ "(Single"
         , List.map repeatableToString rs |> listToString
         , List.map sequenceToString ss |> listToString
         , Maybe.map pseudoElementToString pe |> maybeToString
-        , Maybe.map mediaQueryToString mq |> maybeToString
         , ")"
         ]
 

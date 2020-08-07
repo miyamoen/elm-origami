@@ -32,34 +32,34 @@ flatten styles =
         nonEmpty ->
             let
                 ( properties, accStyles ) =
-                    List.foldr (walk Selector.empty) ( [], [] ) nonEmpty
+                    List.foldr (walk Selector.initial) ( [], [] ) nonEmpty
             in
-            FlatStyle Selector.empty properties :: accStyles
+            FlatStyle Selector.initial properties :: accStyles
 
 
 walk : Selector -> Style -> ( Properties, List FlatStyle ) -> ( Properties, List FlatStyle )
-walk currentSelector style ( properties, styles ) =
+walk parentSelector style ( properties, styles ) =
     case style of
         PropertyStyle property ->
             ( property :: properties, styles )
 
         BatchStyles batched ->
-            List.foldr (walk currentSelector) ( properties, styles ) batched
+            List.foldr (walk parentSelector) ( properties, styles ) batched
 
         NestedStyle _ [] ->
             ( properties, styles )
 
-        NestedStyle nestSelector nestStyles ->
-            case Selector.nest currentSelector nestSelector of
+        NestedStyle childSelector childStyles ->
+            case Selector.nest parentSelector childSelector of
                 Nothing ->
                     ( properties, styles )
 
-                Just combined ->
+                Just nested ->
                     let
-                        ( nestProperties, accStyles ) =
-                            List.foldr (walk combined) ( [], styles ) nestStyles
+                        ( childProperties, accStyles ) =
+                            List.foldr (walk nested) ( [], styles ) childStyles
                     in
-                    ( properties, FlatStyle combined nestProperties :: accStyles )
+                    ( properties, FlatStyle nested childProperties :: accStyles )
 
         AnimationStyle keyframesStyleBlocks ->
             let
@@ -85,14 +85,24 @@ compile classname styles =
 toBlock : String -> FlatStyle -> Block
 toBlock classname style =
     case style of
-        FlatStyle (Selector rs ss pe Nothing) ps ->
-            StyleBlock (StyleTag.Selector classname rs ss pe) ps
+        FlatStyle (Selector selectors Nothing) ps ->
+            StyleBlock (convertSelector classname selectors) ps
 
-        FlatStyle (Selector rs ss pe (Just mq)) ps ->
-            MediaBlock mq [ StyleBlock (StyleTag.Selector classname rs ss pe) ps ]
+        FlatStyle (Selector selectors (Just mq)) ps ->
+            MediaBlock mq [ StyleBlock (convertSelector classname selectors) ps ]
 
         FlatAnimationStyle an bs ->
             KeyframesBlock an bs
+
+
+convertSelector : String -> List Selector.Single -> StyleTag.Selector
+convertSelector classname selectors =
+    StyleTag.Selector <| List.map (convertSingleSelector classname) selectors
+
+
+convertSingleSelector : String -> Selector.Single -> StyleTag.SingleSelector
+convertSingleSelector classname (Selector.Single rs ss pe) =
+    StyleTag.SingleSelector classname rs ss pe
 
 
 

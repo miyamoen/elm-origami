@@ -6,6 +6,7 @@ module Origami.Css.StyleTag exposing
     , Properties
     , Property(..)
     , Selector(..)
+    , SingleSelector(..)
     , print
     , printKeyframeSelector
     )
@@ -52,9 +53,14 @@ type Block
 
 
 type Selector
-    = -- inline CSSから変換するのでSelectorはhash値のclass selector始まりに限定している
-      Selector String (List Selector.Repeatable) (List Selector.Sequence) (Maybe PseudoElement)
+    = Selector (List SingleSelector)
     | CustomSelector String
+
+
+{-| inline CSSから変換するのでSelectorはhash値のclass selector始まりに限定している
+-}
+type SingleSelector
+    = SingleSelector String (List Selector.Repeatable) (List Selector.Sequence) (Maybe PseudoElement)
 
 
 type alias KeyframesStyleBlock =
@@ -134,16 +140,22 @@ printStyleBlock indentLevel selector properties =
 printSelector : Selector -> String
 printSelector selector =
     case selector of
-        Selector classname repeatables sequences pseudo ->
-            String.concat <|
-                "."
-                    :: classname
-                    :: List.map printRepeatableSelector repeatables
-                    ++ List.map printSelectorSequence sequences
-                    ++ [ Maybe.map printPseudoElement pseudo |> Maybe.withDefault "" ]
+        Selector selectors ->
+            List.map printSingleSelector selectors
+                |> String.join ", "
 
         CustomSelector raw ->
             raw
+
+
+printSingleSelector : SingleSelector -> String
+printSingleSelector (SingleSelector classname repeatables sequences pseudo) =
+    String.concat <|
+        "."
+            :: classname
+            :: List.map printRepeatableSelector repeatables
+            ++ List.map printSelectorSequence sequences
+            ++ [ Maybe.map printPseudoElement pseudo |> Maybe.withDefault "" ]
 
 
 printSelectorSequence : Selector.Sequence -> String
