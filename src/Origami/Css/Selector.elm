@@ -66,9 +66,18 @@ initial =
 -}
 nest : Selector -> Selector -> Maybe Selector
 nest (Selector parent pm) (Selector child cm) =
-    case ( pm, cm ) of
-        ( Just _, Just _ ) ->
+    case ( pm, cm, child ) of
+        -- media queryはネストできない
+        ( Just _, Just _, _ ) ->
             Nothing
+
+        -- empty (invalid) child selector
+        ( _, Nothing, [] ) ->
+            Nothing
+
+        -- childがmedia queryのみ
+        ( Nothing, Just _, [] ) ->
+            Just <| Selector parent cm
 
         _ ->
             case lift2 nestSingle parent child |> List.filterMap identity of
