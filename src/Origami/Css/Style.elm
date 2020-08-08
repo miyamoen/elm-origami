@@ -11,7 +11,7 @@ import Origami.Css.StyleTag as StyleTag exposing (Block(..), KeyframeSelector(..
 -}
 type Style
     = PropertyStyle Property
-    | BatchStyles (List Style)
+    | BatchedStyle (List Style)
     | NestedStyle Selector (List Style)
     | AnimationStyle (List KeyframesStyleBlock)
 
@@ -43,7 +43,7 @@ walk parentSelector style ( properties, styles ) =
         PropertyStyle property ->
             ( property :: properties, styles )
 
-        BatchStyles batched ->
+        BatchedStyle batched ->
             List.foldr (walk parentSelector) ( properties, styles ) batched
 
         NestedStyle _ [] ->
@@ -62,11 +62,16 @@ walk parentSelector style ( properties, styles ) =
                     ( properties, FlatStyle nested childProperties :: accStyles )
 
         AnimationStyle keyframesStyleBlocks ->
-            let
-                animationName =
-                    hashToAnimationName keyframesStyleBlocks
-            in
-            ( Property "animation-name" animationName :: properties, FlatAnimationStyle animationName keyframesStyleBlocks :: styles )
+            case keyframesStyleBlocks of
+                [] ->
+                    ( properties, styles )
+
+                nonEmpty ->
+                    let
+                        animationName =
+                            hashToAnimationName nonEmpty
+                    in
+                    ( Property "animation-name" animationName :: properties, FlatAnimationStyle animationName nonEmpty :: styles )
 
 
 compile : String -> List FlatStyle -> List Block

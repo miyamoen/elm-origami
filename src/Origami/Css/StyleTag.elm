@@ -103,7 +103,7 @@ printBlock indentLevel block =
         FontFaceBlock properties ->
             String.join ""
                 [ indentLevel
-                , "@font-face  {\n"
+                , "@font-face {\n"
                 , printProperties (indentLevel ++ spaceIndent) properties
                 , "\n"
                 , indentLevel
@@ -239,7 +239,7 @@ printKeyframeSelector selector =
 printProperties : String -> Properties -> String
 printProperties indentLevel properties =
     List.map (\property -> printProperty property) properties
-        |> String.join (indentLevel ++ "\n")
+        |> String.join ("\n" ++ indentLevel)
         |> (++) indentLevel
 
 
