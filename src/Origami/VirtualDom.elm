@@ -1,6 +1,6 @@
 module Origami.VirtualDom exposing
     ( Node, text, node, nodeNS
-    , Attribute(..), style, property, attribute, attributeNS, batchAttributes
+    , Attribute(..), style, property, attribute, attributeNS, batchAttributes, noAttribute
     , on
     , map, mapAttribute
     , keyedNode, keyedNodeNS
@@ -18,7 +18,7 @@ module Origami.VirtualDom exposing
 
 # Attributes
 
-@docs Attribute, style, property, attribute, attributeNS, batchAttributes
+@docs Attribute, style, property, attribute, attributeNS, batchAttributes, noAttribute
 
 
 # Events
@@ -144,6 +144,11 @@ batchAttributes : List (Attribute msg) -> Attribute msg
 batchAttributes =
     List.foldr (\(Attribute attrs styles) ( accAttrs, accStyles ) -> ( attrs ++ accAttrs, styles ++ accStyles )) ( [], [] )
         >> (\( attrs, styles ) -> Attribute attrs styles)
+
+
+noAttribute : Attribute msg
+noAttribute =
+    Attribute [] []
 
 
 on : String -> VirtualDom.Handler msg -> Attribute msg

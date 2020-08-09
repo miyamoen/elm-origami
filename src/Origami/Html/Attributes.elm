@@ -1,5 +1,5 @@
 module Origami.Html.Attributes exposing
-    ( css, fromHtmlAttribute, batchAttributes
+    ( css, fromHtmlAttribute, batchAttributes, noAttribute
     , style, property, attribute, map
     , class, classList, id, title, hidden
     , type_, value, checked, placeholder, selected
@@ -22,9 +22,9 @@ module Origami.Html.Attributes exposing
 
 {-| Drop-in replacement for the `Html.Attributes` module from the `elm/html` package.
 
-The only functions added are `css`, `fromHtmlAttribute` and `batchAttributes`:
+The only functions added are `css`, `fromHtmlAttribute`, `batchAttributes` and `noAttribute`:
 
-@docs css, fromHtmlAttribute, batchAttributes
+@docs css, fromHtmlAttribute, batchAttributes, noAttribute
 
 Note that there is no `toHtmlAttribute` for Attributes! This is because the process
 of going from origami to html involves adding a `<style>` element to the DOM,
@@ -145,6 +145,19 @@ fromHtmlAttribute =
 batchAttributes : List (Attribute msg) -> Attribute msg
 batchAttributes =
     Origami.VirtualDom.batchAttributes
+
+
+{-| Empty Attribute.
+
+    if predicate then
+        class "spam"
+    then
+        noAttribute
+
+-}
+noAttribute : Attribute msg
+noAttribute =
+    Origami.VirtualDom.noAttribute
 
 
 

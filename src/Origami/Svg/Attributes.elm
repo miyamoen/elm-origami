@@ -1,5 +1,5 @@
 module Origami.Svg.Attributes exposing
-    ( css, fromSvgAttribute, batchAttributes
+    ( css, fromSvgAttribute, batchAttributes, noAttribute
     , accentHeight, accelerate, accumulate, additive, alphabetic, allowReorder
     , amplitude, arabicForm, ascent, attributeName, attributeType, autoReverse
     , azimuth, baseFrequency, baseProfile, bbox, begin, bias, by, calcMode
@@ -43,9 +43,9 @@ module Origami.Svg.Attributes exposing
     )
 
 {-| Drop-in replacement for the `Svg.Attributes` module from the `elm/svg` package.
-The only functions added are `css`, `fromSvgAttribute` and `batchAttributes`:
+The only functions added are `css`, `fromSvgAttribute`, `batchAttributes` and `noAttribute`:
 
-@docs css, fromSvgAttribute, batchAttributes
+@docs css, fromSvgAttribute, batchAttributes, noAttribute
 
 
 # Regular attributes
@@ -124,6 +124,19 @@ fromSvgAttribute =
 batchAttributes : List (Attribute msg) -> Attribute msg
 batchAttributes =
     Origami.VirtualDom.batchAttributes
+
+
+{-| Empty Attribute.
+
+    if predicate then
+        class "spam"
+    then
+        noAttribute
+
+-}
+noAttribute : Attribute msg
+noAttribute =
+    Origami.VirtualDom.noAttribute
 
 
 
