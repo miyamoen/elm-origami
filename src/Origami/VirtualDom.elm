@@ -233,14 +233,16 @@ lazyHelp7 fn arg1 arg2 arg3 arg4 arg5 arg6 arg7 =
 
 css : List Style -> Attribute msg
 css styles =
-    let
-        flattens =
-            Origami.Css.Style.flatten styles
+    case Origami.Css.Style.flatten styles of
+        [] ->
+            noAttribute
 
-        classname =
-            Origami.Css.Style.hashToClassname flattens
-    in
-    Attribute [ VirtualDom.property "className" (Json.Encode.string classname) ] [ ( classname, flattens ) ]
+        nonEmpty ->
+            let
+                classname =
+                    Origami.Css.Style.hashToClassname nonEmpty
+            in
+            Attribute [ VirtualDom.property "className" (Json.Encode.string classname) ] [ ( classname, nonEmpty ) ]
 
 
 toPlainNode : Node msg -> VirtualDom.Node msg

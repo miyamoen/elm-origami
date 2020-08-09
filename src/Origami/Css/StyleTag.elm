@@ -11,15 +11,13 @@ module Origami.Css.StyleTag exposing
     , printKeyframeSelector
     )
 
-{-| A representation of the structure of a stylesheet. This module is concerned
-solely with representing valid stylesheets; it is not concerned with the
-elm-css DSL, collecting warnings, or
+{-| A representation of the structure of a style tag.
 -}
 
 import Origami.Css.Selector as Selector exposing (MediaQuery(..), PseudoElement(..))
 
 
-{-| A property consisting of a key:value string.
+{-| A property consisting of key and value string.
 -}
 type Property
     = Property String String
@@ -29,20 +27,11 @@ type alias Properties =
     List Property
 
 
-{-| A Declaration, meaning either a [`StyleBlock`](#StyleBlock) declaration
-or an [at-rule](https://developer.mozilla.org/docs/Web/CSS/At-rule)
-declaration. Since each at-rule works differently, the supported ones are
-enumerated as follows.
+{-|
 
   - `MediaRule`: an [`@media`](https://developer.mozilla.org/docs/Web/CSS/@media) rule.
-  - `SupportsRule`: an [`@supports`](https://developer.mozilla.org/docs/Web/CSS/@supports) rule.
-  - `DocumentRule`: an [`@document`](https://developer.mozilla.org/docs/Web/CSS/@document) rule.
-  - `PageRule`: an [`@page`](https://developer.mozilla.org/docs/Web/CSS/@page) rule.
   - `FontFace`: an [`@font-face`](https://developer.mozilla.org/docs/Web/CSS/@font-face) rule.
   - `Keyframes`: an [`@keyframes`](https://developer.mozilla.org/docs/Web/CSS/@keyframes) rule.
-  - `Viewport`: an [`@viewport`](https://developer.mozilla.org/docs/Web/CSS/@viewport) rule.
-  - `CounterStyle`: an [`@counter-style`](https://developer.mozilla.org/docs/Web/CSS/@counter-style) rule.
-  - `FontFeatureValues`: an [`@font-feature-values`](https://developer.mozilla.org/docs/Web/CSS/@font-feature-values) rule.
 
 -}
 type Block
@@ -196,13 +185,13 @@ printSelectorCombinator comb =
             " "
 
         Selector.ChildCombinator ->
-            ">"
+            " > "
 
         Selector.GeneralSiblingCombinator ->
-            "~"
+            " ~ "
 
         Selector.AdjacentSiblingCombinator ->
-            "+"
+            " + "
 
 
 printPseudoElement : PseudoElement -> String

@@ -63,24 +63,66 @@ initial =
   - 疑似要素が含まれていればそれ以上ネストできない
   - media query はネストできない
 
+
+## 条件分岐網羅
+
+  - header
+      - ps: parent singles
+      - pm: parent media query
+      - cs: child singles
+      - cm: child media query
+      - Rs: Result
+  - body
+      - em: empty
+      - fl: filled
+      - no: nothing
+      - ju: just
+
+| ps | pm | cs | cm | Rs |
+| -- | -- | -- | -- | -- |
+| em | no | em | no | 02 |
+| em | no | em | ju | 02 |
+| em | no | fl | no | 02 |
+| em | no | fl | ju | 02 |
+| em | ju | em | no | 03 |
+| em | ju | em | ju | 01 |
+| em | ju | fl | no | 04 |
+| em | ju | fl | ju | 01 |
+| fl | no | em | no | 03 |
+| fl | no | em | ju | 05 |
+| fl | no | fl | no | 06 |
+| fl | no | fl | ju | 06 |
+| fl | ju | em | no | 03 |
+| fl | ju | em | ju | 01 |
+| fl | ju | fl | no | 06 |
+| fl | ju | fl | ju | 01 |
+
 -}
 nest : Selector -> Selector -> Maybe Selector
-nest (Selector parent pm) (Selector child cm) =
-    case ( pm, cm, child ) of
+nest (Selector ps pm) (Selector cs cm) =
+    case ( ( ps, pm ), ( cs, cm ) ) of
         -- media queryはネストできない
-        ( Just _, Just _, _ ) ->
+        ( ( _, Just _ ), ( _, Just _ ) ) ->
+            Nothing
+
+        -- empty (invalid) parent selector
+        ( ( [], Nothing ), ( _, _ ) ) ->
             Nothing
 
         -- empty (invalid) child selector
-        ( _, Nothing, [] ) ->
+        ( ( _, _ ), ( [], Nothing ) ) ->
             Nothing
 
+        -- parentがmedia queryのみ
+        ( ( [], Just _ ), ( nonEmpty, Nothing ) ) ->
+            Just <| Selector nonEmpty pm
+
         -- childがmedia queryのみ
-        ( Nothing, Just _, [] ) ->
-            Just <| Selector parent cm
+        ( ( nonEmpty, Nothing ), ( [], Just _ ) ) ->
+            Just <| Selector nonEmpty cm
 
         _ ->
-            case lift2 nestSingle parent child |> List.filterMap identity of
+            case lift2 nestSingle ps cs |> List.filterMap identity of
                 [] ->
                     Nothing
 
@@ -89,19 +131,27 @@ nest (Selector parent pm) (Selector child cm) =
 
 
 nestSingle : Single -> Single -> Maybe Single
-nestSingle (Single r1 s1 p1) (Single r2 s2 p2) =
-    case p1 of
-        Just _ ->
+nestSingle parent child =
+    case ( parent, child ) of
+        ( Single _ _ (Just _), _ ) ->
             Nothing
 
-        Nothing ->
-            Just <|
-                case List.reverse s1 of
-                    [] ->
-                        Single (r1 ++ r2) s2 p2
+        ( _, Single [] [] Nothing ) ->
+            Nothing
 
-                    (Sequence c h lastRepeatables) :: heads ->
-                        Single r1 (List.reverse (Sequence c h (lastRepeatables ++ r2) :: heads) ++ s2) p2
+        ( Single [] [] Nothing, _ ) ->
+            Just child
+
+        ( Single prs pss Nothing, Single crs css cpe ) ->
+            case List.reverse pss of
+                [] ->
+                    Just <| Single (prs ++ crs) css cpe
+
+                (Sequence c h rs) :: xs ->
+                    Just <|
+                        Single prs
+                            (List.reverse (Sequence c h (rs ++ crs) :: xs) ++ css)
+                            cpe
 
 
 {-| ref. <https://github.com/elm-community/maybe-extra/blob/5.2.0/src/Maybe/Extra.elm#L260>

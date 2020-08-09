@@ -1,4 +1,4 @@
-module Origami.Css.Style exposing (FlatStyle, Style(..), compile, flatten, hashToClassname)
+module Origami.Css.Style exposing (FlatStyle(..), Style(..), compile, flatten, hashToClassname)
 
 {-| -}
 
@@ -25,16 +25,12 @@ type FlatStyle
 
 flatten : List Style -> List FlatStyle
 flatten styles =
-    case styles of
-        [] ->
-            []
+    case List.foldr (walk Selector.initial) ( [], [] ) styles of
+        ( [], flatStyles ) ->
+            flatStyles
 
-        nonEmpty ->
-            let
-                ( properties, accStyles ) =
-                    List.foldr (walk Selector.initial) ( [], [] ) nonEmpty
-            in
-            FlatStyle Selector.initial properties :: accStyles
+        ( properties, flatStyles ) ->
+            FlatStyle Selector.initial properties :: flatStyles
 
 
 walk : Selector -> Style -> ( Properties, List FlatStyle ) -> ( Properties, List FlatStyle )
@@ -46,21 +42,20 @@ walk parentSelector style ( properties, styles ) =
         BatchedStyle batched ->
             List.foldr (walk parentSelector) ( properties, styles ) batched
 
-        NestedStyle _ [] ->
-            ( properties, styles )
-
         NestedStyle childSelector childStyles ->
             case Selector.nest parentSelector childSelector of
                 Nothing ->
                     ( properties, styles )
 
                 Just nested ->
-                    let
-                        ( childProperties, accStyles ) =
-                            List.foldr (walk nested) ( [], styles ) childStyles
-                    in
-                    ( properties, FlatStyle nested childProperties :: accStyles )
+                    case List.foldr (walk nested) ( [], styles ) childStyles of
+                        ( [], flatStyles ) ->
+                            ( properties, flatStyles )
 
+                        ( childProperties, flatStyles ) ->
+                            ( properties, FlatStyle nested childProperties :: flatStyles )
+
+        -- **CONSIDER**: 同じkeyframes定義があったら同じものが２個生成されてしまうが許容
         AnimationStyle keyframesStyleBlocks ->
             case keyframesStyleBlocks of
                 [] ->
