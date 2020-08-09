@@ -127,24 +127,24 @@ suite =
             ]
             """._test {
     p1_key: p1_val;
-    animation-name: _keyframes__f89d3c68;
+    animation-name: _keyframes_f89d3c68;
     p2_key: p2_val;
 }
 
 @media screen and (max-width: 1200px) {
     ._test {
         m_key: m_val;
-        animation-name: _keyframes__f89d3c68;
+        animation-name: _keyframes_f89d3c68;
     }
 }
 
-@keyframes _keyframes__f89d3c68 {
+@keyframes _keyframes_f89d3c68 {
     from {
         p_key: p_val;
     }
 }
 
-@keyframes _keyframes__f89d3c68 {
+@keyframes _keyframes_f89d3c68 {
     from {
         p_key: p_val;
     }

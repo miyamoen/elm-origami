@@ -30,13 +30,13 @@ suite =
             [ testFlatten "empty" [ animation [] ] []
             , testFlatten "single"
                 [ animation [ ( ( from, [] ), [ p "p" ] ) ] ]
-                [ FlatStyle initialSelector [ Property "animation-name" "_keyframes__f89d3c68" ]
-                , FlatAnimationStyle "_keyframes__f89d3c68" [ ( ( from, [] ), [ p "p" ] ) ]
+                [ FlatStyle initialSelector [ Property "animation-name" "_keyframes_f89d3c68" ]
+                , FlatAnimationStyle "_keyframes_f89d3c68" [ ( ( from, [] ), [ p "p" ] ) ]
                 ]
             , testFlatten "REVIEW: empty properties pass"
                 [ animation [ ( ( from, [] ), [] ) ] ]
-                [ FlatStyle initialSelector [ Property "animation-name" "_keyframes__2a2381ad" ]
-                , FlatAnimationStyle "_keyframes__2a2381ad" [ ( ( from, [] ), [] ) ]
+                [ FlatStyle initialSelector [ Property "animation-name" "_keyframes_2a2381ad" ]
+                , FlatAnimationStyle "_keyframes_2a2381ad" [ ( ( from, [] ), [] ) ]
                 ]
             ]
         , describe "nested style"

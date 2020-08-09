@@ -9,7 +9,6 @@ fromString str =
     str
         |> Murmur3.hashString murmurSeed
         |> Hex.toString
-        |> String.cons '_'
 
 
 murmurSeed : Int
