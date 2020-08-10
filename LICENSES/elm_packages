@@ -1,0 +1,60 @@
+├─ Skinney/murmur3@2.0.8
+│  ├─ name: Skinney/murmur3
+│  ├─ version: 2.0.8
+│  ├─ summary: An implementation of the Murmur3 hash function for Elm
+│  ├─ license: MIT
+│  ├─ licenseText: The MIT License (MIT)
+├─ elm/core@1.0.5
+│  ├─ name: elm/core
+│  ├─ version: 1.0.5
+│  ├─ summary: Elm's standard libraries
+│  ├─ license: BSD-3-Clause
+│  ├─ licenseText: Copyright 2014-present Evan Czaplicki
+├─ elm/html@1.0.0
+│  ├─ name: elm/html
+│  ├─ version: 1.0.0
+│  ├─ summary: Fast HTML, rendered with virtual DOM diffing
+│  ├─ license: BSD-3-Clause
+│  ├─ licenseText: Copyright (c) 2014-present, Evan Czaplicki
+├─ elm/json@1.1.3
+│  ├─ name: elm/json
+│  ├─ version: 1.1.3
+│  ├─ summary: Encode and decode JSON values
+│  ├─ license: BSD-3-Clause
+│  ├─ licenseText: Copyright (c) 2014-present, Evan Czaplicki
+├─ elm/svg@1.0.1
+│  ├─ name: elm/svg
+│  ├─ version: 1.0.1
+│  ├─ summary: Fast SVG, rendered with virtual DOM diffing
+│  ├─ license: BSD-3-Clause
+│  ├─ licenseText: Copyright (c) 2014-present, Evan Czaplicki
+├─ elm/virtual-dom@1.0.2
+│  ├─ name: elm/virtual-dom
+│  ├─ version: 1.0.2
+│  ├─ summary: Core virtual DOM implementation, basis for HTML and SVG libraries
+│  ├─ license: BSD-3-Clause
+│  ├─ licenseText: Copyright (c) 2016-present, Evan Czaplicki
+├─ elm-community/list-extra@8.2.4
+│  ├─ name: elm-community/list-extra
+│  ├─ version: 8.2.4
+│  ├─ summary: Convenience functions for working with List
+│  ├─ license: MIT
+│  ├─ licenseText: The MIT License (MIT)
+├─ elm-community/maybe-extra@5.2.0
+│  ├─ name: elm-community/maybe-extra
+│  ├─ version: 5.2.0
+│  ├─ summary: Convenience functions for working with Maybe
+│  ├─ license: MIT
+│  ├─ licenseText: The MIT License (MIT)
+├─ rtfeldman/elm-css@16.0.1
+│  ├─ name: rtfeldman/elm-css
+│  ├─ version: 16.0.1
+│  ├─ summary: Typed CSS in Elm.
+│  ├─ license: BSD-3-Clause
+│  ├─ licenseText: Copyright (c) 2015, Richard Feldman
+└─ rtfeldman/elm-hex@1.0.0
+   ├─ name: rtfeldman/elm-hex
+   ├─ version: 1.0.0
+   ├─ summary: Work with hexadecimal numbers
+   ├─ license: BSD-3-Clause
+   ├─ licenseText: BSD 3-Clause License
