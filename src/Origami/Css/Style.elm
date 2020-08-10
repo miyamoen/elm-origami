@@ -4,7 +4,7 @@ module Origami.Css.Style exposing (FlatStyle(..), Style(..), compile, flatten, h
 
 import Hash
 import Origami.Css.Selector as Selector exposing (Selector(..), listToString)
-import Origami.Css.StyleTag as StyleTag exposing (Block(..), KeyframeSelector(..), KeyframesStyleBlock, Properties, Property(..))
+import Origami.Css.StyleTag as StyleTag exposing (Block(..), KeyframesSelector(..), KeyframesStyleBlock, Properties, Property(..))
 
 
 {-| ユーザー露出する構文的な型
@@ -166,14 +166,14 @@ propertyToString (Property key val) =
     String.concat [ "(Property\"", key, "\" \"", val, "\")" ]
 
 
-keyframeSelectorToString : KeyframeSelector -> String
+keyframeSelectorToString : KeyframesSelector -> String
 keyframeSelectorToString s =
     case s of
-        KeyframeSelectorFrom ->
+        KeyframesSelectorFrom ->
             "(KeyframeSelectorFrom)"
 
-        KeyframeSelectorTo ->
+        KeyframesSelectorTo ->
             "(KeyframeSelectorTo)"
 
-        KeyframeSelectorPercent val ->
+        KeyframesSelectorPercent val ->
             String.concat [ "(KeyframeSelectorPercent ", String.fromFloat val, ")" ]

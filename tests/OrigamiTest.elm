@@ -69,6 +69,7 @@ suite =
             , testEqual "repeatable"
                 (withDescendants [ ( tag "tag", [ class "class" ] ) ] styles)
                 (NestedStyle (Selector [ Single [] [ Sequence DescendantCombinator (TypeSelector "tag") [ ClassSelector "class" ] ] Nothing ] Nothing) styles)
+            , testEqual "empty" (withDescendants [] styles) (NestedStyle (Selector [] Nothing) styles)
             ]
         , describe "withChildren"
             [ testEqual "single"
@@ -88,6 +89,7 @@ suite =
             , testEqual "repeatable"
                 (withChildren [ ( tag "tag", [ class "class" ] ) ] styles)
                 (NestedStyle (Selector [ Single [] [ Sequence ChildCombinator (TypeSelector "tag") [ ClassSelector "class" ] ] Nothing ] Nothing) styles)
+            , testEqual "empty" (withChildren [] styles) (NestedStyle (Selector [] Nothing) styles)
             ]
         , describe "withGeneralSiblings"
             [ testEqual "single"
@@ -107,6 +109,7 @@ suite =
             , testEqual "repeatable"
                 (withGeneralSiblings [ ( tag "tag", [ class "class" ] ) ] styles)
                 (NestedStyle (Selector [ Single [] [ Sequence GeneralSiblingCombinator (TypeSelector "tag") [ ClassSelector "class" ] ] Nothing ] Nothing) styles)
+            , testEqual "empty" (withGeneralSiblings [] styles) (NestedStyle (Selector [] Nothing) styles)
             ]
         , describe "withAdjacentSiblings"
             [ testEqual "single"
@@ -126,6 +129,7 @@ suite =
             , testEqual "repeatable"
                 (withAdjacentSiblings [ ( tag "tag", [ class "class" ] ) ] styles)
                 (NestedStyle (Selector [ Single [] [ Sequence AdjacentSiblingCombinator (TypeSelector "tag") [ ClassSelector "class" ] ] Nothing ] Nothing) styles)
+            , testEqual "empty" (withAdjacentSiblings [] styles) (NestedStyle (Selector [] Nothing) styles)
             ]
         , describe "selector"
             [ testEqual "empty" (selector [] []) (Single [] [] Nothing)

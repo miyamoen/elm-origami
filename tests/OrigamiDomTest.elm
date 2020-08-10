@@ -1,14 +1,10 @@
 module OrigamiDomTest exposing (suite)
 
-import Expect exposing (equal)
 import Fixtures exposing (..)
 import Origami exposing (..)
-import Origami.Animation exposing (animation)
-import Origami.Css.Selector exposing (..)
-import Origami.Css.Style exposing (Style(..))
-import Origami.Css.StyleTag exposing (Property(..))
-import Origami.Html exposing (..)
+import Origami.Html exposing (div, toHtml)
 import Origami.Html.Attributes exposing (css)
+import Origami.StyleTag exposing (fontFace, from, keyframes, media, pct, style, styleTag, to)
 import Test exposing (Test, describe, test)
 import Test.Html.Query as Query
 import Test.Html.Selector as Selector
@@ -31,6 +27,49 @@ suite =
                         [ Selector.text """._99e21d4a {
     p1_key: p1_val;
     p2_key: p2_val;
+}"""
+                        ]
+            )
+        , test "style tag"
+            (\_ ->
+                div []
+                    [ styleTag
+                        [ style "selector" [ p "p" ]
+                        , media "media" [ style "in media" [ p "m" ] ]
+                        , fontFace [ p "f" ]
+                        , keyframes "animation"
+                            [ ( ( from, [] ), [ p "from" ] )
+                            , ( ( to, [ pct 50 ] ), [ p "to" ] )
+                            ]
+                        ]
+                    ]
+                    |> toHtml
+                    |> Query.fromHtml
+                    |> Query.children []
+                    |> Query.index 1
+                    |> Query.has
+                        [ Selector.text """selector {
+    p_key: p_val;
+}
+
+@media media {
+    in media {
+        m_key: m_val;
+    }
+}
+
+@font-face {
+    f_key: f_val;
+}
+
+@keyframes animation {
+    from {
+        from_key: from_val;
+    }
+
+    to, 50% {
+        to_key: to_val;
+    }
 }"""
                         ]
             )

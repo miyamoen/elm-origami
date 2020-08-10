@@ -4,11 +4,11 @@ module Origami.Animation exposing (Property, Selector, animation, from, pct, pro
 
 import Origami exposing (Style)
 import Origami.Css.Style as Style
-import Origami.Css.StyleTag as StyleTag exposing (KeyframeSelector(..), Property(..))
+import Origami.Css.StyleTag as StyleTag exposing (KeyframesSelector(..), Property(..))
 
 
 type alias Selector =
-    KeyframeSelector
+    KeyframesSelector
 
 
 type alias Property =
@@ -23,17 +23,17 @@ animation =
 
 from : Selector
 from =
-    KeyframeSelectorFrom
+    KeyframesSelectorFrom
 
 
 to : Selector
 to =
-    KeyframeSelectorTo
+    KeyframesSelectorTo
 
 
 pct : Float -> Selector
 pct =
-    KeyframeSelectorPercent
+    KeyframesSelectorPercent
 
 
 property : String -> String -> Property
