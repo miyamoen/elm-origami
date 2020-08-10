@@ -1,7 +1,7 @@
 {
     "type": "package",
     "name": "miyamoen/elm-origami",
-    "summary": "",
+    "summary": "CSS in Elm package forked from rtfeldman/elm-css",
     "license": "BSD-3-Clause",
     "version": "1.0.0",
     "exposed-modules": {
