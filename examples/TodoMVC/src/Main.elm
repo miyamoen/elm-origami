@@ -257,12 +257,12 @@ view model =
                         , property "color" "#e6e6e6"
                         ]
                   in
-                  withDescendants [ ( tag "input", [] ) ]
+                  withDescendants [ tag "input" ]
                     [ withPseudoElement "-webkit-input-placeholder" styles
                     , withPseudoElement "-moz-placeholder" styles
                     , withPseudoElement "input-placeholder" styles
                     ]
-                , withDescendants [ ( tag "h1", [] ) ]
+                , withDescendants [ tag "h1" ]
                     [ property "position" "absolute"
                     , property "top" "-155px"
                     , property "width" "100%"
@@ -704,8 +704,8 @@ infoFooter =
             , property "font-size" "10px"
             , property "text-shadow" "0 1px 0 rgba(255, 255, 255, 0.5)"
             , property "text-align" "center"
-            , withDescendants [ ( tag "p", [] ) ] [ property "line-height" "1" ]
-            , withDescendants [ ( tag "a", [] ) ]
+            , withDescendants [ tag "p" ] [ property "line-height" "1" ]
+            , withDescendants [ tag "a" ]
                 [ property "color" "inherit"
                 , property "text-decoration" "none"
                 , property "font-weight" "400"

@@ -1,7 +1,6 @@
 module OrigamiDomTest exposing (suite)
 
 import Fixtures exposing (..)
-import Origami exposing (..)
 import Origami.Html exposing (div, toHtml)
 import Origami.Html.Attributes exposing (css)
 import Origami.StyleTag exposing (fontFace, from, keyframes, media, pct, style, styleTag, to)

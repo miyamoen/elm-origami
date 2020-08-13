@@ -1,7 +1,12 @@
 module Origami.Html.Lazy exposing (lazy, lazy2, lazy3, lazy4, lazy5, lazy6, lazy7)
 
-{-| **NOTE:** `Html.Lazy` goes up to `lazy8`, but `Origami.Html.Lazy` can only go
-up to `lazy7` because it uses one of the arguments to track styling info.
+{-|
+
+> **NOTE:** `Html.Lazy` goes up to `lazy8`, but `Origami.Html.Lazy` can only go
+> up to `lazy7` because it uses one of the arguments to track styling info.
+
+> `VirtualDom.lazyX`を使うために暗黙的に`toPlainNode`が使われています。
+> つまり`lazyX`が使われたところでstyle tagが生成されます。
 
 Since all Elm functions are pure we have a guarantee that the same input
 will always result in the same output. This module gives us tools to be lazy

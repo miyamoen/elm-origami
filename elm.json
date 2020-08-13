@@ -7,7 +7,6 @@
     "exposed-modules": {
         "Styling": [
             "Origami",
-            "Origami.Animation",
             "Origami.StyleTag"
         ],
         "Elements": [

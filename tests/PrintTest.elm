@@ -3,7 +3,6 @@ module PrintTest exposing (suite)
 import Expect exposing (equal)
 import Fixtures exposing (..)
 import Origami exposing (..)
-import Origami.Animation exposing (animation, from)
 import Origami.Css.Selector exposing (..)
 import Origami.Css.Style exposing (FlatStyle(..), Style, compile, flatten)
 import Origami.Css.StyleTag exposing (Property(..), print)
@@ -40,10 +39,7 @@ suite =
             , withClass "class"
                 [ ps "c1"
                 , ps "c2"
-                , withChildren
-                    [ ( tag "tag", [ pseudoClass "pseudoClass" ] )
-                    , ( everyTag, [ attribute "attr" ] )
-                    ]
+                , withChildren [ tag "tag", everyTag ]
                     [ ps "child1", ps "child2" ]
                 ]
             , ps "p2"
@@ -58,18 +54,18 @@ suite =
     c2_key: c2_val;
 }
 
-._test.class > tag:pseudoClass, ._test.class > *[attr] {
+._test.class > tag, ._test.class > * {
     child1_key: child1_val;
     child2_key: child2_val;
 }"""
         , testPrint "combinators"
             [ ps "p1"
-            , withChildren [ ( tag "tag1", [] ), ( everyTag, [] ) ]
+            , withChildren [ tag "tag1", everyTag ]
                 [ ps "c"
-                , withDescendants [ ( tag "tag2", [] ), ( everyTag, [] ) ] [ ps "d" ]
+                , withDescendants [ tag "tag2", everyTag ] [ ps "d" ]
                 ]
-            , withGeneralSiblings [ ( tag "tag3", [] ), ( everyTag, [] ) ] [ ps "g" ]
-            , withAdjacentSiblings [ ( tag "tag4", [] ), ( everyTag, [] ) ] [ ps "a" ]
+            , withGeneralSiblings [ tag "tag3", everyTag ] [ ps "g" ]
+            , withAdjacentSiblings [ tag "tag4", everyTag ] [ ps "a" ]
             , ps "p2"
             ]
             """._test {

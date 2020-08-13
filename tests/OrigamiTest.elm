@@ -3,7 +3,6 @@ module OrigamiTest exposing (suite)
 import Expect exposing (equal)
 import Fixtures exposing (..)
 import Origami exposing (..)
-import Origami.Animation exposing (animation)
 import Origami.Css.Selector exposing (..)
 import Origami.Css.Style exposing (Style(..))
 import Origami.Css.StyleTag exposing (Property(..))
@@ -53,10 +52,10 @@ suite =
             (NestedStyle (Selector [] (Just (MediaQuery "media query"))) styles)
         , describe "withDescendants"
             [ testEqual "single"
-                (withDescendants [ ( tag "tag", [] ) ] styles)
+                (withDescendants [ tag "tag" ] styles)
                 (NestedStyle (Selector [ Single [] [ Sequence DescendantCombinator (TypeSelector "tag") [] ] Nothing ] Nothing) styles)
             , testEqual "multiple"
-                (withDescendants [ ( tag "tag", [] ), ( everyTag, [] ) ] styles)
+                (withDescendants [ tag "tag", everyTag ] styles)
                 (NestedStyle
                     (Selector
                         [ Single [] [ Sequence DescendantCombinator (TypeSelector "tag") [] ] Nothing
@@ -66,17 +65,14 @@ suite =
                     )
                     styles
                 )
-            , testEqual "repeatable"
-                (withDescendants [ ( tag "tag", [ class "class" ] ) ] styles)
-                (NestedStyle (Selector [ Single [] [ Sequence DescendantCombinator (TypeSelector "tag") [ ClassSelector "class" ] ] Nothing ] Nothing) styles)
             , testEqual "empty" (withDescendants [] styles) (NestedStyle (Selector [] Nothing) styles)
             ]
         , describe "withChildren"
             [ testEqual "single"
-                (withChildren [ ( tag "tag", [] ) ] styles)
+                (withChildren [ tag "tag" ] styles)
                 (NestedStyle (Selector [ Single [] [ Sequence ChildCombinator (TypeSelector "tag") [] ] Nothing ] Nothing) styles)
             , testEqual "multiple"
-                (withChildren [ ( tag "tag", [] ), ( everyTag, [] ) ] styles)
+                (withChildren [ tag "tag", everyTag ] styles)
                 (NestedStyle
                     (Selector
                         [ Single [] [ Sequence ChildCombinator (TypeSelector "tag") [] ] Nothing
@@ -86,17 +82,14 @@ suite =
                     )
                     styles
                 )
-            , testEqual "repeatable"
-                (withChildren [ ( tag "tag", [ class "class" ] ) ] styles)
-                (NestedStyle (Selector [ Single [] [ Sequence ChildCombinator (TypeSelector "tag") [ ClassSelector "class" ] ] Nothing ] Nothing) styles)
             , testEqual "empty" (withChildren [] styles) (NestedStyle (Selector [] Nothing) styles)
             ]
         , describe "withGeneralSiblings"
             [ testEqual "single"
-                (withGeneralSiblings [ ( tag "tag", [] ) ] styles)
+                (withGeneralSiblings [ tag "tag" ] styles)
                 (NestedStyle (Selector [ Single [] [ Sequence GeneralSiblingCombinator (TypeSelector "tag") [] ] Nothing ] Nothing) styles)
             , testEqual "multiple"
-                (withGeneralSiblings [ ( tag "tag", [] ), ( everyTag, [] ) ] styles)
+                (withGeneralSiblings [ tag "tag", everyTag ] styles)
                 (NestedStyle
                     (Selector
                         [ Single [] [ Sequence GeneralSiblingCombinator (TypeSelector "tag") [] ] Nothing
@@ -106,17 +99,14 @@ suite =
                     )
                     styles
                 )
-            , testEqual "repeatable"
-                (withGeneralSiblings [ ( tag "tag", [ class "class" ] ) ] styles)
-                (NestedStyle (Selector [ Single [] [ Sequence GeneralSiblingCombinator (TypeSelector "tag") [ ClassSelector "class" ] ] Nothing ] Nothing) styles)
             , testEqual "empty" (withGeneralSiblings [] styles) (NestedStyle (Selector [] Nothing) styles)
             ]
         , describe "withAdjacentSiblings"
             [ testEqual "single"
-                (withAdjacentSiblings [ ( tag "tag", [] ) ] styles)
+                (withAdjacentSiblings [ tag "tag" ] styles)
                 (NestedStyle (Selector [ Single [] [ Sequence AdjacentSiblingCombinator (TypeSelector "tag") [] ] Nothing ] Nothing) styles)
             , testEqual "multiple"
-                (withAdjacentSiblings [ ( tag "tag", [] ), ( everyTag, [] ) ] styles)
+                (withAdjacentSiblings [ tag "tag", everyTag ] styles)
                 (NestedStyle
                     (Selector
                         [ Single [] [ Sequence AdjacentSiblingCombinator (TypeSelector "tag") [] ] Nothing
@@ -126,9 +116,6 @@ suite =
                     )
                     styles
                 )
-            , testEqual "repeatable"
-                (withAdjacentSiblings [ ( tag "tag", [ class "class" ] ) ] styles)
-                (NestedStyle (Selector [ Single [] [ Sequence AdjacentSiblingCombinator (TypeSelector "tag") [ ClassSelector "class" ] ] Nothing ] Nothing) styles)
             , testEqual "empty" (withAdjacentSiblings [] styles) (NestedStyle (Selector [] Nothing) styles)
             ]
         , describe "selector"
@@ -166,17 +153,16 @@ suite =
                     ]
                     (Just (PseudoElement "pseudoElement"))
                 )
-            , testEqual "s == selector" s selector
             ]
         , testEqual "with"
-            (with (s [ class "class" ] []) styles)
-            (NestedStyle (Selector [ s [ class "class" ] [] ] Nothing) styles)
+            (with (selector [ class "class" ] []) styles)
+            (NestedStyle (Selector [ selector [ class "class" ] [] ] Nothing) styles)
         , testEqual "withEach"
-            (withEach [ s [ class "class" ] [], s [ attribute "attr" ] [] ] styles)
-            (NestedStyle (Selector [ s [ class "class" ] [], s [ attribute "attr" ] [] ] Nothing) styles)
+            (withEach [ selector [ class "class" ] [], selector [ attribute "attr" ] [] ] styles)
+            (NestedStyle (Selector [ selector [ class "class" ] [], selector [ attribute "attr" ] [] ] Nothing) styles)
         , testEqual "withCustom"
-            (withCustom [ s [ class "class" ] [], s [ attribute "attr" ] [] ] "media query" styles)
-            (NestedStyle (Selector [ s [ class "class" ] [], s [ attribute "attr" ] [] ] (Just (MediaQuery "media query"))) styles)
+            (withCustom [ selector [ class "class" ] [], selector [ attribute "attr" ] [] ] "media query" styles)
+            (NestedStyle (Selector [ selector [ class "class" ] [], selector [ attribute "attr" ] [] ] (Just (MediaQuery "media query"))) styles)
         , testEqual "qt" (qt "quoted string") "\"quoted string\""
         , testEqual "animation" (animation []) (AnimationStyle [])
         ]

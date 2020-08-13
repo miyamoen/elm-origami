@@ -14,7 +14,20 @@ module Origami.Css.Selector exposing
     , toString
     )
 
+{-| -}
 
+
+{-| Selector
+
+  - セレクターを足し算的な演算ができるように定義できたのがすごいよかった
+      - 自画自賛
+      - CSS in XXの手法的にDOMに書かれるstyleにはSASSのようなネストした記法が必要になる
+          - そのため型的には再帰的な感じになる
+          - 出力先のCSSはネストできないのでいい感じにフラットに畳む必要がある
+      - Media Queryも再帰的で扱いが難しかったが`Selector`として取り込むことで統一的に扱えて簡単になった
+      - `Style` -> `FlatStyle`で`nest`を使って`Selector`をつなげることで再帰を解決してフラットにすることできた
+
+-}
 type Selector
     = Selector (List Single) (Maybe MediaQuery)
 

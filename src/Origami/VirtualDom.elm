@@ -1,14 +1,22 @@
 module Origami.VirtualDom exposing
-    ( Node, text, node, nodeNS
-    , Attribute(..), style, property, attribute, attributeNS, batchAttributes, noAttribute
+    ( css, toPlainNode, toPlainNodes, plainNode, plainAttribute
+    , Node, text, node, nodeNS
+    , Attribute, style, property, attribute, attributeNS, batchAttributes, noAttribute
     , on
     , map, mapAttribute
     , keyedNode, keyedNodeNS
     , lazy, lazy2, lazy3, lazy4, lazy5, lazy6, lazy7
-    , css, toPlainNode, toPlainNodes, plainNode, plainAttribute
     )
 
-{-|
+{-| A wrapper of elm/virtual-dom.
+
+普通は使わないと思いますがexposedしています。
+そのためユーザー向けではないドキュメントが書かれています。
+
+
+# Style
+
+@docs css, toPlainNode, toPlainNodes, plainNode, plainAttribute
 
 
 # Create
@@ -38,12 +46,10 @@ module Origami.VirtualDom exposing
 
 # Lazy Nodes
 
+`VirtualDom.lazyX`を使うために暗黙的に`toPlainNode`が使われています。
+つまり`lazyX`が使われたところでstyle tagが生成されます。
+
 @docs lazy, lazy2, lazy3, lazy4, lazy5, lazy6, lazy7
-
-
-# Style
-
-@docs css, toPlainNode, toPlainNodes, plainNode, plainAttribute
 
 -}
 
@@ -54,6 +60,7 @@ import Origami.Css.StyleTag
 import VirtualDom
 
 
+{-| -}
 type Node msg
     = Node String (List (Attribute msg)) (List (Node msg))
     | NodeNS String String (List (Attribute msg)) (List (Node msg))
@@ -62,40 +69,60 @@ type Node msg
     | PlainNode (VirtualDom.Node msg)
 
 
+{-| `Attribute`
+
+  - `Attribute`をbatchできるようにするためにListで`VirtualDom.Attribute`を保持
+  - 適用されたStyleをhash値をセットで持ち回す
+
+
+### definition
+
+    type Attribute msg
+        = Attribute (List (VirtualDom.Attribute msg)) (List ( String, List FlatStyle ))
+
+-}
 type Attribute msg
     = Attribute (List (VirtualDom.Attribute msg)) (List ( String, List FlatStyle ))
 
 
+{-| -}
 node : String -> List (Attribute msg) -> List (Node msg) -> Node msg
 node =
     Node
 
 
+{-| -}
 nodeNS : String -> String -> List (Attribute msg) -> List (Node msg) -> Node msg
 nodeNS =
     NodeNS
 
 
+{-| -}
 keyedNode : String -> List (Attribute msg) -> List ( String, Node msg ) -> Node msg
 keyedNode =
     KeyedNode
 
 
+{-| -}
 keyedNodeNS : String -> String -> List (Attribute msg) -> List ( String, Node msg ) -> Node msg
 keyedNodeNS =
     KeyedNodeNS
 
 
+{-| 通常 -> Origami
+-}
 plainNode : VirtualDom.Node msg -> Node msg
 plainNode =
     PlainNode
 
 
+{-| -}
 text : String -> Node msg
 text =
     PlainNode << VirtualDom.text
 
 
+{-| -}
 map : (a -> b) -> Node a -> Node b
 map transform vdomNode =
     case vdomNode of
@@ -115,52 +142,67 @@ map transform vdomNode =
             PlainNode <| VirtualDom.map transform vdom
 
 
+{-| -}
 property : String -> Json.Encode.Value -> Attribute msg
 property key value =
     plainAttribute <| VirtualDom.property key value
 
 
+{-| -}
 attribute : String -> String -> Attribute msg
 attribute key value =
     plainAttribute <| VirtualDom.attribute key value
 
 
+{-| -}
 style : String -> String -> Attribute msg
 style key value =
     plainAttribute <| VirtualDom.style key value
 
 
+{-| -}
 attributeNS : String -> String -> String -> Attribute msg
 attributeNS namespace key value =
     plainAttribute <| VirtualDom.attributeNS namespace key value
 
 
+{-| -}
 plainAttribute : VirtualDom.Attribute msg -> Attribute msg
 plainAttribute attr =
     Attribute [ attr ] []
 
 
+{-| AttributeとStyleをまとめる
+-}
 batchAttributes : List (Attribute msg) -> Attribute msg
 batchAttributes =
     List.foldr (\(Attribute attrs styles) ( accAttrs, accStyles ) -> ( attrs ++ accAttrs, styles ++ accStyles )) ( [], [] )
         >> (\( attrs, styles ) -> Attribute attrs styles)
 
 
+{-| Listを2個保持したデータ型なのでemptyが表現できる
+
+    Attribute [] []
+
+-}
 noAttribute : Attribute msg
 noAttribute =
     Attribute [] []
 
 
+{-| -}
 on : String -> VirtualDom.Handler msg -> Attribute msg
 on eventName handler =
     plainAttribute (VirtualDom.on eventName handler)
 
 
+{-| -}
 mapAttribute : (a -> b) -> Attribute a -> Attribute b
 mapAttribute transform (Attribute attrs styles) =
     Attribute (List.map (VirtualDom.mapAttribute transform) attrs) styles
 
 
+{-| -}
 lazy : (a -> Node msg) -> a -> Node msg
 lazy fn arg =
     PlainNode <| VirtualDom.lazy2 lazyHelp fn arg
@@ -171,6 +213,7 @@ lazyHelp fn arg =
     toPlainNode <| fn arg
 
 
+{-| -}
 lazy2 : (a -> b -> Node msg) -> a -> b -> Node msg
 lazy2 fn arg1 arg2 =
     PlainNode <| VirtualDom.lazy3 lazyHelp2 fn arg1 arg2
@@ -181,6 +224,7 @@ lazyHelp2 fn arg1 arg2 =
     toPlainNode <| fn arg1 arg2
 
 
+{-| -}
 lazy3 : (a -> b -> c -> Node msg) -> a -> b -> c -> Node msg
 lazy3 fn arg1 arg2 arg3 =
     PlainNode <| VirtualDom.lazy4 lazyHelp3 fn arg1 arg2 arg3
@@ -191,6 +235,7 @@ lazyHelp3 fn arg1 arg2 arg3 =
     toPlainNode <| fn arg1 arg2 arg3
 
 
+{-| -}
 lazy4 : (a -> b -> c -> d -> Node msg) -> a -> b -> c -> d -> Node msg
 lazy4 fn arg1 arg2 arg3 arg4 =
     PlainNode <| VirtualDom.lazy5 lazyHelp4 fn arg1 arg2 arg3 arg4
@@ -201,6 +246,7 @@ lazyHelp4 fn arg1 arg2 arg3 arg4 =
     toPlainNode <| fn arg1 arg2 arg3 arg4
 
 
+{-| -}
 lazy5 : (a -> b -> c -> d -> e -> Node msg) -> a -> b -> c -> d -> e -> Node msg
 lazy5 fn arg1 arg2 arg3 arg4 arg5 =
     PlainNode <| VirtualDom.lazy6 lazyHelp5 fn arg1 arg2 arg3 arg4 arg5
@@ -211,6 +257,7 @@ lazyHelp5 fn arg1 arg2 arg3 arg4 arg5 =
     toPlainNode <| fn arg1 arg2 arg3 arg4 arg5
 
 
+{-| -}
 lazy6 : (a -> b -> c -> d -> e -> f -> Node msg) -> a -> b -> c -> d -> e -> f -> Node msg
 lazy6 fn arg1 arg2 arg3 arg4 arg5 arg6 =
     PlainNode <| VirtualDom.lazy7 lazyHelp6 fn arg1 arg2 arg3 arg4 arg5 arg6
@@ -221,6 +268,7 @@ lazyHelp6 fn arg1 arg2 arg3 arg4 arg5 arg6 =
     toPlainNode <| fn arg1 arg2 arg3 arg4 arg5 arg6
 
 
+{-| -}
 lazy7 : (a -> b -> c -> d -> e -> f -> g -> Node msg) -> a -> b -> c -> d -> e -> f -> g -> Node msg
 lazy7 fn arg1 arg2 arg3 arg4 arg5 arg6 arg7 =
     PlainNode <| VirtualDom.lazy8 lazyHelp7 fn arg1 arg2 arg3 arg4 arg5 arg6 arg7
@@ -231,6 +279,15 @@ lazyHelp7 fn arg1 arg2 arg3 arg4 arg5 arg6 arg7 =
     toPlainNode <| fn arg1 arg2 arg3 arg4 arg5 arg6 arg7
 
 
+{-| DOMにStyleを適用するための関数
+
+  - この関数で再帰的な`Style`型から再帰のない`FlatStyle`型に変換してある
+      - `FlatStyle`型は無効なSelector Blockを除去してある
+  - `css`関数に適用された単位でStyleの重複除去が行われる
+      - それより細かい単位では重複があっても除去されない
+  - `FlatStyle`から計算されたhash値がclass attributeに暗黙的に設定されている
+
+-}
 css : List Style -> Attribute msg
 css styles =
     case Origami.Css.Style.flatten styles of
@@ -245,6 +302,12 @@ css styles =
             Attribute [ VirtualDom.property "className" (Json.Encode.string classname) ] [ ( classname, nonEmpty ) ]
 
 
+{-| Origami -> 通常
+
+  - OrigamiのDOMを再帰的にたどりながらStyleの収集と通常のDOMへの変換を行っている
+  - style tagは子ノードの先頭に追加される
+
+-}
 toPlainNode : Node msg -> VirtualDom.Node msg
 toPlainNode vdom =
     case vdom of
@@ -280,6 +343,11 @@ toPlainNode vdom =
             VirtualDom.keyedNodeNS ns elemType plainAttributes (toKeyedStyleNode styles childNodes :: childNodes)
 
 
+{-| Origami -> 通常
+
+  - style tagは先頭に追加される
+
+-}
 toPlainNodes : List (Node msg) -> List (VirtualDom.Node msg)
 toPlainNodes vdoms =
     let
