@@ -293,7 +293,6 @@ _b75a75af:hover {
 ._xxx.class[title]:hover {...}
 ```
 
-
 @docs RepeatableSelector, class, pseudoClass, attribute
 
 ```css
@@ -362,7 +361,7 @@ type alias SelectorSequence =
 
 {-| -}
 type alias Tag =
-    Origami.Css.Selector.Head
+    Origami.Css.Selector.Tag
 
 
 {-| Create a property style.

@@ -148,16 +148,16 @@ printSingleSelector (SingleSelector classname repeatables sequences pseudo) =
 
 
 printSelectorSequence : Selector.Sequence -> String
-printSelectorSequence (Selector.Sequence combinator head repeatables) =
+printSelectorSequence (Selector.Sequence combinator tag repeatables) =
     String.concat <|
         printSelectorCombinator combinator
-            :: printSelectorHead head
+            :: printSelectorTag tag
             :: List.map printRepeatableSelector repeatables
 
 
-printSelectorHead : Selector.Head -> String
-printSelectorHead head =
-    case head of
+printSelectorTag : Selector.Tag -> String
+printSelectorTag tag =
+    case tag of
         Selector.TypeSelector element ->
             element
 

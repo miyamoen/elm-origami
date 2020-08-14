@@ -1,12 +1,12 @@
 module Origami.Css.Selector exposing
     ( Combinator(..)
-    , Head(..)
     , MediaQuery(..)
     , PseudoElement(..)
     , Repeatable(..)
     , Selector(..)
     , Sequence(..)
     , Single(..)
+    , Tag(..)
     , initial
     , listToString
     , maybeToString
@@ -37,10 +37,10 @@ type Single
 
 
 type Sequence
-    = Sequence Combinator Head (List Repeatable)
+    = Sequence Combinator Tag (List Repeatable)
 
 
-type Head
+type Tag
     = TypeSelector String
     | UniversalSelector
 
@@ -251,7 +251,7 @@ sequenceToString (Sequence c h rs) =
     String.concat
         [ "(Sequence"
         , combinatorToString c
-        , headToString h
+        , tagToString h
         , List.map repeatableToString rs |> listToString
         , ")"
         ]
@@ -273,9 +273,9 @@ combinatorToString c =
             "(AdjacentSiblingCombinator)"
 
 
-headToString : Head -> String
-headToString h =
-    case h of
+tagToString : Tag -> String
+tagToString t =
+    case t of
         TypeSelector val ->
             String.concat [ "(TypeSelector\"", val, "\")" ]
 
