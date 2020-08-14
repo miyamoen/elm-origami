@@ -43,7 +43,7 @@ type Block
 {-| inline CSSから変換するのでSelectorはhash値のclass selector始まりに限定している
 -}
 type Selector
-    = Selector (List ( String, Selector.Single ))
+    = Selector String Selector.Single (List Selector.Single)
     | CustomSelector String
 
 
@@ -124,16 +124,16 @@ printStyleBlock indentLevel selector properties =
 printSelector : Selector -> String
 printSelector selector =
     case selector of
-        Selector selectors ->
-            List.map printSingleSelector selectors
+        Selector classname s ss ->
+            List.map (printSingleSelector classname) (s :: ss)
                 |> String.join ", "
 
         CustomSelector raw ->
             raw
 
 
-printSingleSelector : ( String, Selector.Single ) -> String
-printSingleSelector ( classname, Selector.Single repeatables pseudo ) =
+printSingleSelector : String -> Selector.Single -> String
+printSingleSelector classname (Selector.Single repeatables pseudo) =
     String.concat <|
         "."
             :: classname

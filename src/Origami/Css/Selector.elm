@@ -26,7 +26,7 @@ module Origami.Css.Selector exposing
 
 -}
 type Selector
-    = Selector (List Single) (Maybe MediaQuery)
+    = Selector Single (List Single) (Maybe MediaQuery)
 
 
 type Single
@@ -58,7 +58,7 @@ type MediaQuery
 
 initial : Selector
 initial =
-    Selector [ Single [] Nothing ] Nothing
+    Selector (Single [] Nothing) [] Nothing
 
 
 {-|
@@ -102,35 +102,19 @@ initial =
 
 -}
 nest : Selector -> Selector -> Maybe Selector
-nest (Selector ps pm) (Selector cs cm) =
-    case ( ( ps, pm ), ( cs, cm ) ) of
+nest (Selector ps pss pm) (Selector cs css cm) =
+    case ( pm, cm ) of
         -- media queryはネストできない
-        ( ( _, Just _ ), ( _, Just _ ) ) ->
+        ( Just _, Just _ ) ->
             Nothing
-
-        -- empty (invalid) parent selector
-        ( ( [], Nothing ), ( _, _ ) ) ->
-            Nothing
-
-        -- empty (invalid) child selector
-        ( ( _, _ ), ( [], Nothing ) ) ->
-            Nothing
-
-        -- parentがmedia queryのみ
-        ( ( [], Just _ ), ( nonEmpty, Nothing ) ) ->
-            Just <| Selector nonEmpty pm
-
-        -- childがmedia queryのみ
-        ( ( nonEmpty, Nothing ), ( [], Just _ ) ) ->
-            Just <| Selector nonEmpty cm
 
         _ ->
-            case lift2 nestSingle ps cs |> List.filterMap identity of
+            case lift2 nestSingle (ps :: pss) (cs :: css) |> List.filterMap identity of
                 [] ->
                     Nothing
 
-                nonEmpty ->
-                    Just <| Selector nonEmpty (or pm cm)
+                s :: ss ->
+                    Just <| Selector s ss (or pm cm)
 
 
 nestSingle : Single -> Single -> Maybe Single
@@ -176,9 +160,10 @@ lift2 f la lb =
 
 
 toString : Selector -> String
-toString (Selector ss mq) =
+toString (Selector s ss mq) =
     String.concat
         [ "(Selector"
+        , singleToString s
         , List.map singleToString ss |> listToString
         , Maybe.map mediaQueryToString mq |> maybeToString
         , ")"
