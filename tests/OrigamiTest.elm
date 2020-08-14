@@ -37,86 +37,78 @@ suite =
             )
         , testEqual "withClass"
             (withClass "class" styles)
-            (NestedStyle (Selector [ Single [ ClassSelector "class" ] Nothing ] Nothing) styles)
+            (NestedStyle (Selector (Single [ ClassSelector "class" ] Nothing) [] Nothing) styles)
         , testEqual "withAttribute"
             (withAttribute "attr" styles)
-            (NestedStyle (Selector [ Single [ AttributeSelector "attr" ] Nothing ] Nothing) styles)
+            (NestedStyle (Selector (Single [ AttributeSelector "attr" ] Nothing) [] Nothing) styles)
         , testEqual "withPseudoClass"
             (withPseudoClass "class" styles)
-            (NestedStyle (Selector [ Single [ PseudoClassSelector "class" ] Nothing ] Nothing) styles)
+            (NestedStyle (Selector (Single [ PseudoClassSelector "class" ] Nothing) [] Nothing) styles)
         , testEqual "withPseudoElement"
             (withPseudoElement "element" styles)
-            (NestedStyle (Selector [ Single [] (Just (PseudoElement "element")) ] Nothing) styles)
+            (NestedStyle (Selector (Single [] (Just (PseudoElement "element"))) [] Nothing) styles)
         , testEqual "withMedia"
             (withMedia "media query" styles)
-            (NestedStyle (Selector [] (Just (MediaQuery "media query"))) styles)
+            (NestedStyle (Selector (Single [] Nothing) [] (Just (MediaQuery "media query"))) styles)
         , describe "withDescendants"
             [ testEqual "single"
                 (withDescendants [ tag "tag" ] styles)
-                (NestedStyle (Selector [ Single [ DescendantCombinator (TypeSelector "tag") ] Nothing ] Nothing) styles)
+                (NestedStyle (Selector (Single [ DescendantCombinator (TypeSelector "tag") ] Nothing) [] Nothing) styles)
             , testEqual "multiple"
                 (withDescendants [ tag "tag", everyTag ] styles)
                 (NestedStyle
-                    (Selector
-                        [ Single [ DescendantCombinator (TypeSelector "tag") ] Nothing
-                        , Single [ DescendantCombinator UniversalSelector ] Nothing
-                        ]
+                    (Selector (Single [ DescendantCombinator (TypeSelector "tag") ] Nothing)
+                        [ Single [ DescendantCombinator UniversalSelector ] Nothing ]
                         Nothing
                     )
                     styles
                 )
-            , testEqual "empty" (withDescendants [] styles) (NestedStyle (Selector [] Nothing) styles)
+            , testEqual "empty" (withDescendants [] styles) (NestedStyle (Selector (Single [] Nothing) [] Nothing) styles)
             ]
         , describe "withChildren"
             [ testEqual "single"
                 (withChildren [ tag "tag" ] styles)
-                (NestedStyle (Selector [ Single [ ChildCombinator (TypeSelector "tag") ] Nothing ] Nothing) styles)
+                (NestedStyle (Selector (Single [ ChildCombinator (TypeSelector "tag") ] Nothing) [] Nothing) styles)
             , testEqual "multiple"
                 (withChildren [ tag "tag", everyTag ] styles)
                 (NestedStyle
-                    (Selector
-                        [ Single [ ChildCombinator (TypeSelector "tag") ] Nothing
-                        , Single [ ChildCombinator UniversalSelector ] Nothing
-                        ]
+                    (Selector (Single [ ChildCombinator (TypeSelector "tag") ] Nothing)
+                        [ Single [ ChildCombinator UniversalSelector ] Nothing ]
                         Nothing
                     )
                     styles
                 )
-            , testEqual "empty" (withChildren [] styles) (NestedStyle (Selector [] Nothing) styles)
+            , testEqual "empty" (withChildren [] styles) (NestedStyle (Selector (Single [] Nothing) [] Nothing) styles)
             ]
         , describe "withGeneralSiblings"
             [ testEqual "single"
                 (withGeneralSiblings [ tag "tag" ] styles)
-                (NestedStyle (Selector [ Single [ GeneralSiblingCombinator (TypeSelector "tag") ] Nothing ] Nothing) styles)
+                (NestedStyle (Selector (Single [ GeneralSiblingCombinator (TypeSelector "tag") ] Nothing) [] Nothing) styles)
             , testEqual "multiple"
                 (withGeneralSiblings [ tag "tag", everyTag ] styles)
                 (NestedStyle
-                    (Selector
-                        [ Single [ GeneralSiblingCombinator (TypeSelector "tag") ] Nothing
-                        , Single [ GeneralSiblingCombinator UniversalSelector ] Nothing
-                        ]
+                    (Selector (Single [ GeneralSiblingCombinator (TypeSelector "tag") ] Nothing)
+                        [ Single [ GeneralSiblingCombinator UniversalSelector ] Nothing ]
                         Nothing
                     )
                     styles
                 )
-            , testEqual "empty" (withGeneralSiblings [] styles) (NestedStyle (Selector [] Nothing) styles)
+            , testEqual "empty" (withGeneralSiblings [] styles) (NestedStyle (Selector (Single [] Nothing) [] Nothing) styles)
             ]
         , describe "withAdjacentSiblings"
             [ testEqual "single"
                 (withAdjacentSiblings [ tag "tag" ] styles)
-                (NestedStyle (Selector [ Single [ AdjacentSiblingCombinator (TypeSelector "tag") ] Nothing ] Nothing) styles)
+                (NestedStyle (Selector (Single [ AdjacentSiblingCombinator (TypeSelector "tag") ] Nothing) [] Nothing) styles)
             , testEqual "multiple"
                 (withAdjacentSiblings [ tag "tag", everyTag ] styles)
                 (NestedStyle
-                    (Selector
-                        [ Single [ AdjacentSiblingCombinator (TypeSelector "tag") ] Nothing
-                        , Single [ AdjacentSiblingCombinator UniversalSelector ] Nothing
-                        ]
+                    (Selector (Single [ AdjacentSiblingCombinator (TypeSelector "tag") ] Nothing)
+                        [ Single [ AdjacentSiblingCombinator UniversalSelector ] Nothing ]
                         Nothing
                     )
                     styles
                 )
-            , testEqual "empty" (withAdjacentSiblings [] styles) (NestedStyle (Selector [] Nothing) styles)
+            , testEqual "empty" (withAdjacentSiblings [] styles) (NestedStyle (Selector (Single [] Nothing) [] Nothing) styles)
             ]
         , describe "selector"
             [ testEqual "empty" (selector []) (Single [] Nothing)
@@ -170,13 +162,13 @@ suite =
             ]
         , testEqual "with"
             (with (selector [ class "class" ]) styles)
-            (NestedStyle (Selector [ selector [ class "class" ] ] Nothing) styles)
+            (NestedStyle (Selector (selector [ class "class" ]) [] Nothing) styles)
         , testEqual "withEach"
             (withEach [ selector [ class "class" ], selector [ attribute "attr" ] ] styles)
-            (NestedStyle (Selector [ selector [ class "class" ], selector [ attribute "attr" ] ] Nothing) styles)
+            (NestedStyle (Selector (selector [ class "class" ]) [ selector [ attribute "attr" ] ] Nothing) styles)
         , testEqual "withCustom"
             (withCustom [ selector [ class "class" ], selector [ attribute "attr" ] ] "media query" styles)
-            (NestedStyle (Selector [ selector [ class "class" ], selector [ attribute "attr" ] ] (Just (MediaQuery "media query"))) styles)
+            (NestedStyle (Selector (selector [ class "class" ]) [ selector [ attribute "attr" ] ] (Just (MediaQuery "media query"))) styles)
         , testEqual "qt" (qt "quoted string") "\"quoted string\""
         , testEqual "animation" (animation []) (AnimationStyle [])
         ]

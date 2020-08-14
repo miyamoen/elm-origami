@@ -24,7 +24,7 @@ suite =
                     |> Query.children []
                     |> Query.first
                     |> Query.has
-                        [ Selector.text """._40928ed3 {
+                        [ Selector.text """._96ff2f9a {
     p1_key: p1_val;
     p2_key: p2_val;
 }"""

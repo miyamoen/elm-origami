@@ -41,10 +41,10 @@ suite =
         , describe "nested style"
             [ testFlatten "withClass"
                 [ withClass "class" [ ps "p" ] ]
-                [ FlatStyle (Selector [ Single [ ClassSelector "class" ] Nothing ] Nothing) [ p "p" ] ]
+                [ FlatStyle (Selector (Single [ ClassSelector "class" ] Nothing) [] Nothing) [ p "p" ] ]
             , testFlatten "withClass multiple batch"
                 [ withClass "class" [ ps "1", batch [ ps "2", ps "3", ps "4" ], ps "5", ps "6", batch [ ps "7", batch [ ps "8", ps "9" ], ps "10" ], ps "11" ] ]
-                [ FlatStyle (Selector [ Single [ ClassSelector "class" ] Nothing ] Nothing) [ p "1", p "2", p "3", p "4", p "5", p "6", p "7", p "8", p "9", p "10", p "11" ] ]
+                [ FlatStyle (Selector (Single [ ClassSelector "class" ] Nothing) [] Nothing) [ p "1", p "2", p "3", p "4", p "5", p "6", p "7", p "8", p "9", p "10", p "11" ] ]
             , testFlatten "empty selectors" [ withEach [] [ ps "p" ] ] []
             , testFlatten "empty styles" [ withClass "class" [] ] []
             , testFlatten "nest media"
@@ -62,8 +62,8 @@ suite =
                 , ps "p2"
                 ]
                 [ FlatStyle initialSelector [ p "p1", p "p2" ]
-                , FlatStyle (Selector [ Single [] Nothing ] (Just (MediaQuery "media query"))) [ p "m1", p "m2" ]
-                , FlatStyle (Selector [ Single [ ClassSelector "class" ] Nothing ] (Just (MediaQuery "media query"))) [ p "mc" ]
+                , FlatStyle (Selector (Single [] Nothing) [] (Just (MediaQuery "media query"))) [ p "m1", p "m2" ]
+                , FlatStyle (Selector (Single [ ClassSelector "class" ] Nothing) [] (Just (MediaQuery "media query"))) [ p "mc" ]
                 ]
             ]
         ]
