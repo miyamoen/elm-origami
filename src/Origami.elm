@@ -428,20 +428,34 @@ batch =
 {-| Create a nested style.
 -}
 withCustom : List Selector -> String -> List Style -> Style
-withCustom ss mq =
-    Style.NestedStyle (Origami.Css.Selector.Selector ss <| Just <| MediaQuery mq)
+withCustom selectors mq =
+    Style.NestedStyle <|
+        -- 利便性のためにListで受ける
+        case selectors of
+            [] ->
+                Origami.Css.Selector.emptySingles (Just <| MediaQuery mq)
+
+            s :: ss ->
+                Origami.Css.Selector.Selector s ss (Just <| MediaQuery mq)
 
 
 {-| -}
 with : Selector -> List Style -> Style
-with s_ =
-    Style.NestedStyle (Origami.Css.Selector.Selector [ s_ ] Nothing)
+with s =
+    Style.NestedStyle (Origami.Css.Selector.Selector s [] Nothing)
 
 
 {-| -}
 withEach : List Selector -> List Style -> Style
-withEach ss =
-    Style.NestedStyle (Origami.Css.Selector.Selector ss Nothing)
+withEach selectors =
+    Style.NestedStyle <|
+        -- 利便性のためにListで受ける
+        case selectors of
+            [] ->
+                Origami.Css.Selector.emptySingles Nothing
+
+            s :: ss ->
+                Origami.Css.Selector.Selector s ss Nothing
 
 
 {-| Nest with a media query.
@@ -490,7 +504,7 @@ _note_: Media Queryを複数回入れ子にすることはできません
 -}
 withMedia : String -> List Style -> Style
 withMedia mq =
-    Style.NestedStyle (Origami.Css.Selector.Selector [] <| Just <| MediaQuery mq)
+    Style.NestedStyle <| Origami.Css.Selector.emptySingles (Just <| MediaQuery mq)
 
 
 {-| -}

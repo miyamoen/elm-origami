@@ -5,11 +5,13 @@ module Origami.Css.Selector exposing
     , Selector(..)
     , Single(..)
     , Tag(..)
+    , emptySingles
     , initial
     , listToString
     , maybeToString
     , nest
     , toString
+    , unit
     )
 
 {-| -}
@@ -58,63 +60,48 @@ type MediaQuery
 
 initial : Selector
 initial =
-    Selector (Single [] Nothing) [] Nothing
+    Selector unit [] Nothing
+
+
+unit : Single
+unit =
+    Single [] Nothing
+
+
+emptySingles : Maybe MediaQuery -> Selector
+emptySingles mq =
+    Selector unit [] mq
 
 
 {-|
 
   - 疑似要素が含まれていればそれ以上ネストできない
-  - media query はネストできない
-
-
-## 条件分岐網羅
-
-  - header
-      - ps: parent singles
-      - pm: parent media query
-      - cs: child singles
-      - cm: child media query
-      - Rs: Result
-  - body
-      - em: empty
-      - fl: filled
-      - no: nothing
-      - ju: just
-
-| ps | pm | cs | cm | Rs |
-| -- | -- | -- | -- | -- |
-| em | no | em | no | 02 |
-| em | no | em | ju | 02 |
-| em | no | fl | no | 02 |
-| em | no | fl | ju | 02 |
-| em | ju | em | no | 03 |
-| em | ju | em | ju | 01 |
-| em | ju | fl | no | 04 |
-| em | ju | fl | ju | 01 |
-| fl | no | em | no | 03 |
-| fl | no | em | ju | 05 |
-| fl | no | fl | no | 06 |
-| fl | no | fl | ju | 06 |
-| fl | ju | em | no | 03 |
-| fl | ju | em | ju | 01 |
-| fl | ju | fl | no | 06 |
-| fl | ju | fl | ju | 01 |
+  - media queryはネストできない
+  - unitはネストできない
+      - selectorが変化しないので実質batchのような感じになる
+      - batchがあればよいので禁止
+  - Media Queryだけネストするときは個別対応
+      - unitはネストできないで禁止されてしまったのでそれをすり抜けさせる
 
 -}
 nest : Selector -> Selector -> Maybe Selector
-nest (Selector ps pss pm) (Selector cs css cm) =
-    case ( pm, cm ) of
+nest (Selector ps pss pmq) child =
+    case ( pmq, child ) of
         -- media queryはネストできない
-        ( Just _, Just _ ) ->
+        ( Just _, Selector _ _ (Just _) ) ->
             Nothing
 
-        _ ->
+        -- Media Queryだけネストするときは個別対応
+        ( _, Selector (Single [] Nothing) [] (Just cmq) ) ->
+            Just <| Selector ps pss (Just cmq)
+
+        ( _, Selector cs css cmq ) ->
             case lift2 nestSingle (ps :: pss) (cs :: css) |> List.filterMap identity of
                 [] ->
                     Nothing
 
                 s :: ss ->
-                    Just <| Selector s ss (or pm cm)
+                    Just <| Selector s ss (or pmq cmq)
 
 
 nestSingle : Single -> Single -> Maybe Single
@@ -123,6 +110,7 @@ nestSingle parent child =
         ( Single _ (Just _), _ ) ->
             Nothing
 
+        -- unitをネストできないので無効化
         ( _, Single [] Nothing ) ->
             Nothing
 
