@@ -6,7 +6,6 @@ module Origami.Css.StyleTag exposing
     , Properties
     , Property(..)
     , Selector(..)
-    , SingleSelector(..)
     , print
     , printKeyframeSelector
     )
@@ -41,15 +40,11 @@ type Block
     | KeyframesBlock String (List KeyframesStyleBlock)
 
 
-type Selector
-    = Selector (List SingleSelector)
-    | CustomSelector String
-
-
 {-| inline CSSから変換するのでSelectorはhash値のclass selector始まりに限定している
 -}
-type SingleSelector
-    = SingleSelector String (List Selector.Repeatable) (List Selector.Sequence) (Maybe PseudoElement)
+type Selector
+    = Selector (List ( String, Selector.Single ))
+    | CustomSelector String
 
 
 type alias KeyframesStyleBlock =
@@ -137,22 +132,13 @@ printSelector selector =
             raw
 
 
-printSingleSelector : SingleSelector -> String
-printSingleSelector (SingleSelector classname repeatables sequences pseudo) =
+printSingleSelector : ( String, Selector.Single ) -> String
+printSingleSelector ( classname, Selector.Single repeatables pseudo ) =
     String.concat <|
         "."
             :: classname
             :: List.map printRepeatableSelector repeatables
-            ++ List.map printSelectorSequence sequences
             ++ [ Maybe.map printPseudoElement pseudo |> Maybe.withDefault "" ]
-
-
-printSelectorSequence : Selector.Sequence -> String
-printSelectorSequence (Selector.Sequence combinator tag repeatables) =
-    String.concat <|
-        printSelectorCombinator combinator
-            :: printSelectorTag tag
-            :: List.map printRepeatableSelector repeatables
 
 
 printSelectorTag : Selector.Tag -> String
@@ -176,6 +162,9 @@ printRepeatableSelector repeatable =
 
         Selector.AttributeSelector attr ->
             String.concat [ "[", attr, "]" ]
+
+        Selector.Sequence combinator tag ->
+            printSelectorCombinator combinator ++ printSelectorTag tag
 
 
 printSelectorCombinator : Selector.Combinator -> String

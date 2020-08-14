@@ -4,7 +4,6 @@ module Origami.Css.Selector exposing
     , PseudoElement(..)
     , Repeatable(..)
     , Selector(..)
-    , Sequence(..)
     , Single(..)
     , Tag(..)
     , initial
@@ -20,7 +19,6 @@ module Origami.Css.Selector exposing
 {-| Selector
 
   - セレクターを足し算的な演算ができるように定義できたのがすごいよかった
-      - 自画自賛
       - CSS in XXの手法的にDOMに書かれるstyleにはSASSのようなネストした記法が必要になる
           - そのため型的には再帰的な感じになる
           - 出力先のCSSはネストできないのでいい感じにフラットに畳む必要がある
@@ -33,22 +31,19 @@ type Selector
 
 
 type Single
-    = Single (List Repeatable) (List Sequence) (Maybe PseudoElement)
-
-
-type Sequence
-    = Sequence Combinator Tag (List Repeatable)
-
-
-type Tag
-    = TypeSelector String
-    | UniversalSelector
+    = Single (List Repeatable) (Maybe PseudoElement)
 
 
 type Repeatable
     = ClassSelector String
     | PseudoClassSelector String
     | AttributeSelector String
+    | Sequence Combinator Tag
+
+
+type Tag
+    = TypeSelector String
+    | UniversalSelector
 
 
 type Combinator
@@ -68,7 +63,7 @@ type MediaQuery
 
 initial : Selector
 initial =
-    Selector [ Single [] [] Nothing ] Nothing
+    Selector [ Single [] Nothing ] Nothing
 
 
 {-|
@@ -146,25 +141,17 @@ nest (Selector ps pm) (Selector cs cm) =
 nestSingle : Single -> Single -> Maybe Single
 nestSingle parent child =
     case ( parent, child ) of
-        ( Single _ _ (Just _), _ ) ->
+        ( Single _ (Just _), _ ) ->
             Nothing
 
-        ( _, Single [] [] Nothing ) ->
+        ( _, Single [] Nothing ) ->
             Nothing
 
-        ( Single [] [] Nothing, _ ) ->
+        ( Single [] Nothing, _ ) ->
             Just child
 
-        ( Single prs pss Nothing, Single crs css cpe ) ->
-            case List.reverse pss of
-                [] ->
-                    Just <| Single (prs ++ crs) css cpe
-
-                (Sequence c h rs) :: xs ->
-                    Just <|
-                        Single prs
-                            (List.reverse (Sequence c h (rs ++ crs) :: xs) ++ css)
-                            cpe
+        ( Single prs Nothing, Single crs cpe ) ->
+            Just <| Single (prs ++ crs) cpe
 
 
 {-| ref. <https://github.com/elm-community/maybe-extra/blob/5.2.0/src/Maybe/Extra.elm#L260>
@@ -204,11 +191,10 @@ toString (Selector ss mq) =
 
 
 singleToString : Single -> String
-singleToString (Single rs ss pe) =
+singleToString (Single rs pe) =
     String.concat
         [ "(Single"
         , List.map repeatableToString rs |> listToString
-        , List.map sequenceToString ss |> listToString
         , Maybe.map pseudoElementToString pe |> maybeToString
         , ")"
         ]
@@ -245,16 +231,13 @@ repeatableToString r =
         AttributeSelector val ->
             String.concat [ "(AttributeSelector\"", val, "\")" ]
 
-
-sequenceToString : Sequence -> String
-sequenceToString (Sequence c h rs) =
-    String.concat
-        [ "(Sequence"
-        , combinatorToString c
-        , tagToString h
-        , List.map repeatableToString rs |> listToString
-        , ")"
-        ]
+        Sequence c tag ->
+            String.concat
+                [ "(Sequence"
+                , combinatorToString c
+                , tagToString tag
+                , ")"
+                ]
 
 
 combinatorToString : Combinator -> String

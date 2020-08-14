@@ -7,7 +7,7 @@ module Origami exposing
     , RepeatableSelector, class, pseudoClass, attribute
     , with, withEach, withCustom
     , Selector, selector, pseudoElement
-    , SelectorSequence, descendant, child, generalSibling, adjacentSibling
+    , descendant, child, generalSibling, adjacentSibling
     , animation, Property, propertyA
     , KeyframesSelector, from, to, pct
     , qt
@@ -315,7 +315,7 @@ _b75a75af:hover {
 
 @docs with, withEach, withCustom
 @docs Selector, selector, pseudoElement
-@docs SelectorSequence, descendant, child, generalSibling, adjacentSibling
+@docs descendant, child, generalSibling, adjacentSibling
 
 
 ## Animation Style
@@ -352,11 +352,6 @@ type alias Selector =
 {-| -}
 type alias RepeatableSelector =
     Origami.Css.Selector.Repeatable
-
-
-{-| -}
-type alias SelectorSequence =
-    Origami.Css.Selector.Sequence
 
 
 {-| -}
@@ -499,15 +494,15 @@ withMedia mq =
 
 
 {-| -}
-selector : List RepeatableSelector -> List SelectorSequence -> Selector
-selector rs ss =
-    Origami.Css.Selector.Single rs ss Nothing
+selector : List RepeatableSelector -> Selector
+selector rs =
+    Origami.Css.Selector.Single rs Nothing
 
 
 {-| -}
-pseudoElement : List RepeatableSelector -> List SelectorSequence -> String -> Selector
-pseudoElement rs ss pe =
-    Origami.Css.Selector.Single rs ss <| Just <| Origami.Css.Selector.PseudoElement pe
+pseudoElement : List RepeatableSelector -> String -> Selector
+pseudoElement rs pe =
+    Origami.Css.Selector.Single rs <| Just <| Origami.Css.Selector.PseudoElement pe
 
 
 {-| -}
@@ -529,25 +524,25 @@ attribute =
 
 
 {-| -}
-descendant : Tag -> List RepeatableSelector -> SelectorSequence
+descendant : Tag -> RepeatableSelector
 descendant =
     Origami.Css.Selector.Sequence Origami.Css.Selector.DescendantCombinator
 
 
 {-| -}
-child : Tag -> List RepeatableSelector -> SelectorSequence
+child : Tag -> RepeatableSelector
 child =
     Origami.Css.Selector.Sequence Origami.Css.Selector.ChildCombinator
 
 
 {-| -}
-generalSibling : Tag -> List RepeatableSelector -> SelectorSequence
+generalSibling : Tag -> RepeatableSelector
 generalSibling =
     Origami.Css.Selector.Sequence Origami.Css.Selector.GeneralSiblingCombinator
 
 
 {-| -}
-adjacentSibling : Tag -> List RepeatableSelector -> SelectorSequence
+adjacentSibling : Tag -> RepeatableSelector
 adjacentSibling =
     Origami.Css.Selector.Sequence Origami.Css.Selector.AdjacentSiblingCombinator
 
@@ -606,7 +601,7 @@ _xxx.classname {
 -}
 withClass : String -> List Style -> Style
 withClass val =
-    with (selector [ class val ] [])
+    with (selector [ class val ])
 
 
 {-| Nest with a attribute selector.
@@ -624,7 +619,7 @@ _xxx[href="https://example.org"] {
 -}
 withAttribute : String -> List Style -> Style
 withAttribute val =
-    with (selector [ attribute val ] [])
+    with (selector [ attribute val ])
 
 
 {-| Nest with a pseudo class.
@@ -642,7 +637,7 @@ _xxx:hover {
 -}
 withPseudoClass : String -> List Style -> Style
 withPseudoClass val =
-    with (selector [ pseudoClass val ] [])
+    with (selector [ pseudoClass val ])
 
 
 {-| Nest with a pseudo element.
@@ -680,7 +675,7 @@ _xxx::after {
 -}
 withPseudoElement : String -> List Style -> Style
 withPseudoElement val =
-    with (pseudoElement [] [] val)
+    with (pseudoElement [] val)
 
 
 {-| Nest with descendant combinators.
@@ -698,7 +693,7 @@ _xxx p, _xxx li {
 -}
 withDescendants : List Tag -> List Style -> Style
 withDescendants vals =
-    withEach <| List.map (\t -> selector [] [ descendant t [] ]) vals
+    withEach <| List.map (\t -> selector [ descendant t ]) vals
 
 
 {-| Nest with child combinators.
@@ -716,7 +711,7 @@ _xxx > p, _xxx > li {
 -}
 withChildren : List Tag -> List Style -> Style
 withChildren vals =
-    withEach <| List.map (\t -> selector [] [ child t [] ]) vals
+    withEach <| List.map (\t -> selector [ child t ]) vals
 
 
 {-| Nest with general sibling combinators.
@@ -734,7 +729,7 @@ _xxx ~ p, _xxx ~ li {
 -}
 withGeneralSiblings : List Tag -> List Style -> Style
 withGeneralSiblings vals =
-    withEach <| List.map (\t -> selector [] [ generalSibling t [] ]) vals
+    withEach <| List.map (\t -> selector [ generalSibling t ]) vals
 
 
 {-| Nest with adjacent sibling combinators.
@@ -752,7 +747,7 @@ _xxx + p, _xxx + li {
 -}
 withAdjacentSiblings : List Tag -> List Style -> Style
 withAdjacentSiblings vals =
-    withEach <| List.map (\t -> selector [] [ adjacentSibling t [] ]) vals
+    withEach <| List.map (\t -> selector [ adjacentSibling t ]) vals
 
 
 

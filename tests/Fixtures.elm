@@ -22,4 +22,4 @@ styles =
 
 initialSelector : Selector.Selector
 initialSelector =
-    Selector [ Single [] [] Nothing ] Nothing
+    Selector [ Single [] Nothing ] Nothing

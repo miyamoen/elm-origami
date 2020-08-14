@@ -17,13 +17,14 @@ suite =
                 div []
                     [ div [ css [ ps "p1", ps "p2" ] ] []
                     , div [ css [ ps "p1", ps "p2" ] ] []
+                    , div [] [ div [ css [ ps "p1", ps "p2" ] ] [] ]
                     ]
                     |> toHtml
                     |> Query.fromHtml
                     |> Query.children []
                     |> Query.first
                     |> Query.has
-                        [ Selector.text """._99e21d4a {
+                        [ Selector.text """._40928ed3 {
     p1_key: p1_val;
     p2_key: p2_val;
 }"""

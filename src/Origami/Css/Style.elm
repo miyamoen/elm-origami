@@ -97,12 +97,7 @@ toBlock classname style =
 
 convertSelector : String -> List Selector.Single -> StyleTag.Selector
 convertSelector classname selectors =
-    StyleTag.Selector <| List.map (convertSingleSelector classname) selectors
-
-
-convertSingleSelector : String -> Selector.Single -> StyleTag.SingleSelector
-convertSingleSelector classname (Selector.Single rs ss pe) =
-    StyleTag.SingleSelector classname rs ss pe
+    StyleTag.Selector <| List.map (Tuple.pair classname) selectors
 
 
 

@@ -165,7 +165,7 @@ suite =
 }"""
         , testPrint "selector"
             [ ps "p1"
-            , with (pseudoElement [ class "class" ] [ descendant (tag "tag") [ attribute "attr" ] ] "after") [ ps "s" ]
+            , with (pseudoElement [ class "class", descendant (tag "tag"), attribute "attr" ] "after") [ ps "s" ]
             , ps "p2"
             ]
             """._test {

@@ -18,8 +18,8 @@ suite =
             , testNest "child * 1 = 0" childSelector initialSelector Nothing
             , testNest "1 * pseudoElement = pseudoElement" initialSelector pseudoSelector (Just pseudoSelector)
             , testNest "pseudoElement * 1 = 0" pseudoSelector initialSelector Nothing
-            , testNest "1 * media = 1 media" initialSelector mediaSelector (Just (Selector [ Single [] [] Nothing ] (Just (MediaQuery "media"))))
-            , testNest "media * 1 = 1 media" mediaSelector initialSelector (Just (Selector [ Single [] [] Nothing ] (Just (MediaQuery "media"))))
+            , testNest "1 * media = 1 media" initialSelector mediaSelector (Just (Selector [ Single [] Nothing ] (Just (MediaQuery "media"))))
+            , testNest "media * 1 = 1 media" mediaSelector initialSelector (Just (Selector [ Single [] Nothing ] (Just (MediaQuery "media"))))
             , testNest "1 * x = x" initialSelector allSelector (Just allSelector)
             , testNest "x * 1 = 0" allSelector initialSelector Nothing
             ]
@@ -49,36 +49,48 @@ suite =
             , testNest "media * class = class media"
                 mediaSelector
                 classSelector
-                (Just (Selector [ Single [ ClassSelector "class" ] [] Nothing ] (Just (MediaQuery "media"))))
+                (Just (Selector [ Single [ ClassSelector "class" ] Nothing ] (Just (MediaQuery "media"))))
             , testNest "class * media = class media"
                 classSelector
                 mediaSelector
-                (Just (Selector [ Single [ ClassSelector "class" ] [] Nothing ] (Just (MediaQuery "media"))))
+                (Just (Selector [ Single [ ClassSelector "class" ] Nothing ] (Just (MediaQuery "media"))))
             ]
         , describe "combination"
             [ testNest "repeatables * repeatables = sticked"
-                (Selector [ Single [ ClassSelector "1", AttributeSelector "2" ] [] Nothing ] Nothing)
-                (Selector [ Single [ ClassSelector "3", AttributeSelector "4" ] [] Nothing ] Nothing)
+                (Selector [ Single [ ClassSelector "1", AttributeSelector "2" ] Nothing ] Nothing)
+                (Selector [ Single [ ClassSelector "3", AttributeSelector "4" ] Nothing ] Nothing)
                 (Just
                     (Selector
-                        [ Single [ ClassSelector "1", AttributeSelector "2", ClassSelector "3", AttributeSelector "4" ] [] Nothing ]
+                        [ Single [ ClassSelector "1", AttributeSelector "2", ClassSelector "3", AttributeSelector "4" ] Nothing ]
                         Nothing
                     )
                 )
             , testNest "sequences * sequences = sticked"
                 (Selector
-                    [ Single [ ClassSelector "1", AttributeSelector "2" ]
-                        [ Sequence DescendantCombinator (TypeSelector "3") [ ClassSelector "4", AttributeSelector "5" ]
-                        , Sequence ChildCombinator (TypeSelector "6") [ ClassSelector "7", AttributeSelector "8" ]
+                    [ Single
+                        [ ClassSelector "1"
+                        , AttributeSelector "2"
+                        , Sequence DescendantCombinator (TypeSelector "3")
+                        , ClassSelector "4"
+                        , AttributeSelector "5"
+                        , Sequence ChildCombinator (TypeSelector "6")
+                        , ClassSelector "7"
+                        , AttributeSelector "8"
                         ]
                         Nothing
                     ]
                     Nothing
                 )
                 (Selector
-                    [ Single [ ClassSelector "9", AttributeSelector "10" ]
-                        [ Sequence DescendantCombinator (TypeSelector "11") [ ClassSelector "12", AttributeSelector "13" ]
-                        , Sequence ChildCombinator (TypeSelector "14") [ ClassSelector "15", AttributeSelector "16" ]
+                    [ Single
+                        [ ClassSelector "9"
+                        , AttributeSelector "10"
+                        , Sequence DescendantCombinator (TypeSelector "11")
+                        , ClassSelector "12"
+                        , AttributeSelector "13"
+                        , Sequence ChildCombinator (TypeSelector "14")
+                        , ClassSelector "15"
+                        , AttributeSelector "16"
                         ]
                         Nothing
                     ]
@@ -86,17 +98,23 @@ suite =
                 )
                 (Just
                     (Selector
-                        [ Single [ ClassSelector "1", AttributeSelector "2" ]
-                            [ Sequence DescendantCombinator (TypeSelector "3") [ ClassSelector "4", AttributeSelector "5" ]
-                            , Sequence ChildCombinator
-                                (TypeSelector "6")
-                                [ ClassSelector "7"
-                                , AttributeSelector "8"
-                                , ClassSelector "9"
-                                , AttributeSelector "10"
-                                ]
-                            , Sequence DescendantCombinator (TypeSelector "11") [ ClassSelector "12", AttributeSelector "13" ]
-                            , Sequence ChildCombinator (TypeSelector "14") [ ClassSelector "15", AttributeSelector "16" ]
+                        [ Single
+                            [ ClassSelector "1"
+                            , AttributeSelector "2"
+                            , Sequence DescendantCombinator (TypeSelector "3")
+                            , ClassSelector "4"
+                            , AttributeSelector "5"
+                            , Sequence ChildCombinator (TypeSelector "6")
+                            , ClassSelector "7"
+                            , AttributeSelector "8"
+                            , ClassSelector "9"
+                            , AttributeSelector "10"
+                            , Sequence DescendantCombinator (TypeSelector "11")
+                            , ClassSelector "12"
+                            , AttributeSelector "13"
+                            , Sequence ChildCombinator (TypeSelector "14")
+                            , ClassSelector "15"
+                            , AttributeSelector "16"
                             ]
                             Nothing
                         ]
@@ -105,26 +123,26 @@ suite =
                 )
             , testNest "multiple * multiple = multiple"
                 (Selector
-                    [ Single [ ClassSelector "p1", AttributeSelector "p2" ] [] Nothing
-                    , Single [ ClassSelector "p3", AttributeSelector "p4" ] [] Nothing
+                    [ Single [ ClassSelector "p1", AttributeSelector "p2" ] Nothing
+                    , Single [ ClassSelector "p3", AttributeSelector "p4" ] Nothing
                     ]
                     Nothing
                 )
                 (Selector
-                    [ Single [ ClassSelector "c1", AttributeSelector "c2" ] [] Nothing
-                    , Single [ ClassSelector "c3", AttributeSelector "c4" ] [] Nothing
-                    , Single [ ClassSelector "c5", AttributeSelector "c6" ] [] Nothing
+                    [ Single [ ClassSelector "c1", AttributeSelector "c2" ] Nothing
+                    , Single [ ClassSelector "c3", AttributeSelector "c4" ] Nothing
+                    , Single [ ClassSelector "c5", AttributeSelector "c6" ] Nothing
                     ]
                     Nothing
                 )
                 (Just
                     (Selector
-                        [ Single [ ClassSelector "p1", AttributeSelector "p2", ClassSelector "c1", AttributeSelector "c2" ] [] Nothing
-                        , Single [ ClassSelector "p1", AttributeSelector "p2", ClassSelector "c3", AttributeSelector "c4" ] [] Nothing
-                        , Single [ ClassSelector "p1", AttributeSelector "p2", ClassSelector "c5", AttributeSelector "c6" ] [] Nothing
-                        , Single [ ClassSelector "p3", AttributeSelector "p4", ClassSelector "c1", AttributeSelector "c2" ] [] Nothing
-                        , Single [ ClassSelector "p3", AttributeSelector "p4", ClassSelector "c3", AttributeSelector "c4" ] [] Nothing
-                        , Single [ ClassSelector "p3", AttributeSelector "p4", ClassSelector "c5", AttributeSelector "c6" ] [] Nothing
+                        [ Single [ ClassSelector "p1", AttributeSelector "p2", ClassSelector "c1", AttributeSelector "c2" ] Nothing
+                        , Single [ ClassSelector "p1", AttributeSelector "p2", ClassSelector "c3", AttributeSelector "c4" ] Nothing
+                        , Single [ ClassSelector "p1", AttributeSelector "p2", ClassSelector "c5", AttributeSelector "c6" ] Nothing
+                        , Single [ ClassSelector "p3", AttributeSelector "p4", ClassSelector "c1", AttributeSelector "c2" ] Nothing
+                        , Single [ ClassSelector "p3", AttributeSelector "p4", ClassSelector "c3", AttributeSelector "c4" ] Nothing
+                        , Single [ ClassSelector "p3", AttributeSelector "p4", ClassSelector "c5", AttributeSelector "c6" ] Nothing
                         ]
                         Nothing
                     )
@@ -146,14 +164,19 @@ zeroSelector =
 allSelector : Selector
 allSelector =
     Selector
-        [ Single [ ClassSelector "class" ]
-            [ Sequence GeneralSiblingCombinator (TypeSelector "tag") [ AttributeSelector "attr" ] ]
+        [ Single
+            [ ClassSelector "class"
+            , Sequence GeneralSiblingCombinator (TypeSelector "tag")
+            , AttributeSelector "attr"
+            ]
             (Just (PseudoElement "element"))
-        , Single [ ClassSelector "class" ] [] Nothing
+        , Single [ ClassSelector "class" ] Nothing
         , Single
-            [ ClassSelector "class" ]
-            [ Sequence GeneralSiblingCombinator (TypeSelector "tag") [ AttributeSelector "attr" ]
-            , Sequence ChildCombinator UniversalSelector [ PseudoClassSelector "pclass" ]
+            [ ClassSelector "class"
+            , Sequence GeneralSiblingCombinator (TypeSelector "tag")
+            , AttributeSelector "attr"
+            , Sequence ChildCombinator UniversalSelector
+            , PseudoClassSelector "pclass"
             ]
             Nothing
         ]
@@ -162,17 +185,17 @@ allSelector =
 
 classSelector : Selector
 classSelector =
-    Selector [ Single [ ClassSelector "class" ] [] Nothing ] Nothing
+    Selector [ Single [ ClassSelector "class" ] Nothing ] Nothing
 
 
 pseudoSelector : Selector
 pseudoSelector =
-    Selector [ Single [] [] (Just (PseudoElement "pseudoElement")) ] Nothing
+    Selector [ Single [] (Just (PseudoElement "pseudoElement")) ] Nothing
 
 
 childSelector : Selector
 childSelector =
-    Selector [ Single [] [ Sequence ChildCombinator UniversalSelector [] ] Nothing ] Nothing
+    Selector [ Single [ Sequence ChildCombinator UniversalSelector ] Nothing ] Nothing
 
 
 mediaSelector : Selector
