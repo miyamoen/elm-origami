@@ -163,24 +163,17 @@ printRepeatableSelector repeatable =
         Selector.AttributeSelector attr ->
             String.concat [ "[", attr, "]" ]
 
-        Selector.Sequence combinator tag ->
-            printSelectorCombinator combinator ++ printSelectorTag tag
+        Selector.DescendantCombinator tag ->
+            " " ++ printSelectorTag tag
 
+        Selector.ChildCombinator tag ->
+            " > " ++ printSelectorTag tag
 
-printSelectorCombinator : Selector.Combinator -> String
-printSelectorCombinator comb =
-    case comb of
-        Selector.DescendantCombinator ->
-            " "
+        Selector.GeneralSiblingCombinator tag ->
+            " ~ " ++ printSelectorTag tag
 
-        Selector.ChildCombinator ->
-            " > "
-
-        Selector.GeneralSiblingCombinator ->
-            " ~ "
-
-        Selector.AdjacentSiblingCombinator ->
-            " + "
+        Selector.AdjacentSiblingCombinator tag ->
+            " + " ++ printSelectorTag tag
 
 
 printPseudoElement : PseudoElement -> String

@@ -1,6 +1,5 @@
 module Origami.Css.Selector exposing
-    ( Combinator(..)
-    , MediaQuery(..)
+    ( MediaQuery(..)
     , PseudoElement(..)
     , Repeatable(..)
     , Selector(..)
@@ -38,19 +37,15 @@ type Repeatable
     = ClassSelector String
     | PseudoClassSelector String
     | AttributeSelector String
-    | Sequence Combinator Tag
+    | DescendantCombinator Tag
+    | ChildCombinator Tag
+    | GeneralSiblingCombinator Tag
+    | AdjacentSiblingCombinator Tag
 
 
 type Tag
     = TypeSelector String
     | UniversalSelector
-
-
-type Combinator
-    = DescendantCombinator
-    | ChildCombinator
-    | GeneralSiblingCombinator
-    | AdjacentSiblingCombinator
 
 
 type PseudoElement
@@ -231,29 +226,17 @@ repeatableToString r =
         AttributeSelector val ->
             String.concat [ "(AttributeSelector\"", val, "\")" ]
 
-        Sequence c tag ->
-            String.concat
-                [ "(Sequence"
-                , combinatorToString c
-                , tagToString tag
-                , ")"
-                ]
+        DescendantCombinator tag ->
+            String.concat [ "(DescendantCombinator", tagToString tag, ")" ]
 
+        ChildCombinator tag ->
+            String.concat [ "(ChildCombinator", tagToString tag, ")" ]
 
-combinatorToString : Combinator -> String
-combinatorToString c =
-    case c of
-        DescendantCombinator ->
-            "(DescendantCombinator)"
+        GeneralSiblingCombinator tag ->
+            String.concat [ "(GeneralSiblingCombinator", tagToString tag, ")" ]
 
-        ChildCombinator ->
-            "(ChildCombinator)"
-
-        GeneralSiblingCombinator ->
-            "(GeneralSiblingCombinator)"
-
-        AdjacentSiblingCombinator ->
-            "(AdjacentSiblingCombinator)"
+        AdjacentSiblingCombinator tag ->
+            String.concat [ "(AdjacentSiblingCombinator", tagToString tag, ")" ]
 
 
 tagToString : Tag -> String

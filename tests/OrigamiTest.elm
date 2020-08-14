@@ -53,13 +53,13 @@ suite =
         , describe "withDescendants"
             [ testEqual "single"
                 (withDescendants [ tag "tag" ] styles)
-                (NestedStyle (Selector [ Single [ Sequence DescendantCombinator (TypeSelector "tag") ] Nothing ] Nothing) styles)
+                (NestedStyle (Selector [ Single [ DescendantCombinator (TypeSelector "tag") ] Nothing ] Nothing) styles)
             , testEqual "multiple"
                 (withDescendants [ tag "tag", everyTag ] styles)
                 (NestedStyle
                     (Selector
-                        [ Single [ Sequence DescendantCombinator (TypeSelector "tag") ] Nothing
-                        , Single [ Sequence DescendantCombinator UniversalSelector ] Nothing
+                        [ Single [ DescendantCombinator (TypeSelector "tag") ] Nothing
+                        , Single [ DescendantCombinator UniversalSelector ] Nothing
                         ]
                         Nothing
                     )
@@ -70,13 +70,13 @@ suite =
         , describe "withChildren"
             [ testEqual "single"
                 (withChildren [ tag "tag" ] styles)
-                (NestedStyle (Selector [ Single [ Sequence ChildCombinator (TypeSelector "tag") ] Nothing ] Nothing) styles)
+                (NestedStyle (Selector [ Single [ ChildCombinator (TypeSelector "tag") ] Nothing ] Nothing) styles)
             , testEqual "multiple"
                 (withChildren [ tag "tag", everyTag ] styles)
                 (NestedStyle
                     (Selector
-                        [ Single [ Sequence ChildCombinator (TypeSelector "tag") ] Nothing
-                        , Single [ Sequence ChildCombinator UniversalSelector ] Nothing
+                        [ Single [ ChildCombinator (TypeSelector "tag") ] Nothing
+                        , Single [ ChildCombinator UniversalSelector ] Nothing
                         ]
                         Nothing
                     )
@@ -87,13 +87,13 @@ suite =
         , describe "withGeneralSiblings"
             [ testEqual "single"
                 (withGeneralSiblings [ tag "tag" ] styles)
-                (NestedStyle (Selector [ Single [ Sequence GeneralSiblingCombinator (TypeSelector "tag") ] Nothing ] Nothing) styles)
+                (NestedStyle (Selector [ Single [ GeneralSiblingCombinator (TypeSelector "tag") ] Nothing ] Nothing) styles)
             , testEqual "multiple"
                 (withGeneralSiblings [ tag "tag", everyTag ] styles)
                 (NestedStyle
                     (Selector
-                        [ Single [ Sequence GeneralSiblingCombinator (TypeSelector "tag") ] Nothing
-                        , Single [ Sequence GeneralSiblingCombinator UniversalSelector ] Nothing
+                        [ Single [ GeneralSiblingCombinator (TypeSelector "tag") ] Nothing
+                        , Single [ GeneralSiblingCombinator UniversalSelector ] Nothing
                         ]
                         Nothing
                     )
@@ -104,13 +104,13 @@ suite =
         , describe "withAdjacentSiblings"
             [ testEqual "single"
                 (withAdjacentSiblings [ tag "tag" ] styles)
-                (NestedStyle (Selector [ Single [ Sequence AdjacentSiblingCombinator (TypeSelector "tag") ] Nothing ] Nothing) styles)
+                (NestedStyle (Selector [ Single [ AdjacentSiblingCombinator (TypeSelector "tag") ] Nothing ] Nothing) styles)
             , testEqual "multiple"
                 (withAdjacentSiblings [ tag "tag", everyTag ] styles)
                 (NestedStyle
                     (Selector
-                        [ Single [ Sequence AdjacentSiblingCombinator (TypeSelector "tag") ] Nothing
-                        , Single [ Sequence AdjacentSiblingCombinator UniversalSelector ] Nothing
+                        [ Single [ AdjacentSiblingCombinator (TypeSelector "tag") ] Nothing
+                        , Single [ AdjacentSiblingCombinator UniversalSelector ] Nothing
                         ]
                         Nothing
                     )
@@ -125,16 +125,16 @@ suite =
             , testEqual "pseudoClass" (selector [ pseudoClass "pseudoClass" ]) (Single [ PseudoClassSelector "pseudoClass" ] Nothing)
             , testEqual "descendant"
                 (selector [ descendant everyTag, class "class" ])
-                (Single [ Sequence DescendantCombinator UniversalSelector, ClassSelector "class" ] Nothing)
+                (Single [ DescendantCombinator UniversalSelector, ClassSelector "class" ] Nothing)
             , testEqual "child"
                 (selector [ child everyTag, class "class" ])
-                (Single [ Sequence ChildCombinator UniversalSelector, ClassSelector "class" ] Nothing)
+                (Single [ ChildCombinator UniversalSelector, ClassSelector "class" ] Nothing)
             , testEqual "generalSibling"
                 (selector [ generalSibling everyTag, class "class" ])
-                (Single [ Sequence GeneralSiblingCombinator UniversalSelector, ClassSelector "class" ] Nothing)
+                (Single [ GeneralSiblingCombinator UniversalSelector, ClassSelector "class" ] Nothing)
             , testEqual "adjacentSibling"
                 (selector [ adjacentSibling everyTag, class "class" ])
-                (Single [ Sequence AdjacentSiblingCombinator UniversalSelector, ClassSelector "class" ] Nothing)
+                (Single [ AdjacentSiblingCombinator UniversalSelector, ClassSelector "class" ] Nothing)
             , testEqual "pseudoElement" (pseudoElement [] "pseudoElement") (Single [] (Just (PseudoElement "pseudoElement")))
             , testEqual "all"
                 (pseudoElement
@@ -156,13 +156,13 @@ suite =
                     [ ClassSelector "class"
                     , AttributeSelector "attr"
                     , PseudoClassSelector "pseudoClass"
-                    , Sequence DescendantCombinator UniversalSelector
+                    , DescendantCombinator UniversalSelector
                     , ClassSelector "class"
-                    , Sequence ChildCombinator UniversalSelector
+                    , ChildCombinator UniversalSelector
                     , ClassSelector "class"
-                    , Sequence GeneralSiblingCombinator UniversalSelector
+                    , GeneralSiblingCombinator UniversalSelector
                     , ClassSelector "class"
-                    , Sequence AdjacentSiblingCombinator UniversalSelector
+                    , AdjacentSiblingCombinator UniversalSelector
                     , ClassSelector "class"
                     ]
                     (Just (PseudoElement "pseudoElement"))

@@ -70,10 +70,10 @@ suite =
                     [ Single
                         [ ClassSelector "1"
                         , AttributeSelector "2"
-                        , Sequence DescendantCombinator (TypeSelector "3")
+                        , DescendantCombinator (TypeSelector "3")
                         , ClassSelector "4"
                         , AttributeSelector "5"
-                        , Sequence ChildCombinator (TypeSelector "6")
+                        , ChildCombinator (TypeSelector "6")
                         , ClassSelector "7"
                         , AttributeSelector "8"
                         ]
@@ -85,10 +85,10 @@ suite =
                     [ Single
                         [ ClassSelector "9"
                         , AttributeSelector "10"
-                        , Sequence DescendantCombinator (TypeSelector "11")
+                        , DescendantCombinator (TypeSelector "11")
                         , ClassSelector "12"
                         , AttributeSelector "13"
-                        , Sequence ChildCombinator (TypeSelector "14")
+                        , ChildCombinator (TypeSelector "14")
                         , ClassSelector "15"
                         , AttributeSelector "16"
                         ]
@@ -101,18 +101,18 @@ suite =
                         [ Single
                             [ ClassSelector "1"
                             , AttributeSelector "2"
-                            , Sequence DescendantCombinator (TypeSelector "3")
+                            , DescendantCombinator (TypeSelector "3")
                             , ClassSelector "4"
                             , AttributeSelector "5"
-                            , Sequence ChildCombinator (TypeSelector "6")
+                            , ChildCombinator (TypeSelector "6")
                             , ClassSelector "7"
                             , AttributeSelector "8"
                             , ClassSelector "9"
                             , AttributeSelector "10"
-                            , Sequence DescendantCombinator (TypeSelector "11")
+                            , DescendantCombinator (TypeSelector "11")
                             , ClassSelector "12"
                             , AttributeSelector "13"
-                            , Sequence ChildCombinator (TypeSelector "14")
+                            , ChildCombinator (TypeSelector "14")
                             , ClassSelector "15"
                             , AttributeSelector "16"
                             ]
@@ -166,16 +166,16 @@ allSelector =
     Selector
         [ Single
             [ ClassSelector "class"
-            , Sequence GeneralSiblingCombinator (TypeSelector "tag")
+            , GeneralSiblingCombinator (TypeSelector "tag")
             , AttributeSelector "attr"
             ]
             (Just (PseudoElement "element"))
         , Single [ ClassSelector "class" ] Nothing
         , Single
             [ ClassSelector "class"
-            , Sequence GeneralSiblingCombinator (TypeSelector "tag")
+            , GeneralSiblingCombinator (TypeSelector "tag")
             , AttributeSelector "attr"
-            , Sequence ChildCombinator UniversalSelector
+            , ChildCombinator UniversalSelector
             , PseudoClassSelector "pclass"
             ]
             Nothing
@@ -195,7 +195,7 @@ pseudoSelector =
 
 childSelector : Selector
 childSelector =
-    Selector [ Single [ Sequence ChildCombinator UniversalSelector ] Nothing ] Nothing
+    Selector [ Single [ ChildCombinator UniversalSelector ] Nothing ] Nothing
 
 
 mediaSelector : Selector

@@ -526,25 +526,25 @@ attribute =
 {-| -}
 descendant : Tag -> RepeatableSelector
 descendant =
-    Origami.Css.Selector.Sequence Origami.Css.Selector.DescendantCombinator
+    Origami.Css.Selector.DescendantCombinator
 
 
 {-| -}
 child : Tag -> RepeatableSelector
 child =
-    Origami.Css.Selector.Sequence Origami.Css.Selector.ChildCombinator
+    Origami.Css.Selector.ChildCombinator
 
 
 {-| -}
 generalSibling : Tag -> RepeatableSelector
 generalSibling =
-    Origami.Css.Selector.Sequence Origami.Css.Selector.GeneralSiblingCombinator
+    Origami.Css.Selector.GeneralSiblingCombinator
 
 
 {-| -}
 adjacentSibling : Tag -> RepeatableSelector
 adjacentSibling =
-    Origami.Css.Selector.Sequence Origami.Css.Selector.AdjacentSiblingCombinator
+    Origami.Css.Selector.AdjacentSiblingCombinator
 
 
 {-| Represent an element selector.
