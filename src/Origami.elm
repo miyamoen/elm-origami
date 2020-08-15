@@ -319,6 +319,53 @@ _b75a75af:hover {
 
 @docs qt
 
+
+# Advanced topics
+
+
+## CSSの重複除去は行われる？
+
+    div []
+        [ div [ css [ property "key" "value" ] ] []
+        , div [ css [ property "key" "value" ] ] []
+        , div [] [ div [ css [ property "key" "value" ] ] [] ]
+        ]
+
+...outputs only
+
+```css
+._xxx {
+    key: value;
+}
+```
+
+  - 重複除去は`css`に適用したstyleの単位で行われます
+
+
+## `css`関数を複数使ったらどうなる？
+
+    div
+        [ css [ property "display" "none" ]
+        , css [ property "display" "block" ]
+        ]
+        [ text "表示されますか？" ]
+
+  - このdivは表示されるでしょうか？
+      - 答えは「わかりません」
+      - styleは`css`関数でまとめられた単位で扱われ、`Dict`を経由して書き出されます
+      - そのため`ccs`を使う順番に依存した実装は行わないほうがいいでしょう
+  - もし既に適用されている`css`の値を上書きしたいのならば`withClass`などを使ってセレクターの詳細度を上げるとよいでしょう
+
+
+## クラス名がハッシュ値で読みにくい
+
+    cssWithClass : String -> List Style -> Attribute msg
+    cssWithClass classname styles =
+        batchAttributes [ Attributes.class classname, css [ withClass classname styles ] ]
+
+  - クラス名を付加してみてください
+  - 上記のようなヘルパーを定義するとよいでしょう
+
 -}
 
 import Origami.Css.Selector exposing (MediaQuery(..))
