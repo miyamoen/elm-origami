@@ -4,10 +4,9 @@ module Origami exposing
     , withDescendants, withChildren, withGeneralSiblings, withAdjacentSiblings
     , Tag, tag, everyTag
     , withMedia
-    , RepeatableSelector, class, pseudoClass, attribute
     , with, withEach, withCustom
     , Selector, selector, pseudoElement
-    , descendant, child, generalSibling, adjacentSibling
+    , RepeatableSelector, class, pseudoClass, attribute, descendant, child, generalSibling, adjacentSibling
     , animation, Property, propertyA
     , KeyframesSelector, from, to, pct
     , qt
@@ -280,42 +279,30 @@ _b75a75af:hover {
 ## Custom Nested Style
 
   - ここまでの`withXxx`関数で大体のことには事足りるかと思います
-  - もしもっと柔軟にstyleを入れ子にしたくなったのならOrigamiにおける`Selector`の定義を学びましょう
-  - ここから`Selector`を構成するいくつかの概念を説明していきます
-
-
-### `RepeatableSelector`
+  - もしもっと柔軟にstyleを入れ子にしたくなったのならOrigamiにおける`Selector`を学びましょう
 
 ```css
-         repeatables
-     +-----------------+
-     |                 |
-._xxx.class[title]:hover {...}
+             ┌ child              ┌ descendant                       ┌ adjacent sibling
+     class   │   pseudo class     │          attribute               │  pseudo element
+     ┌────┐ ┌─┐┌──────────────┐┌──────┐┌───────────────────┐        ┌─┐┌─────┐
+._xxx.class > *:nth-child(2n+1) section[aria-hidden="false"], ._xxx + *::after {...}
+└──────────────────────────────────────────────────────────┘  └──────────────┘
+                          selector                                selector
 ```
 
-@docs RepeatableSelector, class, pseudoClass, attribute
-
-```css
-                                     sequences
-                   +--------------------------------------------+
-                   |                                            |
-      repeatables  |  sequence                sequence          |
-     +-----------+ +-------------+ +----------------------------+
-     |           | |             | |                            |
-     +           + +             + +                            +
-._xxx.class[title] > *.child-class + section[aria-hidden="false"], ._xxx *.child-class {...}
-     +               ^+          +   +     ++                   +                    +
-     |               ||          |   |     ||                   |                    |
-     |     tag +-----++----------+   +-----++-------------------+                    |
-     |                 repeatable      tag       repeatables                         |
-     |                                                                               |
-     +-------------------------------------------------------------------------------+
-                                      selectors
-```
+  - See an above diagram.
+      - class selector, pseudo class, attribute selectorが並んでいます
+          - また各種結合子とtype selectorかuniversal selectorがまとめられています
+          - これらを`RepeatableSelector`としてまとめています
+      - `Selector`型を生成する[`selector`関数](#selector)は`RepeatableSelector`の`List`を受け取るようになっています
+          - またpseudo elementを付加する場合は[`pseudoElement`](#pseudoElement)を使ってください
+      - 生成した`Selector`は`with`, `withEach`, `withCustom`で`css`関数に繋げられます
+          - 図のように`Selector`を列挙したければ`withEach`か`withCustom`を使ってください
+          - `withCustom`にはMedia Queryも付加することができます
 
 @docs with, withEach, withCustom
 @docs Selector, selector, pseudoElement
-@docs descendant, child, generalSibling, adjacentSibling
+@docs RepeatableSelector, class, pseudoClass, attribute, descendant, child, generalSibling, adjacentSibling
 
 
 ## Animation Style
@@ -349,7 +336,18 @@ type alias Selector =
     Origami.Css.Selector.Single
 
 
-{-| -}
+{-|
+
+    type RepeatableSelector
+        = ClassSelector String
+        | PseudoClassSelector String
+        | AttributeSelector String
+        | DescendantCombinator Tag
+        | ChildCombinator Tag
+        | GeneralSiblingCombinator Tag
+        | AdjacentSiblingCombinator Tag
+
+-}
 type alias RepeatableSelector =
     Origami.Css.Selector.Repeatable
 
@@ -425,10 +423,29 @@ batch =
 ----------------
 
 
-{-| Create a nested style.
+{-| Nest with `Selector` list and a media query.
+
+    css
+        [ withCustom "(max-width: 430px)"
+            [ selector [ class "classname" ]
+            , selector [ attribute "title" ]
+            ]
+            [ property "key" "value" ]
+        ]
+
+...outputs
+
+```css
+@media (max-width: 430px) {
+    _xxx.classname, _xxx[title] {
+        key: value;
+    }
+}
+```
+
 -}
-withCustom : List Selector -> String -> List Style -> Style
-withCustom selectors mq =
+withCustom : String -> List Selector -> List Style -> Style
+withCustom mq selectors =
     Style.NestedStyle <|
         -- 利便性のためにListで受ける
         case selectors of
@@ -439,13 +456,59 @@ withCustom selectors mq =
                 Origami.Css.Selector.Selector s ss (Just <| MediaQuery mq)
 
 
-{-| -}
+{-| Nest with a `Selector`.
+
+    css
+        [ with (selector [ class "classname" ]) [ property "key" "value" ] ]
+
+...outputs
+
+```css
+_xxx.classname {
+    key: value;
+}
+```
+
+-}
 with : Selector -> List Style -> Style
 with s =
     Style.NestedStyle (Origami.Css.Selector.Selector s [] Nothing)
 
 
-{-| -}
+{-| Nest with `Selector` list.
+
+    css
+        [ withEach
+            [ selector [ class "classname" ]
+            , selector [ attribute "title" ]
+            ]
+            [ property "key" "value" ]
+        ]
+
+...outputs
+
+```css
+_xxx.classname, _xxx[title] {
+    key: value;
+}
+```
+
+**note**: もし空リストを与えたらそのstyleは霧視されます
+
+    css
+        [ withEach [] [ property "key" "empty-value" ]
+        , property "key" "value"
+        ]
+
+...outputs
+
+```css
+_xxx {
+    key: value;
+}
+```
+
+-}
 withEach : List Selector -> List Style -> Style
 withEach selectors =
     Style.NestedStyle <|
@@ -472,7 +535,7 @@ withEach selectors =
 }
 ```
 
-_note_: Media Queryを複数回入れ子にすることはできません
+**note**: Media Queryを複数回入れ子にすることはできません
 
     css
         [ withMedia "screen"
@@ -519,43 +582,115 @@ pseudoElement rs pe =
     Origami.Css.Selector.Single rs <| Just <| Origami.Css.Selector.PseudoElement pe
 
 
-{-| -}
+{-| Represent a class selector.
+
+    class "classname"
+
+...outputs
+
+```css
+.classname
+```
+
+-}
 class : String -> RepeatableSelector
 class =
     Origami.Css.Selector.ClassSelector
 
 
-{-| -}
+{-| Represent a pseudo class.
+
+    pseudoClass "hover"
+
+...outputs
+
+```css
+:hover
+```
+
+-}
 pseudoClass : String -> RepeatableSelector
 pseudoClass =
     Origami.Css.Selector.PseudoClassSelector
 
 
-{-| -}
+{-| Represent an attribute selector.
+
+    attribute "aria-hidden=\"false\""
+
+...outputs
+
+```css
+[aria-hidden="false"]
+```
+
+-}
 attribute : String -> RepeatableSelector
 attribute =
     Origami.Css.Selector.AttributeSelector
 
 
-{-| -}
+{-| Represent a descendant combinator with a type selector or universal selector.
+
+    descendant (tag "p")
+
+...outputs
+
+```css
+ p
+```
+
+  - descendant combinatorは空白で表せられるので見た目的に分かりにくい
+
+-}
 descendant : Tag -> RepeatableSelector
 descendant =
     Origami.Css.Selector.DescendantCombinator
 
 
-{-| -}
+{-| Represent a child combinator with a type selector or universal selector.
+
+    child (tag "li")
+
+...outputs
+
+```css
+ > li
+```
+
+-}
 child : Tag -> RepeatableSelector
 child =
     Origami.Css.Selector.ChildCombinator
 
 
-{-| -}
+{-| Represent a general sibling combinator with a type selector or universal selector.
+
+    generalSibling everyTag
+
+...outputs
+
+```css
+ ~ *
+```
+
+-}
 generalSibling : Tag -> RepeatableSelector
 generalSibling =
     Origami.Css.Selector.GeneralSiblingCombinator
 
 
-{-| -}
+{-| Represent a adjacent sibling combinator with a type selector or universal selector.
+
+    adjacentSibling (tag "section")
+
+...outputs
+
+```css
+ + section
+```
+
+-}
 adjacentSibling : Tag -> RepeatableSelector
 adjacentSibling =
     Origami.Css.Selector.AdjacentSiblingCombinator
@@ -586,6 +721,8 @@ tag =
 ```css
 *
 ```
+
+**note**: もし`.parent > .child`のようなselectorを使用したいと思っているなら`.parent > *.child`のように暗黙に全称セレクターが指定されていると思って`everyTag`を使ってください
 
 -}
 everyTag : Tag
@@ -666,7 +803,7 @@ _xxx::after {
 }
 ```
 
-_note_: `withPseudoElement`を使ったらそれ以上ネストできません
+**note**: `withPseudoElement`を使ったらそれ以上ネストできません
 
     css
         [ withPseudoElement "after"
