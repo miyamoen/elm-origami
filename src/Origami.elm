@@ -433,7 +433,7 @@ withCustom selectors mq =
         -- 利便性のためにListで受ける
         case selectors of
             [] ->
-                Origami.Css.Selector.emptySingles (Just <| MediaQuery mq)
+                Origami.Css.Selector.emptyWith mq
 
             s :: ss ->
                 Origami.Css.Selector.Selector s ss (Just <| MediaQuery mq)
@@ -452,7 +452,7 @@ withEach selectors =
         -- 利便性のためにListで受ける
         case selectors of
             [] ->
-                Origami.Css.Selector.emptySingles Nothing
+                Origami.Css.Selector.initial
 
             s :: ss ->
                 Origami.Css.Selector.Selector s ss Nothing
@@ -504,7 +504,7 @@ _note_: Media Queryを複数回入れ子にすることはできません
 -}
 withMedia : String -> List Style -> Style
 withMedia mq =
-    Style.NestedStyle <| Origami.Css.Selector.emptySingles (Just <| MediaQuery mq)
+    Style.NestedStyle <| Origami.Css.Selector.emptyWith mq
 
 
 {-| -}

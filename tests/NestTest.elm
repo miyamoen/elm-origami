@@ -10,18 +10,18 @@ import Test exposing (..)
 suite : Test
 suite =
     describe "nest two selectors"
-        [ describe "1"
-            [ testNest "1 * 1 = 0" initialSelector initialSelector Nothing
-            , testNest "1 * class = class" initialSelector classSelector (Just classSelector)
-            , testNest "class * 1 = 0" classSelector initialSelector Nothing
-            , testNest "1 * child = child" initialSelector childSelector (Just childSelector)
-            , testNest "child * 1 = 0" childSelector initialSelector Nothing
-            , testNest "1 * pseudoElement = pseudoElement" initialSelector pseudoSelector (Just pseudoSelector)
-            , testNest "pseudoElement * 1 = 0" pseudoSelector initialSelector Nothing
-            , testNest "1 * media = 1 media" initialSelector mediaSelector (Just (Selector (Single [] Nothing) [] (Just (MediaQuery "media"))))
-            , testNest "media * 1 = 0" mediaSelector initialSelector Nothing
-            , testNest "1 * x = x" initialSelector allSelector (Just allSelector)
-            , testNest "x * 1 = 0" allSelector initialSelector Nothing
+        [ describe "empty"
+            [ testNest "empty * empty = 0" initialSelector initialSelector Nothing
+            , testNest "empty * class = class" initialSelector classSelector (Just classSelector)
+            , testNest "class * empty = 0" classSelector initialSelector Nothing
+            , testNest "empty * child = child" initialSelector childSelector (Just childSelector)
+            , testNest "child * empty = 0" childSelector initialSelector Nothing
+            , testNest "empty * pseudoElement = pseudoElement" initialSelector pseudoSelector (Just pseudoSelector)
+            , testNest "pseudoElement * empty = 0" pseudoSelector initialSelector Nothing
+            , testNest "empty * media = media" initialSelector mediaSelector (Just (Selector (Single [] Nothing) [] (Just (MediaQuery "media"))))
+            , testNest "media * empty = 0" mediaSelector initialSelector Nothing
+            , testNest "empty * x = x" initialSelector allSelector (Just allSelector)
+            , testNest "x * empty = 0" allSelector initialSelector Nothing
             ]
         , describe "pseudoElement"
             [ testNest "pseudoElement * class = 0" pseudoSelector classSelector Nothing
@@ -41,7 +41,7 @@ suite =
                 (Just (Selector (Single [ ClassSelector "class" ] Nothing) [] (Just (MediaQuery "media"))))
             ]
         , describe "combination"
-            [ testNest "repeatables * repeatables = sticked"
+            [ testNest "repeatables * repeatables = stucked"
                 (Selector (Single [ ClassSelector "1", AttributeSelector "2" ] Nothing) [] Nothing)
                 (Selector (Single [ ClassSelector "3", AttributeSelector "4" ] Nothing) [] Nothing)
                 (Just
@@ -51,7 +51,7 @@ suite =
                         Nothing
                     )
                 )
-            , testNest "sequences * sequences = sticked"
+            , testNest "combinator repeatables * combinator repeatables = stucked"
                 (Selector
                     (Single
                         [ ClassSelector "1"

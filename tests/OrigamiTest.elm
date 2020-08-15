@@ -166,9 +166,15 @@ suite =
         , testEqual "withEach"
             (withEach [ selector [ class "class" ], selector [ attribute "attr" ] ] styles)
             (NestedStyle (Selector (selector [ class "class" ]) [ selector [ attribute "attr" ] ] Nothing) styles)
+        , testEqual "withEach empty"
+            (withEach [] styles)
+            (NestedStyle initialSelector styles)
         , testEqual "withCustom"
             (withCustom [ selector [ class "class" ], selector [ attribute "attr" ] ] "media query" styles)
             (NestedStyle (Selector (selector [ class "class" ]) [ selector [ attribute "attr" ] ] (Just (MediaQuery "media query"))) styles)
+        , testEqual "withCustom empty"
+            (withCustom [] "media query" styles)
+            (NestedStyle (Selector (Single [] Nothing) [] (Just (MediaQuery "media query"))) styles)
         , testEqual "qt" (qt "quoted string") "\"quoted string\""
         , testEqual "animation" (animation []) (AnimationStyle [])
         ]

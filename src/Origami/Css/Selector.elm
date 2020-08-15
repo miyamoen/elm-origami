@@ -5,13 +5,12 @@ module Origami.Css.Selector exposing
     , Selector(..)
     , Single(..)
     , Tag(..)
-    , emptySingles
+    , emptyWith
     , initial
     , listToString
     , maybeToString
     , nest
     , toString
-    , unit
     )
 
 {-| -}
@@ -60,28 +59,28 @@ type MediaQuery
 
 initial : Selector
 initial =
-    Selector unit [] Nothing
+    Selector empty [] Nothing
 
 
-unit : Single
-unit =
+empty : Single
+empty =
     Single [] Nothing
 
 
-emptySingles : Maybe MediaQuery -> Selector
-emptySingles mq =
-    Selector unit [] mq
+emptyWith : String -> Selector
+emptyWith mq =
+    Selector empty [] (Just <| MediaQuery mq)
 
 
 {-|
 
   - 疑似要素が含まれていればそれ以上ネストできない
   - media queryはネストできない
-  - unitはネストできない
+  - emptyはネストできない
       - selectorが変化しないので実質batchのような感じになる
       - batchがあればよいので禁止
   - Media Queryだけネストするときは個別対応
-      - unitはネストできないで禁止されてしまったのでそれをすり抜けさせる
+      - emptyはネストできないで禁止されてしまったのでそれをすり抜けさせる
 
 -}
 nest : Selector -> Selector -> Maybe Selector
@@ -110,7 +109,7 @@ nestSingle parent child =
         ( Single _ (Just _), _ ) ->
             Nothing
 
-        -- unitをネストできないので無効化
+        -- emptyをネストできないので無効化
         ( _, Single [] Nothing ) ->
             Nothing
 
