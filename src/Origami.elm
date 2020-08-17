@@ -307,9 +307,35 @@ _b75a75af:hover {
 
 ## Animation Style
 
+    batch
+        [ property "border-radius" "50px"
+        , property "width" "50px"
+        , -- [Copyright (c) 2019 Epicmax LLC](https://epic-spinners.epicmax.co/)
+          withEach [ pseudoElement [] "after", pseudoElement [] "before" ]
+            [ property "content" <| qt ""
+            , property "position" "absolute"
+            , property "width" "60%"
+            , property "height" "60%"
+            , property "border-radius" "100%"
+            , property "border" "calc(30px / 10) solid transparent"
+            , animation
+                [ ( ( from, [] ), [ propertyA "transform" "rotate(0deg)" ] )
+                , ( ( to, [] ), [ propertyA "transform" "rotate(360deg)" ] )
+                ]
+            , property "animation-duration" "1s"
+            , property "animation-iteration-count" "infinite"
+            ]
+        , withPseudoElement "after" [ property "border-top-color" "#ffe9ef" ]
+        , withPseudoElement "before"
+            [ property "border-bottom-color" "#ffe9ef"
+            , property "animation-direction" "alternate"
+            ]
+        ]
+
   - [`animation`](#animation)関数を使ってDOMに直接アニメーションを定義することができます
   - [`propertyA`](#propertyA)関数を使ってpropertyを記述します
       - 型の都合で`property`, `batch`, `noStyle`は使えません
+  - `animation`プロパティのみ暗黙に生成されるのでその他のアニメーションプロパティは別に定義します
 
 @docs animation, Property, propertyA
 @docs KeyframesSelector, from, to, pct
