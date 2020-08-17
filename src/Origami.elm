@@ -33,7 +33,7 @@ module Origami exposing
                 , property "color" "#e6e6e6"
                 , property "padding" "10px 27px 10px 27px"
                 ]
-            , with (pseudoElement [ pseudoClass "checked" ] [] "before")
+            , with (pseudoElement [ pseudoClass "checked" ] "before")
                 [ property "color" "#737373" ]
             , -- Hack to remove background from Mobile Safari.
               -- Can't use it globally since it destroys checkboxes in Firefox

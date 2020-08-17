@@ -1,4 +1,4 @@
-# elm-css
+# elm-origami
 
 `elm-css` lets you define CSS in Elm. (For an Elm styling system that is a
 complete departure from CSS, check out [Elm-UI](https://github.com/mdgriffith/elm-ui).)

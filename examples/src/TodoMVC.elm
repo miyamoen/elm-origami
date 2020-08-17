@@ -1,4 +1,4 @@
-module Main exposing (main)
+module TodoMVC exposing (main)
 
 {-| Forked from [evancz/elm-todomvc](https://github.com/evancz/elm-todomvc).
 
@@ -394,7 +394,7 @@ viewEntries visibility entries =
                     , property "color" "#e6e6e6"
                     , property "padding" "10px 27px 10px 27px"
                     ]
-                , with (pseudoElement [ pseudoClass "checked" ] [] "before")
+                , with (pseudoElement [ pseudoClass "checked" ] "before")
                     [ property "color" "#737373" ]
                 , -- Hack to remove background from Mobile Safari.
                   -- Can't use it globally since it destroys checkboxes in Firefox
@@ -449,7 +449,7 @@ viewEntry todo =
 
               else
                 noStyle
-            , with (selector [ pseudoClass "hover" ] [ descendant (tag "button") [] ]) [ property "display" "block" ]
+            , with (selector [ pseudoClass "hover", descendant (tag "button") ]) [ property "display" "block" ]
             ]
         ]
         [ div
@@ -476,7 +476,7 @@ viewEntry todo =
                     , property "appearance" "none"
                     , withPseudoElement "after"
                         [ property "content" """url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="-10 -18 100 135"><circle cx="50" cy="50" r="50" fill="none" stroke="#ededed" stroke-width="3"/></svg>')""" ]
-                    , with (pseudoElement [ pseudoClass "checked" ] [] "after")
+                    , with (pseudoElement [ pseudoClass "checked" ] "after")
                         [ property "content" """url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="-10 -18 100 135"><circle cx="50" cy="50" r="50" fill="none" stroke="#bddad5" stroke-width="3"/><path fill="#5dc2af" d="M72 25L42 71 27 56l-4 4 20 20 34-52z"/></svg>')""" ]
                     , -- Hack to remove background from Mobile Safari.
                       -- Can't use it globally since it destroys checkboxes in Firefox
