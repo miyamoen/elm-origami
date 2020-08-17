@@ -126,6 +126,12 @@ See [the `Origami` module documentation](http://package.elm-lang.org/packages/mi
   - 型付けされた property 関数がない
   - CSS をより柔軟にネストできる
 
+## Origami の名前の意味
+
+- 特に意味はないです
+- 他と区別が付く名前なら何でもよかった
+- 一応 CSS を node に折り込んでいるような雰囲気の意味で折り紙にしました
+
 ## Inspired by
 
 - [elm-css](https://package.elm-lang.org/packages/rtfeldman/elm-css/latest/)
