@@ -48,7 +48,7 @@ module Origami exposing
         ]
         []
 
-  - See [`examples/TodoMVC`](https://github.com/miyamoen/elm-origami/blob/master/examples/TodoMVC)
+  - See [`examples/TodoMVC`](https://github.com/miyamoen/elm-origami/blob/master/examples)
       - styled by Origami
       - forked from [`evancz/elm-todomvc`](https://github.com/evancz/elm-todomvc)
 
