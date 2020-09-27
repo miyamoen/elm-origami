@@ -5,10 +5,6 @@
     "license": "BSD-3-Clause",
     "version": "1.0.0",
     "exposed-modules": {
-        "Styling": [
-            "Origami",
-            "Origami.StyleTag"
-        ],
         "Elements": [
             "Origami.VirtualDom",
             "Origami.Html",
@@ -21,14 +17,18 @@
             "Origami.Svg.Events",
             "Origami.Svg.Keyed",
             "Origami.Svg.Lazy"
+        ],
+        "Styling": [
+            "Origami",
+            "Origami.StyleTag"
         ]
     },
     "elm-version": "0.19.1 <= v < 0.20.0",
     "dependencies": {
-        "Skinney/murmur3": "2.0.7 <= v < 3.0.0",
         "elm/core": "1.0.0 <= v < 2.0.0",
         "elm/json": "1.0.0 <= v < 2.0.0",
         "elm/virtual-dom": "1.0.0 <= v < 2.0.0",
+        "robinheghan/murmur3": "1.0.0 <= v < 2.0.0",
         "rtfeldman/elm-hex": "1.0.0 <= v < 2.0.0"
     },
     "test-dependencies": {

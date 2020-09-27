@@ -113,7 +113,6 @@ See [the `Origami` module documentation](http://package.elm-lang.org/packages/mi
   - 主に違うところは`elm-css`の typed-css の要素を取り除いて内部の型を整理したところです
 - 2020/08 現在、`elm-css`はあまりメンテナンスされていないようです
   - とはいえ動くので使う分には大した問題はありません
-  - 内部構造があまりきれいではなくて **ついついきれいにしたくなりました**
 - `elm-css`の typed CSS な部分が気に入らない
   - `elm-css`は CSS に型付けをしようという package で、昔は CSS ファイルを生成していましたが今は node に直接付与するスタイルになっています
   - CSS の各プロパティを型がある状態で記述できますが、型は少しわかりにくいですし覚えるが少し煩雑です
