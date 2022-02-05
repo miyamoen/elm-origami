@@ -28,14 +28,14 @@ suite =
         , describe "animation style"
             [ testFlatten "empty" [ animation [] ] []
             , testFlatten "single"
-                [ animation [ ( ( from, [] ), [ p "p" ] ) ] ]
-                [ FlatStyle initialSelector [ Property "animation-name" "_keyframes_f89d3c68" ]
-                , FlatAnimationStyle "_keyframes_f89d3c68" [ ( ( from, [] ), [ p "p" ] ) ]
+                [ animation [ ( "from", [ p "p" ] ) ] ]
+                [ FlatStyle initialSelector [ Property "animation-name" "_keyframes_82cf227c" ]
+                , FlatAnimationStyle "_keyframes_82cf227c" [ ( "from", [ p "p" ] ) ]
                 ]
             , testFlatten "REVIEW: empty properties pass"
-                [ animation [ ( ( from, [] ), [] ) ] ]
-                [ FlatStyle initialSelector [ Property "animation-name" "_keyframes_2a2381ad" ]
-                , FlatAnimationStyle "_keyframes_2a2381ad" [ ( ( from, [] ), [] ) ]
+                [ animation [ ( "from", [] ) ] ]
+                [ FlatStyle initialSelector [ Property "animation-name" "_keyframes_8670b1f3" ]
+                , FlatAnimationStyle "_keyframes_8670b1f3" [ ( "from", [] ) ]
                 ]
             ]
         , describe "nested style"

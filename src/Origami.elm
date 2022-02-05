@@ -2,9 +2,7 @@ module Origami exposing
     ( Style, property, batch, noStyle
     , withMedia
     , with, withCustom
-    , Selector
     , animation, Property, propertyA
-    , KeyframesSelector, from, to, pct
     , qt
     )
 
@@ -400,11 +398,6 @@ type alias Style =
     Style.Style
 
 
-{-| -}
-type alias Selector =
-    Origami.Css.Selector.Selector
-
-
 {-| Create a property style.
 
     css [ property "-webkit-font-smoothing" "none" ]
@@ -572,15 +565,6 @@ withMedia mq =
 ----------------
 
 
-{-| Selectors for `animation`.
-
-`from`, `to` and `pct`(%).
-
--}
-type alias KeyframesSelector =
-    StyleTag.KeyframesSelector
-
-
 {-| -}
 type alias Property =
     StyleTag.Property
@@ -622,30 +606,9 @@ type alias Property =
   - keyframesブロックが生成されます
 
 -}
-animation : List ( ( KeyframesSelector, List KeyframesSelector ), List Property ) -> Style
+animation : List ( String, List Property ) -> Style
 animation =
     Style.AnimationStyle
-
-
-{-| `from` token.
--}
-from : KeyframesSelector
-from =
-    StyleTag.KeyframesSelectorFrom
-
-
-{-| `to` token.
--}
-to : KeyframesSelector
-to =
-    StyleTag.KeyframesSelectorTo
-
-
-{-| `30%`, `70%` and so on.
--}
-pct : Float -> KeyframesSelector
-pct =
-    StyleTag.KeyframesSelectorPercent
 
 
 {-|

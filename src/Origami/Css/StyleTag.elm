@@ -1,6 +1,5 @@
 module Origami.Css.StyleTag exposing
     ( Block(..)
-    , KeyframesSelector(..)
     , KeyframesStyleBlock
     , NonEmptyList
     , Properties
@@ -47,13 +46,7 @@ type Selector
 
 
 type alias KeyframesStyleBlock =
-    ( NonEmptyList KeyframesSelector, Properties )
-
-
-type KeyframesSelector
-    = KeyframesSelectorFrom
-    | KeyframesSelectorTo
-    | KeyframesSelectorPercent Float
+    ( String, Properties )
 
 
 type alias NonEmptyList a =
@@ -130,30 +123,17 @@ printSelector selector =
             raw
 
 
-printKeyframesStyleBlock : String -> ( NonEmptyList KeyframesSelector, Properties ) -> String
-printKeyframesStyleBlock indentLevel ( ( selector, selectors ), properties ) =
+printKeyframesStyleBlock : String -> ( String, Properties ) -> String
+printKeyframesStyleBlock indentLevel ( selector, properties ) =
     String.join ""
         [ indentLevel
-        , List.map printKeyframeSelector (selector :: selectors) |> String.join ", "
+        , selector
         , " {\n"
         , printProperties (indentLevel ++ spaceIndent) properties
         , "\n"
         , indentLevel
         , "}"
         ]
-
-
-printKeyframeSelector : KeyframesSelector -> String
-printKeyframeSelector selector =
-    case selector of
-        KeyframesSelectorTo ->
-            "to"
-
-        KeyframesSelectorFrom ->
-            "from"
-
-        KeyframesSelectorPercent value ->
-            String.fromFloat value ++ "%"
 
 
 printProperties : String -> Properties -> String

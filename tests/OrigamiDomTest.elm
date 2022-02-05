@@ -3,7 +3,7 @@ module OrigamiDomTest exposing (suite)
 import Fixtures exposing (..)
 import Origami.Html exposing (div, toHtml)
 import Origami.Html.Attributes exposing (css)
-import Origami.StyleTag exposing (fontFace, from, keyframes, media, pct, style, styleTag, to)
+import Origami.StyleTag exposing (fontFace, keyframes, media, style, styleTag)
 import Test exposing (Test, describe, test)
 import Test.Html.Query as Query
 import Test.Html.Selector as Selector
@@ -38,8 +38,8 @@ suite =
                         , media "media" [ style "in media" [ p "m" ] ]
                         , fontFace [ p "f" ]
                         , keyframes "animation"
-                            [ ( ( from, [] ), [ p "from" ] )
-                            , ( ( to, [ pct 50 ] ), [ p "to" ] )
+                            [ ( "from", [ p "from" ] )
+                            , ( "to, 50%", [ p "to" ] )
                             ]
                         ]
                     ]

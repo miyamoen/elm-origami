@@ -2,7 +2,7 @@ module Origami.StyleTag exposing
     ( Block, styleTag, styleTag_
     , style, media, fontFace
     , Property, property
-    , keyframes, KeyframesSelector, from, to, pct
+    , keyframes
     )
 
 {-| Create a style tag.
@@ -23,7 +23,7 @@ module Origami.StyleTag exposing
 
 ### Keyframes
 
-@docs keyframes, KeyframesSelector, from, to, pct
+@docs keyframes
 
 -}
 
@@ -36,11 +36,6 @@ import VirtualDom as OriginalVirtualDom
 {-| -}
 type alias Block =
     StyleTag.Block
-
-
-{-| -}
-type alias KeyframesSelector =
-    StyleTag.KeyframesSelector
 
 
 {-| -}
@@ -151,39 +146,9 @@ media selector bs =
 ```
 
 -}
-keyframes : String -> List ( ( KeyframesSelector, List KeyframesSelector ), List Property ) -> Block
+keyframes : String -> List ( String, List Property ) -> Block
 keyframes animationName bs =
     KeyframesBlock animationName bs
-
-
-{-| `from` token.
-
-  - `Origami.from`と同一
-
--}
-from : KeyframesSelector
-from =
-    KeyframesSelectorFrom
-
-
-{-| `to` token.
-
-  - `Origami.to`と同一
-
--}
-to : KeyframesSelector
-to =
-    KeyframesSelectorTo
-
-
-{-| `30%`, `70%` and so on.
-
-  - `Origami.pct`と同一
-
--}
-pct : Float -> KeyframesSelector
-pct =
-    KeyframesSelectorPercent
 
 
 {-| Create a font-face block.
