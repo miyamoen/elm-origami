@@ -34,12 +34,6 @@
 │  ├─ summary: Core virtual DOM implementation, basis for HTML and SVG libraries
 │  ├─ license: BSD-3-Clause
 │  ├─ licenseText: Copyright (c) 2016-present, Evan Czaplicki
-├─ elm-community/list-extra@8.2.4
-│  ├─ name: elm-community/list-extra
-│  ├─ version: 8.2.4
-│  ├─ summary: Convenience functions for working with List
-│  ├─ license: MIT
-│  ├─ licenseText: The MIT License (MIT)
 ├─ elm-community/maybe-extra@5.2.0
 │  ├─ name: elm-community/maybe-extra
 │  ├─ version: 5.2.0

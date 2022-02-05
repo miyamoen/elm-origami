@@ -22,7 +22,7 @@ suite =
 }"""
         , testPrint "nest class"
             [ ps "p1"
-            , withClass "class" [ ps "c1", ps "c2" ]
+            , with ".class" [ ps "c1", ps "c2" ]
             , ps "p2"
             ]
             """._test {
@@ -36,11 +36,10 @@ suite =
 }"""
         , testPrint "nest 2"
             [ ps "p1"
-            , withClass "class"
+            , with ".class"
                 [ ps "c1"
                 , ps "c2"
-                , withChildren [ tag "tag", everyTag ]
-                    [ ps "child1", ps "child2" ]
+                , with " > tag" [ ps "child1", ps "child2" ]
                 ]
             , ps "p2"
             ]
@@ -54,18 +53,18 @@ suite =
     c2_key: c2_val;
 }
 
-._test.class > tag, ._test.class > * {
+._test.class > tag {
     child1_key: child1_val;
     child2_key: child2_val;
 }"""
         , testPrint "combinators"
             [ ps "p1"
-            , withChildren [ tag "tag1", everyTag ]
+            , with " > tag1"
                 [ ps "c"
-                , withDescendants [ tag "tag2", everyTag ] [ ps "d" ]
+                , with " tag2" [ ps "d" ]
                 ]
-            , withGeneralSiblings [ tag "tag3", everyTag ] [ ps "g" ]
-            , withAdjacentSiblings [ tag "tag4", everyTag ] [ ps "a" ]
+            , with " ~ tag3" [ ps "g" ]
+            , with " + tag4" [ ps "a" ]
             , ps "p2"
             ]
             """._test {
@@ -73,26 +72,26 @@ suite =
     p2_key: p2_val;
 }
 
-._test > tag1, ._test > * {
+._test > tag1 {
     c_key: c_val;
 }
 
-._test > tag1 tag2, ._test > tag1 *, ._test > * tag2, ._test > * * {
+._test > tag1 tag2 {
     d_key: d_val;
 }
 
-._test ~ tag3, ._test ~ * {
+._test ~ tag3 {
     g_key: g_val;
 }
 
-._test + tag4, ._test + * {
+._test + tag4 {
     a_key: a_val;
 }"""
         , testPrint "media"
             [ ps "p1"
             , withMedia "screen and (max-width: 1200px)"
                 [ ps "m"
-                , withClass "class" [ ps "c" ]
+                , with ".class" [ ps "c" ]
                 ]
             , ps "p2"
             ]
@@ -147,8 +146,8 @@ suite =
 }"""
         , testPrint "pseudoElement"
             [ ps "p1"
-            , withPseudoElement "after" [ ps "a" ]
-            , withPseudoElement "before" [ ps "b" ]
+            , with "::after" [ ps "a" ]
+            , with "::before" [ ps "b" ]
             , ps "p2"
             ]
             """._test {
@@ -165,7 +164,7 @@ suite =
 }"""
         , testPrint "selector"
             [ ps "p1"
-            , with (pseudoElement [ class "class", descendant (tag "tag"), attribute "attr" ] "after") [ ps "s" ]
+            , with ".class tag[attr]::after" [ ps "s" ]
             , ps "p2"
             ]
             """._test {

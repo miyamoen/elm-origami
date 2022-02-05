@@ -1,11 +1,6 @@
 module Origami.Css.Selector exposing
     ( MediaQuery(..)
-    , PseudoElement(..)
-    , Repeatable(..)
     , Selector(..)
-    , Single(..)
-    , Tag(..)
-    , emptyWith
     , initial
     , listToString
     , maybeToString
@@ -27,30 +22,7 @@ module Origami.Css.Selector exposing
 
 -}
 type Selector
-    = Selector Single (List Single) (Maybe MediaQuery)
-
-
-type Single
-    = Single (List Repeatable) (Maybe PseudoElement)
-
-
-type Repeatable
-    = ClassSelector String
-    | PseudoClassSelector String
-    | AttributeSelector String
-    | DescendantCombinator Tag
-    | ChildCombinator Tag
-    | GeneralSiblingCombinator Tag
-    | AdjacentSiblingCombinator Tag
-
-
-type Tag
-    = TypeSelector String
-    | UniversalSelector
-
-
-type PseudoElement
-    = PseudoElement String
+    = Selector String (Maybe MediaQuery)
 
 
 type MediaQuery
@@ -59,65 +31,25 @@ type MediaQuery
 
 initial : Selector
 initial =
-    Selector empty [] Nothing
-
-
-empty : Single
-empty =
-    Single [] Nothing
-
-
-emptyWith : String -> Selector
-emptyWith mq =
-    Selector empty [] (Just <| MediaQuery mq)
+    Selector "" Nothing
 
 
 {-|
 
-  - 疑似要素が含まれていればそれ以上ネストできない
+  - 単に足し合わせる
+  - space sensitive
   - media queryはネストできない
-  - emptyはネストできない
-      - selectorが変化しないので実質batchのような感じになる
-      - batchがあればよいので禁止
-  - Media Queryだけネストするときは個別対応
-      - emptyはネストできないで禁止されてしまったのでそれをすり抜けさせる
 
 -}
 nest : Selector -> Selector -> Maybe Selector
-nest (Selector ps pss pmq) child =
+nest (Selector ps pmq) child =
     case ( pmq, child ) of
         -- media queryはネストできない
-        ( Just _, Selector _ _ (Just _) ) ->
+        ( Just _, Selector _ (Just _) ) ->
             Nothing
 
-        -- Media Queryだけネストするときは個別対応
-        ( _, Selector (Single [] Nothing) [] (Just cmq) ) ->
-            Just <| Selector ps pss (Just cmq)
-
-        ( _, Selector cs css cmq ) ->
-            case lift2 nestSingle (ps :: pss) (cs :: css) |> List.filterMap identity of
-                [] ->
-                    Nothing
-
-                s :: ss ->
-                    Just <| Selector s ss (or pmq cmq)
-
-
-nestSingle : Single -> Single -> Maybe Single
-nestSingle parent child =
-    case ( parent, child ) of
-        ( Single _ (Just _), _ ) ->
-            Nothing
-
-        -- emptyをネストできないので無効化
-        ( _, Single [] Nothing ) ->
-            Nothing
-
-        ( Single [] Nothing, _ ) ->
-            Just child
-
-        ( Single prs Nothing, Single crs cpe ) ->
-            Just <| Single (prs ++ crs) cpe
+        ( _, Selector cs cmq ) ->
+            Just <| Selector (ps ++ cs) (or pmq cmq)
 
 
 {-| ref. <https://github.com/elm-community/maybe-extra/blob/5.2.0/src/Maybe/Extra.elm#L260>
@@ -132,13 +64,6 @@ or ma mb =
             ma
 
 
-{-| ref. <https://github.com/elm-community/list-extra/blob/8.2.4/src/List/Extra.elm#L1763>
--}
-lift2 : (a -> b -> c) -> List a -> List b -> List c
-lift2 f la lb =
-    la |> List.concatMap (\a -> lb |> List.concatMap (\b -> [ f a b ]))
-
-
 
 ----------------
 -- toString
@@ -147,22 +72,12 @@ lift2 f la lb =
 
 
 toString : Selector -> String
-toString (Selector s ss mq) =
+toString (Selector s mq) =
     String.concat
-        [ "(Selector"
-        , singleToString s
-        , List.map singleToString ss |> listToString
+        [ "(Selector\""
+        , s
+        , "\""
         , Maybe.map mediaQueryToString mq |> maybeToString
-        , ")"
-        ]
-
-
-singleToString : Single -> String
-singleToString (Single rs pe) =
-    String.concat
-        [ "(Single"
-        , List.map repeatableToString rs |> listToString
-        , Maybe.map pseudoElementToString pe |> maybeToString
         , ")"
         ]
 
@@ -184,46 +99,6 @@ maybeToString maybe =
 
         Nothing ->
             "(Nothing)"
-
-
-repeatableToString : Repeatable -> String
-repeatableToString r =
-    case r of
-        ClassSelector val ->
-            String.concat [ "(ClassSelector\"", val, "\")" ]
-
-        PseudoClassSelector val ->
-            String.concat [ "(PseudoClassSelector\"", val, "\")" ]
-
-        AttributeSelector val ->
-            String.concat [ "(AttributeSelector\"", val, "\")" ]
-
-        DescendantCombinator tag ->
-            String.concat [ "(DescendantCombinator", tagToString tag, ")" ]
-
-        ChildCombinator tag ->
-            String.concat [ "(ChildCombinator", tagToString tag, ")" ]
-
-        GeneralSiblingCombinator tag ->
-            String.concat [ "(GeneralSiblingCombinator", tagToString tag, ")" ]
-
-        AdjacentSiblingCombinator tag ->
-            String.concat [ "(AdjacentSiblingCombinator", tagToString tag, ")" ]
-
-
-tagToString : Tag -> String
-tagToString t =
-    case t of
-        TypeSelector val ->
-            String.concat [ "(TypeSelector\"", val, "\")" ]
-
-        UniversalSelector ->
-            "(UniversalSelector)"
-
-
-pseudoElementToString : PseudoElement -> String
-pseudoElementToString (PseudoElement val) =
-    String.concat [ "(PseudoElement\"", val, "\")" ]
 
 
 mediaQueryToString : MediaQuery -> String

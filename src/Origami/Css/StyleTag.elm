@@ -7,13 +7,12 @@ module Origami.Css.StyleTag exposing
     , Property(..)
     , Selector(..)
     , print
-    , printKeyframeSelector
     )
 
 {-| A representation of the structure of a style tag.
 -}
 
-import Origami.Css.Selector as Selector exposing (MediaQuery(..), PseudoElement(..))
+import Origami.Css.Selector exposing (MediaQuery(..))
 
 
 {-| A property consisting of key and value string.
@@ -43,7 +42,7 @@ type Block
 {-| inline CSSから変換するのでSelectorはhash値のclass selector始まりに限定している
 -}
 type Selector
-    = Selector String Selector.Single (List Selector.Single)
+    = Selector String String
     | CustomSelector String
 
 
@@ -124,61 +123,11 @@ printStyleBlock indentLevel selector properties =
 printSelector : Selector -> String
 printSelector selector =
     case selector of
-        Selector classname s ss ->
-            List.map (printSingleSelector classname) (s :: ss)
-                |> String.join ", "
+        Selector classname s ->
+            "." ++ classname ++ s
 
         CustomSelector raw ->
             raw
-
-
-printSingleSelector : String -> Selector.Single -> String
-printSingleSelector classname (Selector.Single repeatables pseudo) =
-    String.concat <|
-        "."
-            :: classname
-            :: List.map printRepeatableSelector repeatables
-            ++ [ Maybe.map printPseudoElement pseudo |> Maybe.withDefault "" ]
-
-
-printSelectorTag : Selector.Tag -> String
-printSelectorTag tag =
-    case tag of
-        Selector.TypeSelector element ->
-            element
-
-        Selector.UniversalSelector ->
-            "*"
-
-
-printRepeatableSelector : Selector.Repeatable -> String
-printRepeatableSelector repeatable =
-    case repeatable of
-        Selector.ClassSelector classname ->
-            "." ++ classname
-
-        Selector.PseudoClassSelector pseudoClass ->
-            ":" ++ pseudoClass
-
-        Selector.AttributeSelector attr ->
-            String.concat [ "[", attr, "]" ]
-
-        Selector.DescendantCombinator tag ->
-            " " ++ printSelectorTag tag
-
-        Selector.ChildCombinator tag ->
-            " > " ++ printSelectorTag tag
-
-        Selector.GeneralSiblingCombinator tag ->
-            " ~ " ++ printSelectorTag tag
-
-        Selector.AdjacentSiblingCombinator tag ->
-            " + " ++ printSelectorTag tag
-
-
-printPseudoElement : PseudoElement -> String
-printPseudoElement (PseudoElement element) =
-    "::" ++ element
 
 
 printKeyframesStyleBlock : String -> ( NonEmptyList KeyframesSelector, Properties ) -> String

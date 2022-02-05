@@ -85,11 +85,11 @@ compile classname styles =
 toBlock : String -> FlatStyle -> Block
 toBlock classname style =
     case style of
-        FlatStyle (Selector selector selectors Nothing) ps ->
-            StyleBlock (StyleTag.Selector classname selector selectors) ps
+        FlatStyle (Selector selector Nothing) ps ->
+            StyleBlock (StyleTag.Selector classname selector) ps
 
-        FlatStyle (Selector selector selectors (Just mq)) ps ->
-            MediaBlock mq [ StyleBlock (StyleTag.Selector classname selector selectors) ps ]
+        FlatStyle (Selector selector (Just mq)) ps ->
+            MediaBlock mq [ StyleBlock (StyleTag.Selector classname selector) ps ]
 
         FlatAnimationStyle an bs ->
             KeyframesBlock an bs

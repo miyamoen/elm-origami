@@ -1,4 +1,4 @@
-module Fixtures exposing (initialSelector, p, ps, styles)
+module Fixtures exposing (initialSelector, mediaSelector, p, ps, selector, styles)
 
 import Origami exposing (..)
 import Origami.Css.Selector as Selector exposing (..)
@@ -22,4 +22,14 @@ styles =
 
 initialSelector : Selector.Selector
 initialSelector =
-    Selector (Single [] Nothing) [] Nothing
+    Selector "" Nothing
+
+
+selector : String -> Selector.Selector
+selector s =
+    Selector s Nothing
+
+
+mediaSelector : Selector.Selector
+mediaSelector =
+    Selector "" (Just (MediaQuery "media"))
