@@ -13,7 +13,8 @@ type Style
     = PropertyStyle Property
     | BatchedStyle (List Style)
     | NestedStyle Selector (List Style)
-    | AnimationStyle (List KeyframesStyleBlock)
+      -- NestedStyleとAnimationStyleを入れても無視される
+    | AnimationStyle (List ( String, List Style ))
 
 
 {-| Styleの再帰構造をフラットにした型
@@ -56,8 +57,8 @@ walk parentSelector style ( properties, styles ) =
                             ( properties, FlatStyle nested childProperties :: flatStyles )
 
         -- **CONSIDER**: 同じkeyframes定義があったら同じものが２個生成されてしまうが許容
-        AnimationStyle keyframesStyleBlocks ->
-            case keyframesStyleBlocks of
+        AnimationStyle keyframes ->
+            case List.map (\( selector, block ) -> ( selector, List.foldr walkInAnimation [] block )) keyframes of
                 [] ->
                     ( properties, styles )
 
@@ -67,6 +68,19 @@ walk parentSelector style ( properties, styles ) =
                             hashToAnimationName nonEmpty
                     in
                     ( Property "animation-name" animationName :: properties, FlatAnimationStyle animationName nonEmpty :: styles )
+
+
+walkInAnimation : Style -> Properties -> Properties
+walkInAnimation style properties =
+    case style of
+        PropertyStyle property ->
+            property :: properties
+
+        BatchedStyle batched ->
+            List.foldr walkInAnimation properties batched
+
+        _ ->
+            properties
 
 
 compile : String -> List FlatStyle -> List Block

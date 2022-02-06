@@ -2,7 +2,7 @@ module Origami exposing
     ( Style, property, batch, noStyle
     , withMedia
     , with, withCustom
-    , animation, Property, propertyA
+    , animation
     , qt
     )
 
@@ -565,11 +565,6 @@ withMedia mq =
 ----------------
 
 
-{-| -}
-type alias Property =
-    StyleTag.Property
-
-
 {-| Define a animation.
 
     css
@@ -606,20 +601,9 @@ type alias Property =
   - keyframesブロックが生成されます
 
 -}
-animation : List ( String, List Property ) -> Style
+animation : List ( String, List Style ) -> Style
 animation =
     Style.AnimationStyle
-
-
-{-|
-
-  - animation用の`property`
-  - `property`とは型が違う
-
--}
-propertyA : String -> String -> Property
-propertyA =
-    StyleTag.Property
 
 
 

@@ -115,9 +115,9 @@ suite =
             [ ps "p1"
             , withMedia "screen and (max-width: 1200px)"
                 [ ps "m"
-                , animation [ ( "from", [ p "p" ] ) ]
+                , animation [ ( "from", [ ps "p" ] ) ]
                 ]
-            , animation [ ( "from", [ p "p" ] ) ]
+            , animation [ ( "from", [ ps "p" ] ) ]
             , ps "p2"
             ]
             """._test {
