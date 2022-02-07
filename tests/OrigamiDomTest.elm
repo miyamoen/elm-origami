@@ -30,6 +30,24 @@ suite =
 }"""
                         ]
             )
+        , test "multiple css"
+            (\_ ->
+                div [ css [ ps "p1", ps "p2" ], css [ ps "p3" ], css [ ps "p4", ps "p5" ] ]
+                    []
+                    |> toHtml
+                    |> Query.fromHtml
+                    |> Query.children []
+                    |> Query.first
+                    |> Query.has
+                        [ Selector.text """._6a2f2a0a {
+    p1_key: p1_val;
+    p2_key: p2_val;
+    p3_key: p3_val;
+    p4_key: p4_val;
+    p5_key: p5_val;
+}"""
+                        ]
+            )
         , test "style tag"
             (\_ ->
                 div []

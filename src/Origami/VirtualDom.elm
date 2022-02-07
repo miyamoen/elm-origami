@@ -82,7 +82,7 @@ type Node msg
 
 -}
 type Attribute msg
-    = Attribute (List (VirtualDom.Attribute msg)) (List ( String, List FlatStyle ))
+    = Attribute (List (VirtualDom.Attribute msg)) (List Style)
 
 
 {-| -}
@@ -280,26 +280,10 @@ lazyHelp7 fn arg1 arg2 arg3 arg4 arg5 arg6 arg7 =
 
 
 {-| DOMにStyleを適用するための関数
-
-  - この関数で再帰的な`Style`型から再帰のない`FlatStyle`型に変換してある
-      - `FlatStyle`型は無効なSelector Blockを除去してある
-  - `css`関数に適用された単位でStyleの重複除去が行われる
-      - それより細かい単位では重複があっても除去されない
-  - `FlatStyle`から計算されたhash値がclass attributeに暗黙的に設定されている
-
 -}
 css : List Style -> Attribute msg
 css styles =
-    case Origami.Css.Style.flatten styles of
-        [] ->
-            noAttribute
-
-        nonEmpty ->
-            let
-                classname =
-                    Origami.Css.Style.hashToClassname nonEmpty
-            in
-            Attribute [ VirtualDom.property "className" (Json.Encode.string classname) ] [ ( classname, nonEmpty ) ]
+    Attribute [] styles
 
 
 {-| Origami -> 通常
@@ -404,9 +388,29 @@ toStyleNode stylesList =
         |> VirtualDom.node "style" []
 
 
+{-|
+
+  - この関数で再帰的な`Style`型から再帰のない`FlatStyle`型に変換してある
+  - 同じnodeに適用されたcssは合成される
+  - `FlatStyle`から計算されたhash値がclass attributeに暗黙的に設定されている
+
+-}
 partitionAttributes : List (Attribute msg) -> ( List (VirtualDom.Attribute msg), List ( String, List FlatStyle ) )
 partitionAttributes attributes =
-    List.foldr (\(Attribute attrs styles) ( accAttrs, accStyles ) -> ( attrs ++ accAttrs, styles ++ accStyles )) ( [], [] ) attributes
+    let
+        ( attrs, styles ) =
+            List.foldr (\(Attribute attrs_ styles_) ( accAttrs, accStyles ) -> ( attrs_ ++ accAttrs, styles_ ++ accStyles )) ( [], [] ) attributes
+    in
+    case Origami.Css.Style.flatten styles of
+        [] ->
+            ( attrs, [] )
+
+        nonEmpty ->
+            let
+                classname =
+                    Origami.Css.Style.hashToClassname nonEmpty
+            in
+            ( VirtualDom.property "className" (Json.Encode.string classname) :: attrs, [ ( classname, nonEmpty ) ] )
 
 
 accumulateStyledHtml :
