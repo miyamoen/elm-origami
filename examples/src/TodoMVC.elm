@@ -257,12 +257,12 @@ view model =
                         , property "color" "#e6e6e6"
                         ]
                   in
-                  withDescendants [ tag "input" ]
-                    [ withPseudoElement "-webkit-input-placeholder" styles
-                    , withPseudoElement "-moz-placeholder" styles
-                    , withPseudoElement "input-placeholder" styles
+                  with " input"
+                    [ with "::-webkit-input-placeholder" styles
+                    , with "::-moz-placeholder" styles
+                    , with "::input-placeholder" styles
                     ]
-                , withDescendants [ tag "h1" ]
+                , with " h1"
                     [ property "position" "absolute"
                     , property "top" "-155px"
                     , property "width" "100%"
@@ -388,13 +388,13 @@ viewEntries visibility entries =
                 , property "height" "34px"
                 , property "text-align" "center"
                 , property "border" "none" -- Mobile Safari
-                , withPseudoElement "before"
+                , with "::before"
                     [ property "content" <| qt "❯"
                     , property "font-size" "22px"
                     , property "color" "#e6e6e6"
                     , property "padding" "10px 27px 10px 27px"
                     ]
-                , with (pseudoElement [ pseudoClass "checked" ] "before")
+                , with ":checked::before"
                     [ property "color" "#737373" ]
                 , -- Hack to remove background from Mobile Safari.
                   -- Can't use it globally since it destroys checkboxes in Firefox
@@ -439,17 +439,18 @@ viewEntry todo =
             [ property "position" "relative"
             , property "font-size" "24px"
             , property "border-bottom" "1px solid #ededed"
-            , withPseudoClass "last-child" [ property "border-bottom" "none" ]
+            , with ":last-child" [ property "border-bottom" "none" ]
             , if todo.editing then
                 batch
                     [ property "border-bottom" "none"
                     , property "padding" "0"
-                    , withPseudoClass "last-child" [ property "margin-bottom" "-1px" ]
+                    , with ":last-child" [ property "margin-bottom" "-1px" ]
                     ]
 
               else
                 noStyle
-            , with (selector [ pseudoClass "hover", descendant (tag "button") ]) [ property "display" "block" ]
+            , with ":hover" [ property "display" "block" ]
+            , with " button" [ property "display" "block" ]
             ]
         ]
         [ div
@@ -474,9 +475,9 @@ viewEntry todo =
                     , property "border" "none" -- Mobile Safari
                     , property "-webkit-appearance" "none"
                     , property "appearance" "none"
-                    , withPseudoElement "after"
+                    , with "::after"
                         [ property "content" """url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="-10 -18 100 135"><circle cx="50" cy="50" r="50" fill="none" stroke="#ededed" stroke-width="3"/></svg>')""" ]
-                    , with (pseudoElement [ pseudoClass "checked" ] "after")
+                    , with ":checked::after"
                         [ property "content" """url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="-10 -18 100 135"><circle cx="50" cy="50" r="50" fill="none" stroke="#bddad5" stroke-width="3"/><path fill="#5dc2af" d="M72 25L42 71 27 56l-4 4 20 20 34-52z"/></svg>')""" ]
                     , -- Hack to remove background from Mobile Safari.
                       -- Can't use it globally since it destroys checkboxes in Firefox
@@ -525,8 +526,8 @@ viewEntry todo =
                     , property "color" "#cc9a9a"
                     , property "margin-bottom" "11px"
                     , property "transition" "color 0.2s ease-out"
-                    , withPseudoClass "hover" [ property "color" "#af5b5e" ]
-                    , withPseudoElement "after" [ property "content" "'×'" ]
+                    , with ":hover" [ property "color" "#af5b5e" ]
+                    , with "::after" [ property "content" "'×'" ]
                     ]
                 , onClick (Delete todo.id)
                 ]
@@ -578,7 +579,7 @@ viewControls visibility entries =
             , property "height" "20px"
             , property "text-align" "center"
             , property "border-top" "1px solid #e6e6e6"
-            , withPseudoElement "before"
+            , with "::before"
                 [ property "content" <| qt ""
                 , property "position" "absolute"
                 , property "right" "0"
@@ -656,7 +657,7 @@ visibilitySwap uri visibility actualVisibility =
                 , property "text-decoration" "none"
                 , property "border" "1px solid transparent"
                 , property "border-radius" "3px"
-                , withPseudoClass "hover" [ property "border-color" "rgba(175, 47, 47, 0.1)" ]
+                , with ":hover" [ property "border-color" "rgba(175, 47, 47, 0.1)" ]
                 , if visibility == actualVisibility then
                     property "border-color" "rgba(175, 47, 47, 0.2)"
 
@@ -673,8 +674,8 @@ viewControlsClear entriesCompleted =
     button
         [ css
             [ clearCompletedStyle
-            , withPseudoClass "hover" [ property "text-decoration" "underline" ]
-            , withPseudoClass "active" [ clearCompletedStyle ]
+            , with ":hover" [ property "text-decoration" "underline" ]
+            , with ":active" [ clearCompletedStyle ]
             ]
         , hidden (entriesCompleted == 0)
         , onClick DeleteComplete
@@ -704,12 +705,12 @@ infoFooter =
             , property "font-size" "10px"
             , property "text-shadow" "0 1px 0 rgba(255, 255, 255, 0.5)"
             , property "text-align" "center"
-            , withDescendants [ tag "p" ] [ property "line-height" "1" ]
-            , withDescendants [ tag "a" ]
+            , with " p" [ property "line-height" "1" ]
+            , with " a"
                 [ property "color" "inherit"
                 , property "text-decoration" "none"
                 , property "font-weight" "400"
-                , withPseudoClass "hover" [ property "text-decoration" "underline" ]
+                , with ":hover" [ property "text-decoration" "underline" ]
                 ]
             ]
         ]

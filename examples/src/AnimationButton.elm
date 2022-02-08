@@ -93,33 +93,38 @@ view model =
                 , property "cursor" "pointer"
                 , property "transition" "all 0.3s cubic-bezier(0.13, 0.99, 0.39, 1.01)"
                 , property "box-shadow" "0 3px 5px rgba(0, 0, 0, 0.3)"
-                , withPseudoClass "hover" [ property "background-color" "#ef794c" ]
+                , with ":hover" [ property "background-color" "#ef794c" ]
                 , case model of
                     Initial ->
                         noStyle
 
                     Loading ->
+                        let
+                            loadingStyle =
+                                batch
+                                    [ property "content" <| qt ""
+                                    , property "position" "absolute"
+                                    , property "width" "60%"
+                                    , property "height" "60%"
+                                    , property "border-radius" "100%"
+                                    , property "border" "calc(30px / 10) solid transparent"
+                                    , animation
+                                        [ ( "from", [ property "transform" "rotate(0deg)" ] )
+                                        , ( "to", [ property "transform" "rotate(360deg)" ] )
+                                        ]
+                                    , property "animation-duration" "1s"
+                                    , property "animation-iteration-count" "infinite"
+                                    ]
+                        in
                         batch
                             [ property "border-radius" "50px"
                             , property "width" "50px"
-                            , -- [Copyright (c) 2019 Epicmax LLC](https://epic-spinners.epicmax.co/)
-                              withEach [ pseudoElement [] "after", pseudoElement [] "before" ]
-                                [ property "content" <| qt ""
-                                , property "position" "absolute"
-                                , property "width" "60%"
-                                , property "height" "60%"
-                                , property "border-radius" "100%"
-                                , property "border" "calc(30px / 10) solid transparent"
-                                , animation
-                                    [ ( ( from, [] ), [ propertyA "transform" "rotate(0deg)" ] )
-                                    , ( ( to, [] ), [ propertyA "transform" "rotate(360deg)" ] )
-                                    ]
-                                , property "animation-duration" "1s"
-                                , property "animation-iteration-count" "infinite"
-                                ]
-                            , withPseudoElement "after" [ property "border-top-color" "#ffe9ef" ]
-                            , withPseudoElement "before"
-                                [ property "border-bottom-color" "#ffe9ef"
+
+                            -- [Copyright (c) 2019 Epicmax LLC](https://epic-spinners.epicmax.co/)
+                            , with "::after" [ loadingStyle, property "border-top-color" "#ffe9ef" ]
+                            , with "::before"
+                                [ loadingStyle
+                                , property "border-bottom-color" "#ffe9ef"
                                 , property "animation-direction" "alternate"
                                 ]
                             ]
@@ -128,7 +133,7 @@ view model =
                         batch
                             [ property "border-radius" "50px"
                             , property "width" "50px"
-                            , withPseudoElement "after"
+                            , with "::after"
                                 [ property "content" <| qt ""
                                 , property "position" "absolute"
                                 , property "width" "60%"
@@ -154,8 +159,8 @@ view model =
                 span
                     [ css
                         [ animation
-                            [ ( ( from, [] ), [ propertyA "opacity" "0" ] )
-                            , ( ( to, [] ), [ propertyA "opacity" "1" ] )
+                            [ ( "from", [ property "opacity" "0" ] )
+                            , ( "to", [ property "opacity" "1" ] )
                             ]
                         , property "animation-duration" "1s"
                         ]
