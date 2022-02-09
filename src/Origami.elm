@@ -1,7 +1,8 @@
 module Origami exposing
     ( Style, property, batch, noStyle
+    , with
     , withMedia
-    , with, withCustom
+    , withCustom
     , animation
     , qt
     )
@@ -21,13 +22,13 @@ module Origami exposing
             , property "height" "34px"
             , property "text-align" "center"
             , property "border" "none" -- Mobile Safari
-            , withPseudoElement "before"
+            , with "::before"
                 [ property "content" <| qt "❯"
                 , property "font-size" "22px"
                 , property "color" "#e6e6e6"
                 , property "padding" "10px 27px 10px 27px"
                 ]
-            , with (pseudoElement [ pseudoClass "checked" ] "before")
+            , with ":checked::before"
                 [ property "color" "#737373" ]
             , -- Hack to remove background from Mobile Safari.
               -- Can't use it globally since it destroys checkboxes in Firefox
@@ -49,9 +50,7 @@ module Origami exposing
 
 # How to Use
 
-  - ここからOrigamiの使い方を説明していきます
-  - elm-cssとほぼ同じようなAPIを定義しています
-      - 型付けされたproperty関数は定義していないことが大きな違いです
+  - use `property` and `with`!
 
 
 ## `css` and basic functions
@@ -122,9 +121,8 @@ module Origami exposing
 
 ## Nested Style
 
-  - CSS preprocessorのようにセレクターを入れ子にしてstyleを定義できます
-  - 入れ子にする関数は簡易的なAPIとカスタム可能なAPIに分けられています
-      - 簡易的なAPIはelm-cssを参考にしています
+  - CSS preprocessorを使用するときのようにセレクターを入れ子にしてstyleを定義できます
+  - use `with` for nested CSS!
 
 ```.elm
 button
@@ -141,8 +139,8 @@ button
         , property "color" "#cc9a9a"
         , property "margin-bottom" "11px"
         , property "transition" "color 0.2s ease-out"
-        , withPseudoClass "hover" [ property "color" "#af5b5e" ]
-        , withPseudoElement "after" [ property "content" "'×'" ]
+        , with ":hover" [ property "color" "#af5b5e" ]
+        , with "::after" [ property "content" "'×'" ]
         ]
     , onClick (Delete todo.id)
     ]
@@ -177,59 +175,10 @@ _b75a75af:hover {
 ```
 
   - hash値に続く形でセレクターが付加されます
-  - 更にネストすることもできます
+      - space sensitive. Add space, then descendant selector.
+  - 入れ子もできます
 
-@docs withClass, withAttribute, withPseudoClass, withPseudoElement
-
-
-### CSS Combinators
-
-結合子も使用することができます
-
-    footer
-        [ css
-            [ property "margin" "65px auto 0"
-            , property "color" "#bfbfbf"
-            , property "font-size" "10px"
-            , property "text-shadow" "0 1px 0 rgba(255, 255, 255, 0.5)"
-            , property "text-align" "center"
-            , withDescendants [ tag "p" ] [ property "line-height" "1" ]
-            , withDescendants [ tag "a" ]
-                [ property "color" "inherit"
-                , property "text-decoration" "none"
-                , property "font-weight" "400"
-                , withPseudoClass "hover" [ property "text-decoration" "underline" ]
-                ]
-            ]
-        ] [...]
-
-...outputs
-
-```css
-._89167f0f {
-    margin: 65px auto 0;
-    color: #bfbfbf;
-    font-size: 10px;
-    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5);
-    text-align: center;
-}
-
-._89167f0f p {
-    line-height: 1;
-}
-
-._89167f0f a {
-    color: inherit;
-    text-decoration: none;
-    font-weight: 400;
-}
-```
-
-  - Origami supports descendant, child, general sibling and adjacent sibling combinators
-  - `tag`関数を使って対象のタグを複数指定することができます
-
-@docs withDescendants, withChildren, withGeneralSiblings, withAdjacentSiblings
-@docs Tag, tag, everyTag
+@docs with
 
 
 ### Media Query
@@ -269,70 +218,45 @@ _b75a75af:hover {
 
 @docs withMedia
 
-
-## Custom Nested Style
-
-  - ここまでの`withXxx`関数で大体のことには事足りるかと思います
-  - もしもっと柔軟にstyleを入れ子にしたくなったのならOrigamiにおける`Selector`を学びましょう
-
-```css
-             ┌ child              ┌ descendant                       ┌ adjacent sibling
-     class   │   pseudo class     │          attribute               │  pseudo element
-     ┌────┐ ┌─┐┌──────────────┐┌──────┐┌───────────────────┐        ┌─┐┌─────┐
-._xxx.class > *:nth-child(2n+1) section[aria-hidden="false"], ._xxx + *::after {...}
-└──────────────────────────────────────────────────────────┘  └──────────────┘
-                          selector                                selector
-```
-
-  - See an above diagram.
-      - class selector, pseudo class, attribute selectorが並んでいます
-          - また各種結合子とtype selectorかuniversal selectorがまとめられています
-          - これらを`RepeatableSelector`としてまとめています
-      - `Selector`型を生成する[`selector`関数](#selector)は`RepeatableSelector`の`List`を受け取るようになっています
-          - またpseudo elementを付加する場合は[`pseudoElement`](#pseudoElement)を使ってください
-      - 生成した`Selector`は`with`, `withEach`, `withCustom`で`css`関数に繋げられます
-          - 図のように`Selector`を列挙したければ`withEach`か`withCustom`を使ってください
-          - `withCustom`にはMedia Queryも付加することができます
-
-@docs with, withEach, withCustom
-@docs Selector, selector, pseudoElement
-@docs RepeatableSelector, class, pseudoClass, attribute, descendant, child, generalSibling, adjacentSibling
+@docs withCustom
 
 
 ## Animation Style
 
+    let
+        loadingStyle =
+            batch
+                [ property "content" <| qt ""
+                , property "position" "absolute"
+                , property "width" "60%"
+                , property "height" "60%"
+                , property "border-radius" "100%"
+                , property "border" "calc(30px / 10) solid transparent"
+                , animation
+                    [ ( "from", [ property "transform" "rotate(0deg)" ] )
+                    , ( "to", [ property "transform" "rotate(360deg)" ] )
+                    ]
+                , property "animation-duration" "1s"
+                , property "animation-iteration-count" "infinite"
+                ]
+    in
     batch
         [ property "border-radius" "50px"
         , property "width" "50px"
-        , -- [Copyright (c) 2019 Epicmax LLC](https://epic-spinners.epicmax.co/)
-          withEach [ pseudoElement [] "after", pseudoElement [] "before" ]
-            [ property "content" <| qt ""
-            , property "position" "absolute"
-            , property "width" "60%"
-            , property "height" "60%"
-            , property "border-radius" "100%"
-            , property "border" "calc(30px / 10) solid transparent"
-            , animation
-                [ ( ( from, [] ), [ propertyA "transform" "rotate(0deg)" ] )
-                , ( ( to, [] ), [ propertyA "transform" "rotate(360deg)" ] )
-                ]
-            , property "animation-duration" "1s"
-            , property "animation-iteration-count" "infinite"
-            ]
-        , withPseudoElement "after" [ property "border-top-color" "#ffe9ef" ]
-        , withPseudoElement "before"
-            [ property "border-bottom-color" "#ffe9ef"
+
+        -- [Copyright (c) 2019 Epicmax LLC](https://epic-spinners.epicmax.co/)
+        , with "::after" [ loadingStyle, property "border-top-color" "#ffe9ef" ]
+        , with "::before"
+            [ loadingStyle
+            , property "border-bottom-color" "#ffe9ef"
             , property "animation-direction" "alternate"
             ]
         ]
 
   - [`animation`](#animation)関数を使ってDOMに直接アニメーションを定義することができます
-  - [`propertyA`](#propertyA)関数を使ってpropertyを記述します
-      - 型の都合で`property`, `batch`, `noStyle`は使えません
   - `animation`プロパティのみ暗黙に生成されるのでその他のアニメーションプロパティは別に定義します
 
-@docs animation, Property, propertyA
-@docs KeyframesSelector, from, to, pct
+@docs animation
 
 
 # Helper
@@ -359,8 +283,6 @@ _b75a75af:hover {
 }
 ```
 
-  - 重複除去は`css`に適用したstyleの単位で行われます
-
 
 ## `css`関数を複数使ったらどうなる？
 
@@ -370,18 +292,23 @@ _b75a75af:hover {
         ]
         [ text "表示されますか？" ]
 
-  - このdivは表示されるでしょうか？
-      - 答えは「わかりません」
-      - styleは`css`関数でまとめられた単位で扱われ、`Dict`を経由して書き出されます
-      - そのため`ccs`を使う順番に依存した実装は行わないほうがいいでしょう
-  - もし既に適用されている`css`の値を上書きしたいのならば`withClass`などを使ってセレクターの詳細度を上げるとよいでしょう
+...outputs
+
+```css
+._xxx {
+    display: none;
+    display: block;
+}
+```
+
+  - 合成されます
 
 
 ## クラス名がハッシュ値で読みにくい
 
     cssWithClass : String -> List Style -> Attribute msg
     cssWithClass classname styles =
-        batchAttributes [ Attributes.class classname, css [ withClass classname styles ] ]
+        batchAttributes [ Attributes.class classname, css [ with ("." ++ classname) styles ] ]
 
   - クラス名を付加してみてください
   - 上記のようなヘルパーを定義するとよいでしょう
@@ -393,7 +320,8 @@ import Origami.Css.Style as Style
 import Origami.Css.StyleTag as StyleTag
 
 
-{-| -}
+{-| `css`関数に渡す型です
+-}
 type alias Style =
     Style.Style
 
@@ -464,13 +392,10 @@ batch =
 ----------------
 
 
-{-| Nest with `Selector` list and a media query.
+{-| Nest CSS with a selector and a media query.
 
     css
-        [ withCustom "(max-width: 430px)"
-            [ selector [ class "classname" ]
-            , selector [ attribute "title" ]
-            ]
+        [ withCustom "(max-width: 430px)" ".classname" <|
             [ property "key" "value" ]
         ]
 
@@ -478,7 +403,7 @@ batch =
 
 ```css
 @media (max-width: 430px) {
-    _xxx.classname, _xxx[title] {
+    _xxx.classname {
         key: value;
     }
 }
@@ -491,10 +416,11 @@ withCustom mq s =
         Origami.Css.Selector.Selector s (Just <| MediaQuery mq)
 
 
-{-| Nest with a `Selector`.
+{-| Nest CSS with a selector.
+生成されたhash値に続けて付加されるのでspace sensitiveです。空白が挟まった場合子孫セレクタと解釈されえます。
 
     css
-        [ with (selector [ class "classname" ]) [ property "key" "value" ] ]
+        [ with ".classname" [ property "key" "value" ] ]
 
 ...outputs
 
@@ -510,7 +436,7 @@ with s =
     Style.NestedStyle (Origami.Css.Selector.Selector s Nothing)
 
 
-{-| Nest with a media query.
+{-| Nest CSS with a media query.
 
     css [ withMedia "screen" [ property "key" "value" ] ]
 
@@ -530,7 +456,7 @@ with s =
         [ withMedia "screen"
             [ property "key" "value"
             , withMedia "not nestable" [ property "key" "value" ]
-            , withClass "nestable" [ property "key" "value" ]
+            , with ".nestable" [ property "key" "value" ]
             ]
         ]
 
@@ -569,9 +495,9 @@ withMedia mq =
 
     css
         [ animation
-            [ ( ( from, [] ), [ propertyA "key" "value" ] )
-            , ( ( pct 20, [ pct 80 ] ), [ propertyA "key" "value" ] )
-            , ( ( to, [] ), [ propertyA "key" "value" ] )
+            [ ( "from", [ property "key" "value" ] )
+            , ( "20%, 80%", [ property "key" "value" ] )
+            , ( "to", [ property "key" "value" ] )
             ]
         ]
 
@@ -599,6 +525,8 @@ withMedia mq =
 
   - `animation-name` propertyが暗黙に生成されます
   - keyframesブロックが生成されます
+
+**note**: 引数の`List Style`で`with`などの入れ子と`animation`自身を使った場合無視されます。
 
 -}
 animation : List ( String, List Style ) -> Style

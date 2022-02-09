@@ -119,9 +119,9 @@ media selector bs =
 
     styleTag
         [ keyframes "spin"
-            [ ( ( from, [] ), [ property "key" "value" ] )
-            , ( ( pct 20, [ pct 80 ] ), [ property "key" "value" ] )
-            , ( ( to, [] ), [ property "key" "value" ] )
+            [ ( "from", [ property "key" "value" ] )
+            , ( "20%, 80%", [ property "key" "value" ] )
+            , ( "to", [ property "key" "value" ] )
             ]
         ]
 
@@ -174,7 +174,7 @@ fontFace ps =
 
 {-|
 
-  - `Origami.propertyA`と同一
+  - `Origami.property`とは非互換
 
 -}
 property : String -> String -> Property

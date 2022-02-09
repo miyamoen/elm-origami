@@ -1,7 +1,6 @@
 module Origami.Css.StyleTag exposing
     ( Block(..)
     , KeyframesStyleBlock
-    , NonEmptyList
     , Properties
     , Property(..)
     , Selector(..)
@@ -47,10 +46,6 @@ type Selector
 
 type alias KeyframesStyleBlock =
     ( String, Properties )
-
-
-type alias NonEmptyList a =
-    ( a, List a )
 
 
 print : List Block -> String
